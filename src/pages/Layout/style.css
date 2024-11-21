@@ -1,0 +1,18 @@
+body {
+  background: hsla(220, 23%, 97%, 1);
+}
+.container-main {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 15px;
+  width: 1440px;
+}
+.container-HeOu {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 1102px;
+}
+* {
+  box-sizing: border-box;
+}
