@@ -18,10 +18,91 @@ import Boxlightbluegraph from "../Invoicing/assets/spending/boxlightbluegraph.sv
 import Boxorangegraph from "../Invoicing/assets/spending/boxorangegraph.svg";
 import Treedotmenu from "../Sidebar/assets/icons/dot.svg";
 import Buttonok from "../Invoicing/assets/spending/buttonok.svg";
+import Blueprogressbar from "../Invoicing/assets/spending/blueprogressbar.svg";
+import Greenprogressbar from "../Invoicing/assets/spending/greenprogressbar.svg";
+import Yellowprogressbar from "../Invoicing/assets/spending/yellowporgressbar.svg";
+import Blackprogressbar from "../Invoicing/assets/spending/blackprogressbar.svg";
+import lightblueprogressbar from "../Invoicing/assets/spending/lightblueprogressbar.svg";
+import Redprogressbar from "../Invoicing/assets/spending/redprogressbar.svg";
 import { useState } from "react";
+import Transactionoverviewgraph from "../Invoicing/assets/transactionoverview/transactionoverviewgraph.svg";
+import Downloadbuttonicon from "../Invoicing/assets/transactionoverview/downloadbuttonicon.svg";
+import walletgraph from "../Invoicing/assets/transactionoverview/walletgraph.svg";
 const Invoicing = () => {
   const [amount, setAmount] = useState(875);
   const balance = 456345.62;
+  const [transactions, setTransactions] = useState([
+    {
+      name: "XYZ Store ID",
+      date: "November 28, 2023",
+      time: "05:34 AM",
+      type: "Cashback",
+      amount: "+ $53.98",
+      status: "PENDING",
+    },
+    {
+      name: "Restaurant ABC",
+      date: "November 28, 2023",
+      time: "07:56 AM",
+      type: "Transfer Out",
+      amount: "- $148.63",
+      status: "COMPLETED",
+    },
+    {
+      name: "Cindy Alexandro",
+      date: "November 28, 2023",
+      time: "10:13 AM",
+      type: "Transfer Out",
+      amount: "- $33.47",
+      status: "COMPLETED",
+    },
+    {
+      name: "Payment CME",
+      date: "November 28, 2023",
+      time: "12:34 PM",
+      type: "Transfer In",
+      amount: "+ $550.33",
+      status: "PENDING",
+    },
+    {
+      name: "Hawkins Jr.",
+      date: "November 28, 2023",
+      time: "04:34 PM",
+      type: "Transfer In",
+      amount: "+ $63.75",
+      status: "CANCELED",
+    },
+  ]);
+
+  const [editIndex, setEditIndex] = useState(null);
+  const [editTransaction, setEditTransaction] = useState({});
+
+  const handleEditClick = (index) => {
+    setEditIndex(index);
+    setEditTransaction({ ...transactions[index] });
+  };
+
+  const handleSaveClick = () => {
+    const updatedTransactions = [...transactions];
+    updatedTransactions[editIndex] = editTransaction;
+    setTransactions(updatedTransactions);
+    setEditIndex(null);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditTransaction({ ...editTransaction, [name]: value });
+  };
+
+  const handleDeleteClick = (index) => {
+    const updatedTransactions = transactions.filter((_, i) => i !== index);
+    setTransactions(updatedTransactions);
+  };
+
+  const handleViewClick = (index) => {
+    alert(`Viewing details for: ${transactions[index].name}`);
+  };
+
   return (
     <>
       <section className="header-container">
@@ -280,6 +361,379 @@ const Invoicing = () => {
               Send <img src={Buttonok} />
             </button>
           </div>
+        </div>
+        <div className="rightside-container-spending-lists">
+          <div className="rightside-container-spending-lists-header">
+            <p>Spending Lists</p>
+            <img src={Treedotmenu} />
+          </div>
+          <div>
+            <div className="rightside-container-spending-lists-middle">
+              <div className="progressbar-icon-container">
+                <img className="progressbar-icon" src={Blueprogressbar} />
+              </div>
+              <div className="rightside-container-spending-lists-middle-text">
+                <div>
+                  <p className="rightside-container-spending-lists-middle-text-item-one">
+                    Investment
+                  </p>
+                </div>
+                <div className="rightside-container-spending-lists-middle-text-item-second-container">
+                  <p className="rightside-container-spending-lists-middle-text-item-two">
+                    $1,415
+                  </p>
+                  <p className="rightside-container-spending-lists-middle-text-item-three">
+                    /$4,560
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div className="rightside-container-spending-lists-middle">
+              <div className="progressbar-icon-container">
+                <img className="progressbar-icon" src={Greenprogressbar} />
+              </div>
+              <div className="rightside-container-spending-lists-middle-text">
+                <div>
+                  <p className="rightside-container-spending-lists-middle-text-item-one">
+                    Restaurant
+                  </p>
+                </div>
+                <div className="rightside-container-spending-lists-middle-text-item-second-container">
+                  <p className="rightside-container-spending-lists-middle-text-item-two">
+                    $2,395
+                  </p>
+                  <p className="rightside-container-spending-lists-middle-text-item-three">
+                    /$4,000
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div className="rightside-container-spending-lists-middle">
+              <div className="progressbar-icon-container">
+                <img className="progressbar-icon" src={Redprogressbar} />
+              </div>
+              <div className="rightside-container-spending-lists-middle-text">
+                <div>
+                  <p className="rightside-container-spending-lists-middle-text-item-one">
+                    Installment
+                  </p>
+                </div>
+                <div className="rightside-container-spending-lists-middle-text-item-second-container">
+                  <p className="rightside-container-spending-lists-middle-text-item-two">
+                    $1,869
+                  </p>
+                  <p className="rightside-container-spending-lists-middle-text-item-three">
+                    /$3,259
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div className="rightside-container-spending-lists-middle">
+              <div className="progressbar-icon-container">
+                <img className="progressbar-icon" src={Yellowprogressbar} />
+              </div>
+              <div className="rightside-container-spending-lists-middle-text">
+                <div>
+                  <p className="rightside-container-spending-lists-middle-text-item-one">
+                    Property
+                  </p>
+                </div>
+                <div className="rightside-container-spending-lists-middle-text-item-second-container">
+                  <p className="rightside-container-spending-lists-middle-text-item-two">
+                    $1,200
+                  </p>
+                  <p className="rightside-container-spending-lists-middle-text-item-three">
+                    /$3,000
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div className="rightside-container-spending-lists-middle">
+              <div className="progressbar-icon-container">
+                <img className="progressbar-icon" src={lightblueprogressbar} />
+              </div>
+              <div className="rightside-container-spending-lists-middle-text">
+                <div>
+                  <p className="rightside-container-spending-lists-middle-text-item-one">
+                    Hobbies
+                  </p>
+                </div>
+                <div className="rightside-container-spending-lists-middle-text-item-second-container">
+                  <p className="rightside-container-spending-lists-middle-text-item-two">
+                    $2,000
+                  </p>
+                  <p className="rightside-container-spending-lists-middle-text-item-three">
+                    /$4,000
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="rightside-container-spending-lists-middle">
+              <div className="progressbar-icon-container">
+                <img className="progressbar-icon" src={Blackprogressbar} />
+              </div>
+              <div className="rightside-container-spending-lists-middle-text">
+                <div>
+                  <p className="rightside-container-spending-lists-middle-text-item-one">
+                    Travel
+                  </p>
+                </div>
+                <div className="rightside-container-spending-lists-middle-text-item-second-container">
+                  <p className="rightside-container-spending-lists-middle-text-item-two">
+                    $1,840
+                  </p>
+                  <p className="rightside-container-spending-lists-middle-text-item-three">
+                    /$3,870
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="Transaction-overview-container">
+        <div className="Transaction-overview-container-leftside">
+          <div className="Transaction-overview-container-header">
+            <p>Transaction Overview</p>
+            <img src={Treedotmenu} />
+          </div>
+          <div className="Transaction-overview-container-item-text-button">
+            <p>
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Nesciunt
+              perfer
+            </p>
+            <button className="Transaction-overview-container-button">
+              <p>Download Report</p>
+              <img src={Downloadbuttonicon} alt="" />
+            </button>
+          </div>
+          <div className="Transactionoverviewgraph-container">
+            <img src={Transactionoverviewgraph} />
+          </div>
+          <div className="Transaction-overview-container-footer">
+            <div className="income-container-text">
+              <div className="circle-blue"></div>
+              <p>Income</p>
+            </div>
+            <div className="horizontal-border"></div>
+            <div className="income-container-text">
+              <div className="circle-gray"></div>
+              <p>Expenses</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="weekly-wallet-container">
+          <div className="weekly-wallet-container-header">
+            <p>Weekly Wallet Transactions</p>
+            <img src={Treedotmenu} />
+          </div>
+          <div className="weekly-wallet-container-button-container">
+            <select className="month-select" name="month" id="month">
+              <option value="January">January</option>
+              <option value="February">February</option>
+              <option value="March">March</option>
+              <option value="April">April</option>
+              <option value="May">May</option>
+              <option value="June">June</option>
+              <option value="July">July</option>
+              <option value="August">August</option>
+              <option value="September">September</option>
+              <option value="October">October</option>
+              <option value="November">November</option>
+              <option value="December">December</option>
+            </select>
+
+            <select className="month-select" name="year" id="year">
+              <option value="2023">2023</option>
+              <option value="2022">2022</option>
+              <option value="2021">2021</option>
+              <option value="2020">2020</option>
+              <option value="2019">2019</option>
+              <option value="2018">2018</option>
+              <option value="2017">2017</option>
+              <option value="2016">2016</option>
+              <option value="2015">2015</option>
+              <option value="2014">2014</option>
+              <option value="2013">2013</option>
+            </select>
+          </div>
+          <div className="weekly-wallet-container-item-number">
+            <p className="weekly-wallet-container-item-number-price">$36,495</p>
+            <div className="weekly-wallet-container-item-number-text-container">
+              <img src={Green25} alt="" />
+              <p className="weekly-wallet-container-item-number-text">
+                from last week
+              </p>
+            </div>
+          </div>
+          <div>
+            <img src={walletgraph} />
+          </div>
+        </div>
+      </section>
+
+      <section className="Previous-Transactions-container">
+        <div className="Previous-Transactions-container-header">
+          <div className="Previous-Transactions-container-header-left">
+            <p>Previous Transactions</p>
+            <p className="Previous-Transactions-container-header-left-text">
+              Lorem ipsum dolor sit amet consectetur sit amet ipsum dolor sit
+              amet consectetur.
+            </p>
+          </div>
+          <div className="Previous-Transactions-container-header-right">
+            <button className="Previous-Transactions-container-header-right-button-first">
+              Today
+            </button>
+            <button className="Previous-Transactions-container-header-right-button">
+              Weekly
+            </button>
+            <button className="Previous-Transactions-container-header-right-button">
+              Monthly
+            </button>
+            <button className="Previous-Transactions-container-header-right-button-last">
+              Yearly
+            </button>
+          </div>
+        </div>
+        <div className="transaction-table">
+          <table className="transaction-table">
+            <thead>
+              <tr>
+                <th>Transaction Name</th>
+                <th>Date & Time</th>
+                <th>Transaction Type</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {transactions.map((transaction, index) => (
+                <tr key={index}>
+                  {editIndex === index ? (
+                    <>
+                      <td>
+                        <input
+                          type="text"
+                          name="name"
+                          value={editTransaction.name}
+                          onChange={handleInputChange}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          name="date"
+                          value={editTransaction.date}
+                          onChange={handleInputChange}
+                        />
+                        <input
+                          type="text"
+                          name="time"
+                          value={editTransaction.time}
+                          onChange={handleInputChange}
+                          style={{ marginLeft: "10px" }}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          name="type"
+                          value={editTransaction.type}
+                          onChange={handleInputChange}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          name="amount"
+                          value={editTransaction.amount}
+                          onChange={handleInputChange}
+                        />
+                      </td>
+                      <td>
+                        <select
+                          name="status"
+                          value={editTransaction.status}
+                          onChange={handleInputChange}>
+                          <option value="PENDING">PENDING</option>
+                          <option value="COMPLETED">COMPLETED</option>
+                          <option value="CANCELED">CANCELED</option>
+                        </select>
+                      </td>
+                      <td>
+                        <button
+                          className="action-button save"
+                          onClick={handleSaveClick}>
+                          💾 Save
+                        </button>
+                      </td>
+                    </>
+                  ) : (
+                    <>
+                      <td>{transaction.name}</td>
+                      <td>{`${transaction.date} ${transaction.time}`}</td>
+                      <td>{transaction.type}</td>
+                      <td
+                        className={
+                          transaction.amount.startsWith("+")
+                            ? "positive"
+                            : "negative"
+                        }>
+                        {transaction.amount}
+                      </td>
+                      <td>
+                        <span
+                          className={`status ${transaction.status.toLowerCase()}`}>
+                          {transaction.status}
+                        </span>
+                      </td>
+                      <td>
+                        <button
+                          className="action-button edit"
+                          onClick={() => handleEditClick(index)}>
+                          ✏️
+                        </button>
+                        <button
+                          className="action-button view"
+                          onClick={() => handleViewClick(index)}>
+                          👁️
+                        </button>
+                        <button
+                          className="action-button delete"
+                          onClick={() => handleDeleteClick(index)}>
+                          🗑️
+                        </button>
+                      </td>
+                    </>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="last-container">
+          <button className="previous">Previous</button>
+          <p>Page 1 of 12</p>
+          <button className="next">Next</button>
         </div>
       </section>
     </>
