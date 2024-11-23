@@ -28,6 +28,9 @@ import { useState } from "react";
 import Transactionoverviewgraph from "../Invoicing/assets/transactionoverview/transactionoverviewgraph.svg";
 import Downloadbuttonicon from "../Invoicing/assets/transactionoverview/downloadbuttonicon.svg";
 import walletgraph from "../Invoicing/assets/transactionoverview/walletgraph.svg";
+import Eye from "../Invoicing/assets/list/Eye.svg";
+import Edit from "../Invoicing/assets/list/Edit.svg";
+import Printer from "../Invoicing/assets/list/Printer.svg";
 const Invoicing = () => {
   const [amount, setAmount] = useState(875);
   const balance = 456345.62;
@@ -709,17 +712,17 @@ const Invoicing = () => {
                         <button
                           className="action-button edit"
                           onClick={() => handleEditClick(index)}>
-                          ✏️
+                          <img src={Edit} />
                         </button>
                         <button
                           className="action-button view"
                           onClick={() => handleViewClick(index)}>
-                          👁️
+                          <img src={Printer} />
                         </button>
                         <button
                           className="action-button delete"
                           onClick={() => handleDeleteClick(index)}>
-                          🗑️
+                          <img src={Eye} />
                         </button>
                       </td>
                     </>
