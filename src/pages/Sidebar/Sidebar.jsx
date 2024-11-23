@@ -355,7 +355,15 @@ function Restaurant() {
             <button
               onClick={(event) => button_click(event, index)}
               className="button">
-              {link}
+              {link === "Analytics" ? (
+                <a
+                  style={{ textDecoration: "none" }}
+                  href="http://localhost:5173/restaurant">
+                  {link}
+                </a>
+              ) : (
+                link
+              )}
             </button>
           </div>
         ))}

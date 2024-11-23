@@ -7,7 +7,7 @@ import Layout from "./pages/Layout/Layout";
 import Eductaion from "./pages/Education/Education";
 import Cryptocurrency from "./pages/Cryptocurrency/Cryptocurrency";
 import Invoicing from "./pages/Invoicing/Invoicing";
-
+import Restaurant from "./pages/Restaurant/Restaurant";
 const routes = [
   {
     path: "/",
@@ -28,6 +28,10 @@ const routes = [
       {
         path: "/invoicing",
         element: <Invoicing />,
+      },
+      {
+        path: "/restaurant",
+        element: <Restaurant />,
       },
     ],
   },

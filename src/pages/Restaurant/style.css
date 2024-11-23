@@ -1,0 +1,84 @@
+.header-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 1, 102px;
+  height: 129px;
+  padding: 20px;
+  gap: 40px;
+  border-radius: 10px;
+  opacity: 0px;
+  background-color: hsla(0, 0%, 100%, 1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.header-container-income {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+.header-container-income-text {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.header-container-income-text-income {
+  color: rgba(122, 124, 127, 1);
+  font-weight: 300;
+  height: 1px;
+}
+.header-container-income-text-price {
+  font-size: 26px;
+  font-weight: 500;
+  height: 3px;
+  color: rgba(77, 81, 84, 1);
+}
+.header-container-income-text-button-text {
+  display: flex;
+}
+.header-container-income-text-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.header-container-income-text-common-container {
+  margin-right: 33px;
+}
+.horizontal-border {
+  height: 90px;
+}
+.total-income-container {
+  display: flex;
+  width: 380px;
+  height: 89px;
+  justify-content: space-between;
+  padding-left: 20px;
+  align-items: center;
+  padding-right: 20px;
+  gap: 20px;
+}
+.total-income-container-text {
+  color: rgba(122, 124, 127, 1);
+  height: 1px;
+}
+.total-income-container-price {
+  color: rgba(77, 81, 84, 1);
+  font-size: 32px;
+  font-weight: 600;
+}
+.withdraw-button {
+  width: 131px;
+  height: 40px;
+  padding: 8px 0px 8px 0px;
+  gap: 10px;
+  border-radius: 5px;
+  display: flex;
+  border: none;
+  cursor: pointer;
+  color: white;
+  background-color: rgba(86, 85, 215, 1);
+  justify-content: center;
+  align-items: center;
+  opacity: 0px;
+}
