@@ -1,0 +1,201 @@
+.cards-container {
+  display: flex;
+  gap: 26px;
+  flex-direction: row;
+}
+.card-t {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100px;
+  width: 350px;
+  height: 186px;
+  gap: 10px;
+  border-radius: 10px;
+  padding: 20px;
+  opacity: 0px;
+  background-color: rgba(127, 126, 255, 1);
+}
+.card-t-light-blue {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100px;
+  width: 350px;
+  height: 186px;
+  gap: 10px;
+  border-radius: 10px;
+  padding: 20px;
+  opacity: 0px;
+  background-color: rgba(74, 189, 232, 1);
+}
+.card-t-green {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100px;
+  width: 350px;
+  height: 186px;
+  gap: 10px;
+  border-radius: 10px;
+  padding: 20px;
+  opacity: 0px;
+  background-color: rgba(0, 153, 126, 1);
+}
+.card-main-wallet-item {
+  font-size: 15px;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 1);
+  line-height: 22px;
+  text-align: left;
+}
+.card-price-item {
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 4px;
+  color: white;
+}
+.id {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 22px;
+  color: rgba(255, 239, 96, 1);
+}
+.card-id {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.wave {
+  display: flex;
+  position: absolute;
+}
+
+/* section */
+.income-section {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.income-container-left {
+  display: flex;
+  flex-direction: column;
+  width: 726px;
+  height: 455px;
+  padding-left: 20px;
+  padding-right: 20px;
+  gap: 15px;
+  border-radius: 10px;
+  opacity: 0px;
+  background-color: hsla(0, 0%, 100%, 1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.income-cotanier-left-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.income-cotanier-left-middle {
+  display: flex;
+  flex-direction: column;
+}
+.income-cotanier-left-middle {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.income-cotanier-left-middle-prices-container-left {
+  display: flex;
+  flex-direction: column;
+}
+.blue-circle-container {
+  display: flex;
+  margin-top: 30px;
+  flex-direction: row;
+  align-items: center;
+  height: 5px;
+  gap: 10px;
+}
+.income-cotanier-left-middle-prices-container-footer {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.income-cotanier-left-middle-prices-container {
+  display: flex;
+  gap: 80px;
+  flex-direction: row;
+}
+.income-cotanier-left-middle {
+  width: 686px;
+  padding-left: 20px;
+  padding-right: 20px;
+  height: 133px;
+  gap: 0px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  justify-content: space-between;
+  opacity: 0px;
+}
+.income-cotanier-left-middle-prices-container-left-prices-p {
+  font-size: 32px;
+  color: rgba(77, 81, 84, 1);
+  font-weight: 600;
+  height: 0px;
+}
+.income-cotanier-left-middle-prices-container-footer-text-item {
+  width: 170px;
+  color: rgba(122, 124, 127, 1);
+}
+.income-cotanier-left-middle-prices-container-footer-percentage {
+  color: rgba(0, 153, 126, 1);
+  font-size: 18px;
+  font-weight: 600;
+}
+.horizontat-bordder {
+  background-color: rgba(220, 220, 220, 1);
+  width: 1px;
+  height: 90px;
+  margin-top: 30px;
+}
+.income-cotanier-left-middle-prices-container-right {
+  display: flex;
+  flex-direction: column;
+}
+.send-container {
+  display: flex;
+  flex-direction: column;
+  width: 350px;
+  height: 455px;
+  padding-left: 20px;
+  padding-right: 20px;
+  gap: 15px;
+  border-radius: 10px;
+  opacity: 0px;
+  background-color: hsla(0, 0%, 100%, 1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.send-container-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.send-container-profiles-container {
+  display: flex;
+  overflow-y:auto;
+  gap: 10px;
+  align-items: center;
+}
+.send-container-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.scroll-content {
+  line-height: 1.5; /* Improve readability */
+  color: #333; /* Text color */
+}

@@ -8,6 +8,7 @@ import Eductaion from "./pages/Education/Education";
 import Cryptocurrency from "./pages/Cryptocurrency/Cryptocurrency";
 import Invoicing from "./pages/Invoicing/Invoicing";
 import Restaurant from "./pages/Restaurant/Restaurant";
+import Banking from "./pages/Banking/Banking";
 const routes = [
   {
     path: "/",
@@ -32,6 +33,10 @@ const routes = [
       {
         path: "/restaurant",
         element: <Restaurant />,
+      },
+      {
+        path: "/banking",
+        element: <Banking />,
       },
     ],
   },
