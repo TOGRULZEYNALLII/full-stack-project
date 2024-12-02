@@ -14,7 +14,7 @@
   border-radius: 10px;
   padding: 20px;
   opacity: 0px;
-  background-color: rgba(127, 126, 255, 1);
+  background-color: rgba(86, 85, 215, 1);
 }
 .card-t-light-blue {
   display: flex;
@@ -76,6 +76,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+  gap: 26px;
 }
 .income-container-left {
   display: flex;
@@ -162,6 +163,7 @@
 }
 .income-cotanier-left-middle-prices-container-right {
   display: flex;
+
   flex-direction: column;
 }
 .send-container {
@@ -171,7 +173,6 @@
   height: 455px;
   padding-left: 20px;
   padding-right: 20px;
-  gap: 15px;
   border-radius: 10px;
   opacity: 0px;
   background-color: hsla(0, 0%, 100%, 1);
@@ -181,12 +182,13 @@
 .send-container-header {
   display: flex;
   flex-direction: row;
+  height: 50px;
   align-items: center;
   justify-content: space-between;
 }
 .send-container-profiles-container {
   display: flex;
-  overflow-y:auto;
+  overflow-y: auto;
   gap: 10px;
   align-items: center;
 }
@@ -198,4 +200,249 @@
 .scroll-content {
   line-height: 1.5; /* Improve readability */
   color: #333; /* Text color */
+}
+.send-container-middle-container-item-text {
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(122, 124, 127, 1);
+}
+.payement-catagory-container-p {
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(122, 124, 127, 1);
+}
+.input {
+  width: 310px;
+  height: 46px;
+  padding: 12px;
+  gap: 10px;
+  border-radius: 5px;
+
+  opacity: 0px;
+}
+.input-container {
+  display: flex;
+  align-items: center;
+}
+.vectoricon {
+  height: 25px;
+}
+.payement-catagory-container-button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 310px;
+  height: 40px;
+  padding: 8px;
+  gap: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: none;
+  color: white;
+  background-color: rgb(100, 100, 240);
+  opacity: 0px;
+
+  justify-content: center;
+}
+.payement-catagory-container-button-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.white-th {
+  background-color: white;
+}
+.Banking-Previous-Transactions-container-header-right-button-first {
+  width: 82px;
+  height: 37px;
+  padding: 8px;
+  gap: 10px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
+  color: rgba(166, 168, 169, 1);
+  background-color: transparent;
+  opacity: 0px;
+}
+.Banking-Previous-Transactions-container-header-right-button-text {
+  font-size: 15px;
+  font-weight: 600;
+}
+.Previous-Transactions-container-header-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 392px;
+  height: 47px;
+  padding: 5px;
+  gap: 10px;
+  border-radius: 10px;
+  background-color: rgba(144, 146, 148, 0.08);
+  opacity: 0px;
+}
+.Banking-Previous-Transactions-container-header-right-button-first :hover {
+  width: 82px;
+  height: 37px;
+  padding: 8px;
+  gap: 10px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(166, 168, 169, 1);
+  background-color: white;
+  opacity: 0px;
+}
+/* section  */
+.Banking-footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 26px;
+}
+.banking-footer-leftside-container {
+  display: flex;
+  flex-direction: column;
+  width: 350px;
+  height: 439px;
+  padding-left: 20px;
+  background-color: hsla(0, 0%, 100%, 1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding-right: 20px;
+  border-radius: 10px;
+  opacity: 0px;
+}
+.banking-footer-leftside-container-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.banking-footer-leftside-container-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 97px;
+}
+.banking-footer-icon-container-main-price {
+  display: flex;
+  align-items: center;
+}
+.instalment {
+  height: 10px;
+}
+.progressbar-container {
+  height: 10px;
+}
+.banking-footer-icon-container-main-price-default {
+  font-weight: 500;
+}
+.banking-footer-icon-container-main-price-gray {
+  font-weight: 500;
+  color: rgb(166, 172, 178);
+}
+.banking-footer-leftside-container-main-flex {
+  display: flex;
+  gap: 0;
+  flex-direction: column;
+}
+.graph-container-price {
+  margin-top: 20px;
+}
+.blue-squere {
+  width: 14px;
+  height: 14px;
+  gap: 0px;
+  background-color: rgba(86, 85, 215, 1);
+  border-radius: 4px;
+  opacity: 0px;
+}
+.dots-container {
+  display: flex;
+  flex-direction: column;
+}
+.dots-container-left-color {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.green-squere {
+  width: 14px;
+  height: 14px;
+  gap: 0px;
+  background-color: rgba(0, 153, 126, 1);
+  border-radius: 4px;
+  opacity: 0px;
+}
+.red-squere {
+  width: 14px;
+  height: 14px;
+  gap: 0px;
+  background-color: rgba(255, 65, 75, 1);
+  border-radius: 4px;
+  opacity: 0px;
+}
+.light-blue-squere {
+  width: 14px;
+  height: 14px;
+  gap: 0px;
+  background-color: rgba(74, 189, 232, 1);
+  border-radius: 4px;
+  opacity: 0px;
+}
+.yellow-squere {
+  width: 14px;
+  height: 14px;
+  gap: 0px;
+  background-color: rgba(255, 174, 65, 1);
+  border-radius: 4px;
+  opacity: 0px;
+}
+.dots-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.history-container {
+  display: flex;
+  flex-direction: column;
+  width: 350px;
+  height: 439px;
+  padding-left: 20px;
+  padding-right: 20px;
+  border-radius: 10px;
+  opacity: 0px;
+  background-color: hsla(0, 0%, 100%, 1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.history-container-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.history-container-main {
+  display: flex;
+  height: 75px;
+  align-items: center;
+  justify-content: space-between;
+}
+.price-history {
+  color: rgba(255, 65, 75, 1);
+  font-weight: 600;
+}
+.history-container-main-text-gray {
+  font-weight: 400;
+  color: rgba(122, 124, 127, 1);
+}
+.price-history-green {
+  color: rgba(0, 153, 126, 1);
+  font-weight: 600;
 }

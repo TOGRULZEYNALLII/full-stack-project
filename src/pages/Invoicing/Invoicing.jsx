@@ -108,7 +108,7 @@ const Invoicing = () => {
 
   return (
     <>
-      <section className="header-container">
+      <section className="header-container-invoicing">
         <div className="header-container-total-invoices">
           <div className="header-container-total-invoices-item">
             <div className="header-container-total-invoices-icon-conatiner">
@@ -619,12 +619,12 @@ const Invoicing = () => {
           <table className="transaction-table">
             <thead>
               <tr>
-                <th>Transaction Name</th>
-                <th>Date & Time</th>
-                <th>Transaction Type</th>
-                <th>Amount</th>
-                <th>Status</th>
-                <th>Action</th>
+                <th className="th-black">Transaction Name</th>
+                <th className="th-black">Date & Time</th>
+                <th className="th-black">Transaction Type</th>
+                <th className="th-black">Amount</th>
+                <th className="th-black">Status</th>
+                <th className="th-black">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -676,7 +676,7 @@ const Invoicing = () => {
                           name="status"
                           value={editTransaction.status}
                           onChange={handleInputChange}>
-                          <option value="PENDING">PENDING</option>
+                          <option className="pending" value="PENDING">PENDING</option>
                           <option value="COMPLETED">COMPLETED</option>
                           <option value="CANCELED">CANCELED</option>
                         </select>
@@ -739,6 +739,8 @@ const Invoicing = () => {
           <button className="next">Next</button>
         </div>
       </section>
+
+    
     </>
   );
 };

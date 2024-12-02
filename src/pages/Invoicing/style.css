@@ -8,6 +8,10 @@
   height: 163.82px;
   flex-direction: column;
 }
+.header-container-invoicing {
+  display: flex;
+  gap: 26px;
+}
 .header-container-total-invoices-item {
   display: flex;
   flex-direction: row;
@@ -508,16 +512,24 @@
   height: 400px;
   border-collapse: collapse;
 }
-
+.buttons-td {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
 .transaction-table th,
 .transaction-table td {
   padding: 10px;
   border: 1px solid #ddd;
 }
+.transaction-table {
+  overflow-y: auto;
+}
 .transaction-table tr:nth-child(even) td {
   background-color: rgba(144, 146, 148, 0.16);
 }
-.transaction-table th {
+.th-black {
   background-color: rgba(144, 146, 148, 0.16);
 }
 .transaction-table .positive {
@@ -534,18 +546,18 @@
 }
 
 .transaction-table .status.pending {
-  background-color: #ffc107;
-  color: white;
+  background-color: rgba(255, 174, 65, 0.16);
+  color: rgba(255, 174, 65, 1);
 }
 
 .transaction-table .status.completed {
-  background-color: #28a745;
-  color: white;
+  background-color: rgba(0, 153, 126, 0.16);
+  color: rgba(0, 153, 126, 1);
 }
 
 .transaction-table .status.canceled {
-  background-color: #dc3545;
-  color: white;
+  background-color: rgba(255, 65, 75, 0.16);
+  color: rgba(255, 65, 75, 1);
 }
 
 .action-button {
@@ -599,4 +611,7 @@
   border-color: 1px solid rgba(220, 220, 220, 1);
   border: 0.86px 0px 0px 0px;
   opacity: 0px;
+}
+.pending {
+  background-color: red;
 }
