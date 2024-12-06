@@ -462,7 +462,15 @@ function Hrmanagement() {
             <button
               onClick={(event) => button_click(event, index)}
               className="button">
-              {link}
+              {link === "Analytics" ? (
+                <a
+                  style={{ textDecoration: "none" }}
+                  href="http://localhost:5173/hrmanagement">
+                  {link}
+                </a>
+              ) : (
+                link
+              )}
             </button>
           </div>
         ))}

@@ -9,6 +9,7 @@ import Cryptocurrency from "./pages/Cryptocurrency/Cryptocurrency";
 import Invoicing from "./pages/Invoicing/Invoicing";
 import Restaurant from "./pages/Restaurant/Restaurant";
 import Banking from "./pages/Banking/Banking";
+import Hrmanagement from "./pages/Hrmanagement/Hrmanagement";
 const routes = [
   {
     path: "/",
@@ -38,6 +39,10 @@ const routes = [
         path: "/banking",
         element: <Banking />,
       },
+      {
+        path:"/hrmanagement",
+        element: <Hrmanagement />,
+      }
     ],
   },
 ];
