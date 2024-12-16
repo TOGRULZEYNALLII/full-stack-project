@@ -594,21 +594,21 @@
   padding: 10.37px 17.29px 10.37px 17.29px;
   gap: 8.64px;
   border-radius: 5px;
-  background-color: white;
+  background: transparent;
+  border: 1px solid rgba(220, 220, 220, 1);
   cursor: pointer;
-  border-color: 1px solid rgba(220, 220, 220, 1);
   border: 0.86px 0px 0px 0px;
   opacity: 0px;
 }
 .next {
-  width: 84.57px;
+   width: 84.57px;
   height: 40.74px;
   padding: 10.37px 17.29px 10.37px 17.29px;
   gap: 8.64px;
   border-radius: 5px;
-  background-color: white;
+  background: transparent;
+  border: 1px solid rgba(220, 220, 220, 1);
   cursor: pointer;
-  border-color: 1px solid rgba(220, 220, 220, 1);
   border: 0.86px 0px 0px 0px;
   opacity: 0px;
 }
