@@ -608,7 +608,98 @@ const Hrmanagement = () => {
             </div>
           </section>
         </div>
-        <div className="rightside-section-container"></div>
+        <div className="rightside-section-container">
+          <div className="month-container">
+            <div className="month-header">
+              <div>
+                <p>November, 2023</p>
+              </div>
+
+              <div className="month-header-buttons">
+                <img src="" alt="" />
+                <img src="" alt="" />
+              </div>
+            </div>
+            <div className="month-list-container">
+              <div className="month-list">
+                <p>Mon</p>
+                <p>29</p>
+              </div>
+              <div className="month-list">
+                <p>Mon</p>
+                <p>29</p>
+              </div>
+              <div className="month-list">
+                <p>Mon</p>
+                <p>29</p>
+              </div>
+              <div className="month-list">
+                <p>Mon</p>
+                <p>29</p>
+              </div>
+              <div className="month-list">
+                <p>Mon</p>
+                <p>29</p>
+              </div>
+              <div className="month-list">
+                <p>Mon</p>
+                <p>29</p>
+              </div>
+              <div className="month-list">
+                <p>Mon</p>
+                <p>29</p>
+              </div>
+            </div>
+            <div className="meeting-container">
+              <div>
+                <img src="" alt="" />
+              </div>
+              <div>
+                <p>Meeting with Candidate #1</p>
+                <div>
+                  <img src="" alt="" />
+                  <p>November 31, 2023</p>
+                </div>
+                <div>
+                  <img src="" alt="" />
+                  <p>10:00 AM - 11:00 AM</p>
+                </div>
+              </div>
+            </div>
+            <div className="meeting-container">
+              <div>
+                <img src="" alt="" />
+              </div>
+              <div>
+                <p>Meeting with Candidate #1</p>
+                <div>
+                  <img src="" alt="" />
+                  <p>November 31, 2023</p>
+                </div>
+                <div>
+                  <img src="" alt="" />
+                  <p>10:00 AM - 11:00 AM</p>
+                </div>
+              </div>
+            </div>
+            <div className="meeting-container">
+              <div>
+                <img src="" alt="" />
+              </div>
+              <div>
+                <p>Meeting with Candidate #1</p>
+                <div>
+                  <img src="" alt="" />
+                  <p>November 31, 2023</p>
+                </div>
+                <div>
+                  <img src="" alt="" />
+                  <p>10:00 AM - 11:00 AM</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
     </>
   );

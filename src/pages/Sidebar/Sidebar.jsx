@@ -588,7 +588,7 @@ function Hospital() {
       <div className="profile-container" onClick={toggleDropdown}>
         <div className="main-containers">
           <img src={HospitalIMG} alt="dashboard-icon" />
-          <p>Hospital Management</p>
+          <p> Hospital Management</p>
         </div>
         <div>
           <img src={dropdownOpen ? DropdownIconDown : DropdownIcon}></img>
@@ -597,7 +597,7 @@ function Hospital() {
       <div
         className="dropdown-container"
         style={{ display: dropdownOpen ? "block" : "none" }}>
-        {["Analytics", "Transactions", "Data"].map((link, index) => (
+        {["Analytics", "Class Projects", "Data"].map((link, index) => (
           <div className="drpdwn-section" key={index}>
             <div
               className={`drpdwn-border ${
@@ -608,7 +608,15 @@ function Hospital() {
             <button
               onClick={(event) => button_click(event, index)}
               className="button">
-              {link}
+              {link === "Analytics" ? (
+                <a
+                  style={{ textDecoration: "none" }}
+                  href="http://localhost:5173/hospital">
+                  {link}
+                </a>
+              ) : (
+                link
+              )}
             </button>
           </div>
         ))}

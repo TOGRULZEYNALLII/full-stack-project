@@ -10,6 +10,7 @@ import Invoicing from "./pages/Invoicing/Invoicing";
 import Restaurant from "./pages/Restaurant/Restaurant";
 import Banking from "./pages/Banking/Banking";
 import Hrmanagement from "./pages/Hrmanagement/Hrmanagement";
+import HospitalManagement from "./pages/Hospitalmanagement/Hospitalmanagement";
 const routes = [
   {
     path: "/",
@@ -40,9 +41,13 @@ const routes = [
         element: <Banking />,
       },
       {
-        path:"/hrmanagement",
+        path: "/hrmanagement",
         element: <Hrmanagement />,
-      }
+      },
+      {
+        path: "/hospital",
+        element: <HospitalManagement />,
+      },
     ],
   },
 ];
