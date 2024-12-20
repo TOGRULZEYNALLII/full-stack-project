@@ -28,6 +28,20 @@ import Jordan from "./assets/table/Jordan.svg";
 import Juliana from "./assets/table/Juliana.svg";
 import Lars from "./assets/table/Lars.svg";
 import Murad from "./assets/table/Murad.svg";
+import Attendancerate from "./assets/rightsideassets/attendancerate.svg";
+import CalendarBlank from "./assets/rightsideassets/calendarblank.svg";
+import Calendarblankblue from "./assets/rightsideassets/calendarblankblue.svg";
+import Calendarblankgreen from "./assets/rightsideassets/calendarblankgreen.svg";
+import Calendarblankgray from "./assets/rightsideassets/calendarblankgray.svg";
+import Clockblank from "./assets/rightsideassets/clockblank.svg";
+import Clockin from "./assets/rightsideassets/clockin.svg";
+import Clockout from "./assets/rightsideassets/clockout.svg";
+import Hiringchart from "./assets/rightsideassets/hiringchart.svg";
+import Joinedteam from "./assets/rightsideassets/joinedteam.svg";
+import Movedteam from "./assets/rightsideassets/movedteam.svg";
+import Startedbreak from "./assets/rightsideassets/startedbreak.svg";
+import Vectorleft from "./assets/rightsideassets/vectorleft.svg";
+import Vectorright from "./assets/rightsideassets/vectorright.svg";
 const Hrmanagement = () => {
   const employees = [
     {
@@ -608,93 +622,185 @@ const Hrmanagement = () => {
             </div>
           </section>
         </div>
+
+        {/* rightside container section container start frfom here baby */}
         <div className="rightside-section-container">
           <div className="month-container">
             <div className="month-header">
-              <div>
+              <div className="month-header-container">
                 <p>November, 2023</p>
-              </div>
-
-              <div className="month-header-buttons">
-                <img src="" alt="" />
-                <img src="" alt="" />
+                <div className="month-header-container-vectors">
+                  <img src={Vectorleft} />
+                  <img src={Vectorright} alt="" />
+                </div>
               </div>
             </div>
             <div className="month-list-container">
               <div className="month-list">
-                <p>Mon</p>
-                <p>29</p>
+                <p className="month-list-month">Mon</p>
+                <p className="month-list-numbers">29</p>
               </div>
               <div className="month-list">
-                <p>Mon</p>
-                <p>29</p>
+                <p className="month-list-month">Tue</p>
+                <p className="month-list-numbers">30</p>
               </div>
               <div className="month-list">
-                <p>Mon</p>
-                <p>29</p>
+                <p className="month-list-month">Wed</p>
+                <p className="month-list-numbers">31</p>
               </div>
               <div className="month-list">
-                <p>Mon</p>
-                <p>29</p>
+                <p className="month-list-month">Thu</p>
+                <p className="month-list-numbers">1</p>
               </div>
               <div className="month-list">
-                <p>Mon</p>
-                <p>29</p>
+                <p className="month-list-month">Fri</p>
+                <p className="month-list-numbers">2</p>
               </div>
               <div className="month-list">
-                <p>Mon</p>
-                <p>29</p>
+                <p className="month-list-month">Sat</p>
+                <p className="month-list-numbers">3</p>
               </div>
               <div className="month-list">
-                <p>Mon</p>
-                <p>29</p>
+                <p className="month-list-month">Sun</p>
+                <p className="month-list-numbers">4</p>
               </div>
             </div>
             <div className="meeting-container">
-              <div>
-                <img src="" alt="" />
+              <div className="calendarblank">
+                <img src={CalendarBlank} />
               </div>
               <div>
-                <p>Meeting with Candidate #1</p>
-                <div>
-                  <img src="" alt="" />
-                  <p>November 31, 2023</p>
+                <p className="headerofcalendaritem">
+                  Meeting with Candidate #1
+                </p>
+                <div className="flex">
+                  <img className="img" src={Calendarblankgray} />
+                  <p className="height">November 31, 2023</p>
                 </div>
-                <div>
-                  <img src="" alt="" />
-                  <p>10:00 AM - 11:00 AM</p>
+                <div className="flex">
+                  <img className="img" src={Clockblank} />
+                  <p className="height">10:00 AM - 11:00 AM</p>
+                </div>
+              </div>
+            </div>{" "}
+            <div className="meeting-container">
+              <div className="calendarblank-green">
+                <img src={Calendarblankgreen} />
+              </div>
+              <div>
+                <p className="headerofcalendaritem">Employee Training </p>
+                <div className="flex">
+                  <img className="img" src={Calendarblankgray} />
+                  <p className="height">November 31, 2023</p>
+                </div>
+                <div className="flex">
+                  <img className="img" src={Clockblank} />
+                  <p className="height">01:00 PM - 02:00 PM</p>
                 </div>
               </div>
             </div>
             <div className="meeting-container">
-              <div>
-                <img src="" alt="" />
+              <div className="calendarblank-blue">
+                <img src={Calendarblankblue} />
               </div>
               <div>
-                <p>Meeting with Candidate #1</p>
-                <div>
-                  <img src="" alt="" />
-                  <p>November 31, 2023</p>
+                <p className="headerofcalendaritem">Meeting with Team </p>
+                <div className="flex">
+                  <img className="img" src={Calendarblankgray} />
+                  <p className="height">November 31, 2023</p>
                 </div>
-                <div>
-                  <img src="" alt="" />
-                  <p>10:00 AM - 11:00 AM</p>
+                <div className="flex">
+                  <img className="img" src={Clockblank} />
+                  <p className="height">02:00 PM - 03:00 PM</p>
                 </div>
               </div>
             </div>
-            <div className="meeting-container">
-              <div>
-                <img src="" alt="" />
+            <div className="employee-rate-container">
+              <div className="empolyee-rate-container-header">
+                <p>Employee Attendance Rate</p>
+                <img src={Dot} />
               </div>
-              <div>
-                <p>Meeting with Candidate #1</p>
-                <div>
-                  <img src="" alt="" />
-                  <p>November 31, 2023</p>
+              <div className="empolyee-rate-container-middle">
+                <select className="select" name="year" id="year">
+                  <option value="2021">2021</option>
+                  <option value="2022">2022</option>
+                  <option value="2023" selected>
+                    2023
+                  </option>
+                  <option value="2024">2024</option>
+                </select>
+                <img src={Attendancerate} />
+              </div>
+            </div>
+            <div className="latest-activity-container">
+              <div className="latest-activity-container-header">
+                <p>Latest Activity</p>
+                <img src={Dot} />
+              </div>
+              <div className="latest-activity-middle-container">
+                <div className="latest-activity-middle">
+                  <div>
+                    <img src={Clockout} />
+                  </div>
+
+                  <div className="latest-activity-middle-text">
+                    <p className="height-10"> Jordan Nico</p>
+                    <p className="gray">Clocked Out</p>
+                  </div>
+                  <div>
+                    <p className="gray">03:00 PM</p>
+                  </div>
                 </div>
-                <div>
-                  <img src="" alt="" />
-                  <p>10:00 AM - 11:00 AM</p>
+
+                <div className="latest-activity-middle-container">
+                  <div className="latest-activity-middle">
+                    <img src={Clockin} />
+                    <div className="latest-activity-middle-text">
+                      <p className="height-10"> Adeline Palmerston</p>
+                      <p className="gray">Clocked In</p>
+                    </div>
+                    <div>
+                      <p className="gray">03:00 PM</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="latest-activity-middle-container">
+                  <div className="latest-activity-middle">
+                    <img src={Joinedteam} />
+                    <div className="latest-activity-middle-text">
+                      <p className="height-10"> Daniel Gallego</p>
+                      <p className="gray">Joined Team</p>
+                    </div>
+                    <div>
+                      <p className="gray">01:00 PM</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="latest-activity-middle-container">
+                  <div className="latest-activity-middle">
+                    <img src={Movedteam} />
+                    <div className="latest-activity-middle-text">
+                      <p className="height-10"> Juliana Silva</p>
+                      <p className="gray">Moved Team</p>
+                    </div>
+                    <div>
+                      <p className="gray">01:00 PM</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="latest-activity-middle-container">
+                  <div className="latest-activity-middle">
+                    <img src={Startedbreak} />
+                    <div className="latest-activity-middle-text">
+                      <p className="height-10"> Murad Naser</p>
+                      <p className="gray">Started a Break</p>
+                    </div>
+                    <div>
+                      <p className="gray">11:00 AM</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
