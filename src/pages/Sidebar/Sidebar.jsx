@@ -33,80 +33,44 @@ import SettingsIMG from "./assets/New folder (3)/settings/settingsprevios.svg";
 import RolesIMG from "./assets/New folder (3)/settings/settings.svg.svg";
 import PaymentsIMG from "./assets/New folder (3)/settings/Wallet.svg";
 import UsersIMG from "./assets/New folder (3)/settings/Users.svg";
-function YRAccouunt() {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [activeButton, setActiveButton] = useState(null);
-  const [isActive, setIsActive] = useState(false); // State to manage class toggling
 
-  // Function to toggle the dropdown visibility
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
+// linkpaths
+const links = {
+  Home: "http://localhost:5173/home",
+  Education: "http://localhost:5173/education",
+  Cryptocurrency: "http://localhost:5173/cryptocurrency",
+  Invoicing: "http://localhost:5173/invoicing",
+  Restaurant: "http://localhost:5173/restaurant",
+  Banking: "http://localhost:5173/banking",
+  Hrmanagement: "http://localhost:5173/hrmanagement",
+  Ticketing: "http://localhost:5173/ticketing",
+};
 
-  // Function to handle the div click for class toggling
-  const handleDivClick = () => {
-    setIsActive(!isActive); // Toggle the class name
-  };
-
-  // Function to handle button click inside the dropdown
-  const handleButtonClick = (event, index) => {
-    setActiveButton(index); // Set the active button index
-  };
-
+// components buttons
+function Component({ imageSrc, title, altText }) {
   return (
-    <>
-      <div
-        className={isActive ? "profile-container-active" : "profile-container"}
-        onClick={handleDivClick} // Toggle the class name when this div is clicked
-      >
-        <div className="main-containers" onClick={toggleDropdown}>
-          <img src={Account} alt="dashboard-icon" />
-          <p>Your Account</p>
-        </div>
-        <div>
-          <img
-            src={dropdownOpen ? DropdownIconDown : DropdownIcon}
-            alt="dropdown-icon"
-          />
-        </div>
-      </div>
-      <div
-        className="dropdown-container"
-        style={{ display: dropdownOpen ? "block" : "none" }}>
-        {["Link 1", "Link 2", "Link 3"].map((link, index) => (
-          <div className="drpdwn-section" key={index}>
-            <div
-              className={`drpdwn-border ${
-                activeButton === index
-                  ? "drpdwn-border-active"
-                  : "drpdwn-border-none"
-              }`}></div>
-            <button
-              onClick={(event) => handleButtonClick(event, index)}
-              className="button">
-              {link}
-            </button>
-          </div>
-        ))}
-      </div>
-    </>
+    <div className="components">
+      <img src={imageSrc} alt={altText} />
+      <p>{title}</p>
+    </div>
   );
 }
-function Logistics() {
+// components openable buttons
+function DropdownComponent({ imageSrc, title, dropdownItems, linkpath }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [activeButton, setActiveButton] = useState(null);
-  const [isActive, setIsActive] = useState(false); // State to manage class toggling
+  const [isActive, setIsActive] = useState(false);
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
   };
 
   const handleDivClick = () => {
-    setIsActive(!isActive); // Toggle the class name
+    setIsActive(!isActive); // Toggle class name
   };
 
   const handleButtonClick = (event, index) => {
-    setActiveButton(index); // Set the active button index
+    setActiveButton(index); // Set active button index
   };
 
   return (
@@ -115,8 +79,8 @@ function Logistics() {
         className={isActive ? "profile-container-active" : "profile-container"}
         onClick={handleDivClick}>
         <div className="main-containers" onClick={toggleDropdown}>
-          <img src={LogistcsIMG} alt="dashboard-icon" />
-          <p>Logistics</p>
+          <img src={imageSrc} alt="dashboard-icon" />
+          <p>{title}</p>
         </div>
         <div>
           <img
@@ -128,7 +92,7 @@ function Logistics() {
       <div
         className="dropdown-container"
         style={{ display: dropdownOpen ? "block" : "none" }}>
-        {["Anlytics", "Tracking", "Data "].map((link, index) => (
+        {dropdownItems.map((link, index) => (
           <div className="drpdwn-section" key={index}>
             <div
               className={`drpdwn-border ${
@@ -139,64 +103,8 @@ function Logistics() {
             <button
               onClick={(event) => handleButtonClick(event, index)}
               className="button">
-              {link === "Anlytics" ? (
-                <a
-                  style={{ textDecoration: "none" }}
-                  href="http://localhost:5173/home">
-                  {link}
-                </a>
-              ) : (
-                link
-              )}
-            </button>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-}
-
-function Education() {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [activeButton, setActiveButton] = useState(null);
-
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
-
-  const button_click = (event, index) => {
-    setActiveButton(index);
-  };
-
-  return (
-    <>
-      <div className="profile-container" onClick={toggleDropdown}>
-        <div className="main-containers">
-          <img src={EducationIMG} alt="dashboard-icon" />
-          <p> Education</p>
-        </div>
-        <div>
-          <img src={dropdownOpen ? DropdownIconDown : DropdownIcon}></img>
-        </div>
-      </div>
-      <div
-        className="dropdown-container"
-        style={{ display: dropdownOpen ? "block" : "none" }}>
-        {["Analytics", "Class Projects", "Data"].map((link, index) => (
-          <div className="drpdwn-section" key={index}>
-            <div
-              className={`drpdwn-border ${
-                activeButton === index
-                  ? "drpdwn-border-active"
-                  : "drpdwn-border-none"
-              }`}></div>
-            <button
-              onClick={(event) => button_click(event, index)}
-              className="button">
               {link === "Analytics" ? (
-                <a
-                  style={{ textDecoration: "none" }}
-                  href="http://localhost:5173/education ">
+                <a style={{ textDecoration: "none" }} href={linkpath}>
                   {link}
                 </a>
               ) : (
@@ -210,845 +118,6 @@ function Education() {
   );
 }
 
-function Cryptocurrency() {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [activeButton, setActiveButton] = useState(null);
-
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
-
-  const button_click = (event, index) => {
-    setActiveButton(index);
-  };
-
-  return (
-    <>
-      <div className="profile-container" onClick={toggleDropdown}>
-        <div className="main-containers">
-          <img src={CryptocurrencyiMG} alt="dashboard-icon" />
-          <p> Cryptocurrency</p>
-        </div>
-        <div>
-          <img src={dropdownOpen ? DropdownIconDown : DropdownIcon}></img>
-        </div>
-      </div>
-      <div
-        className="dropdown-container"
-        style={{ display: dropdownOpen ? "block" : "none" }}>
-        {["Analytics", "Transactions", "Exchange"].map((link, index) => (
-          <div className="drpdwn-section" key={index}>
-            <div
-              className={`drpdwn-border ${
-                activeButton === index
-                  ? "drpdwn-border-active"
-                  : "drpdwn-border-none"
-              }`}></div>
-            <button
-              onClick={(event) => button_click(event, index)}
-              className="button">
-              {link === "Analytics" ? (
-                <a
-                  style={{ textDecoration: "none" }}
-                  href="http://localhost:5173/cryptocurrency ">
-                  {link}
-                </a>
-              ) : (
-                link
-              )}
-            </button>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-}
-
-function Invoicing() {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [activeButton, setActiveButton] = useState(null);
-
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
-
-  const button_click = (event, index) => {
-    setActiveButton(index);
-  };
-
-  return (
-    <>
-      <div className="profile-container" onClick={toggleDropdown}>
-        <div className="main-containers">
-          <img src={InvoicingIMG} alt="dashboard-icon" />
-          <p> Invoicing</p>
-        </div>
-        <div>
-          <img src={dropdownOpen ? DropdownIconDown : DropdownIcon}></img>
-        </div>
-      </div>
-      <div
-        className="dropdown-container"
-        style={{ display: dropdownOpen ? "block" : "none" }}>
-        {["Analytics", "Transactions", "Create New"].map((link, index) => (
-          <div className="drpdwn-section" key={index}>
-            <div
-              className={`drpdwn-border ${
-                activeButton === index
-                  ? "drpdwn-border-active"
-                  : "drpdwn-border-none"
-              }`}></div>
-            <button
-              onClick={(event) => button_click(event, index)}
-              className="button">
-              {link === "Analytics" ? (
-                <a
-                  style={{ textDecoration: "none" }}
-                  href="http://localhost:5173/invoicing">
-                  {link}
-                </a>
-              ) : (
-                link
-              )}
-            </button>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-}
-
-function Restaurant() {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [activeButton, setActiveButton] = useState(null);
-
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
-
-  const button_click = (event, index) => {
-    setActiveButton(index);
-  };
-
-  return (
-    <>
-      <div className="profile-container" onClick={toggleDropdown}>
-        <div className="main-containers">
-          <img src={RestaurantIMG} alt="dashboard-icon" />
-          <p> Restaurant</p>
-        </div>
-        <div>
-          <img src={dropdownOpen ? DropdownIconDown : DropdownIcon}></img>
-        </div>
-      </div>
-      <div
-        className="dropdown-container"
-        style={{ display: dropdownOpen ? "block" : "none" }}>
-        {["Analytics", "Orders", "Data"].map((link, index) => (
-          <div className="drpdwn-section" key={index}>
-            <div
-              className={`drpdwn-border ${
-                activeButton === index
-                  ? "drpdwn-border-active"
-                  : "drpdwn-border-none"
-              }`}></div>
-            <button
-              onClick={(event) => button_click(event, index)}
-              className="button">
-              {link === "Analytics" ? (
-                <a
-                  style={{ textDecoration: "none" }}
-                  href="http://localhost:5173/restaurant">
-                  {link}
-                </a>
-              ) : (
-                link
-              )}
-            </button>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-}
-
-function Banking() {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [activeButton, setActiveButton] = useState(null);
-
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
-
-  const button_click = (event, index) => {
-    setActiveButton(index);
-  };
-
-  return (
-    <>
-      <div className="profile-container" onClick={toggleDropdown}>
-        <div className="main-containers">
-          <img src={BankingIMG} alt="dashboard-icon" />
-          <p>Banking</p>
-        </div>
-        <div>
-          <img src={dropdownOpen ? DropdownIconDown : DropdownIcon}></img>
-        </div>
-      </div>
-      <div
-        className="dropdown-container"
-        style={{ display: dropdownOpen ? "block" : "none" }}>
-        {["Analytics", "Transactions", "Data"].map((link, index) => (
-          <div className="drpdwn-section" key={index}>
-            <div
-              className={`drpdwn-border ${
-                activeButton === index
-                  ? "drpdwn-border-active"
-                  : "drpdwn-border-none"
-              }`}></div>
-            <button
-              onClick={(event) => button_click(event, index)}
-              className="button">
-              {link === "Analytics" ? (
-                <a
-                  style={{ textDecoration: "none" }}
-                  href="http://localhost:5173/banking">
-                  {link}
-                </a>
-              ) : (
-                link
-              )}
-            </button>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-}
-function Hrmanagement() {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [activeButton, setActiveButton] = useState(null);
-
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
-
-  const button_click = (event, index) => {
-    setActiveButton(index);
-  };
-
-  return (
-    <>
-      <div className="profile-container" onClick={toggleDropdown}>
-        <div className="main-containers">
-          <img src={HrmanagementIMG} alt="dashboard-icon" />
-          <p>HR Management</p>
-        </div>
-        <div>
-          <img src={dropdownOpen ? DropdownIconDown : DropdownIcon}></img>
-        </div>
-      </div>
-      <div
-        className="dropdown-container"
-        style={{ display: dropdownOpen ? "block" : "none" }}>
-        {["Analytics", "Employees", "Data"].map((link, index) => (
-          <div className="drpdwn-section" key={index}>
-            <div
-              className={`drpdwn-border ${
-                activeButton === index
-                  ? "drpdwn-border-active"
-                  : "drpdwn-border-none"
-              }`}></div>
-            <button
-              onClick={(event) => button_click(event, index)}
-              className="button">
-              {link === "Analytics" ? (
-                <a
-                  style={{ textDecoration: "none" }}
-                  href="http://localhost:5173/hrmanagement">
-                  {link}
-                </a>
-              ) : (
-                link
-              )}
-            </button>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-}
-
-function Ticketing() {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [activeButton, setActiveButton] = useState(null);
-
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
-
-  const button_click = (event, index) => {
-    setActiveButton(index);
-  };
-
-  return (
-    <>
-      <div className="profile-container" onClick={toggleDropdown}>
-        <div className="main-containers">
-          <img src={TicketingIMG} alt="dashboard-icon" />
-          <p>Ticketing</p>
-        </div>
-        <div>
-          <img src={dropdownOpen ? DropdownIconDown : DropdownIcon}></img>
-        </div>
-      </div>
-      <div
-        className="dropdown-container"
-        style={{ display: dropdownOpen ? "block" : "none" }}>
-        {["Analytics", "Transactions", "Data"].map((link, index) => (
-          <div className="drpdwn-section" key={index}>
-            <div
-              className={`drpdwn-border ${
-                activeButton === index
-                  ? "drpdwn-border-active"
-                  : "drpdwn-border-none"
-              }`}></div>
-            <button
-              onClick={(event) => button_click(event, index)}
-              className="button">
-              {link}
-            </button>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-}
-
-function Pointofsales() {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [activeButton, setActiveButton] = useState(null);
-
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
-
-  const button_click = (event, index) => {
-    setActiveButton(index);
-  };
-
-  return (
-    <>
-      <div className="profile-container" onClick={toggleDropdown}>
-        <div className="main-containers">
-          <img src={PointofsalesIMG} alt="dashboard-icon" />
-          <p>Point of sales</p>
-        </div>
-        <div>
-          <img src={dropdownOpen ? DropdownIconDown : DropdownIcon}></img>
-        </div>
-      </div>
-      <div
-        className="dropdown-container"
-        style={{ display: dropdownOpen ? "block" : "none" }}>
-        {["Analytics", "Transactions", "Data"].map((link, index) => (
-          <div className="drpdwn-section" key={index}>
-            <div
-              className={`drpdwn-border ${
-                activeButton === index
-                  ? "drpdwn-border-active"
-                  : "drpdwn-border-none"
-              }`}></div>
-            <button
-              onClick={(event) => button_click(event, index)}
-              className="button">
-              {link}
-            </button>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-}
-
-function Hospital() {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [activeButton, setActiveButton] = useState(null);
-
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
-
-  const button_click = (event, index) => {
-    setActiveButton(index);
-  };
-
-  return (
-    <>
-      <div className="profile-container" onClick={toggleDropdown}>
-        <div className="main-containers">
-          <img src={HospitalIMG} alt="dashboard-icon" />
-          <p> Hospital Management</p>
-        </div>
-        <div>
-          <img src={dropdownOpen ? DropdownIconDown : DropdownIcon}></img>
-        </div>
-      </div>
-      <div
-        className="dropdown-container"
-        style={{ display: dropdownOpen ? "block" : "none" }}>
-        {["Analytics", "Class Projects", "Data"].map((link, index) => (
-          <div className="drpdwn-section" key={index}>
-            <div
-              className={`drpdwn-border ${
-                activeButton === index
-                  ? "drpdwn-border-active"
-                  : "drpdwn-border-none"
-              }`}></div>
-            <button
-              onClick={(event) => button_click(event, index)}
-              className="button">
-              {link === "Analytics" ? (
-                <a
-                  style={{ textDecoration: "none" }}
-                  href="http://localhost:5173/hospital">
-                  {link}
-                </a>
-              ) : (
-                link
-              )}
-            </button>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-}
-
-function Kanban() {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [activeButton, setActiveButton] = useState(null);
-
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
-
-  const button_click = (event, index) => {
-    setActiveButton(index);
-  };
-
-  return (
-    <>
-      <div className="profile-container" onClick={toggleDropdown}>
-        <div className="main-containers">
-          <img src={KanbanIMG} alt="dashboard-icon" />
-          <p>Kanban</p>
-        </div>
-        <div>
-          <img src={dropdownOpen ? DropdownIconDown : DropdownIcon}></img>
-        </div>
-      </div>
-      <div
-        className="dropdown-container"
-        style={{ display: dropdownOpen ? "block" : "none" }}>
-        {["Link 1", "Link 2", "Link 3"].map((link, index) => (
-          <div className="drpdwn-section" key={index}>
-            <div
-              className={`drpdwn-border ${
-                activeButton === index
-                  ? "drpdwn-border-active"
-                  : "drpdwn-border-none"
-              }`}></div>
-            <button
-              onClick={(event) => button_click(event, index)}
-              className="button">
-              {link}
-            </button>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-}
-
-function File() {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [activeButton, setActiveButton] = useState(null);
-
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
-
-  const button_click = (event, index) => {
-    setActiveButton(index);
-  };
-
-  return (
-    <>
-      <div className="profile-container" onClick={toggleDropdown}>
-        <div className="main-containers">
-          <img src={FileIMG} alt="dashboard-icon" />
-          <p>File Manager</p>
-        </div>
-        <div>
-          <img src={dropdownOpen ? DropdownIconDown : DropdownIcon}></img>
-        </div>
-      </div>
-      <div
-        className="dropdown-container"
-        style={{ display: dropdownOpen ? "block" : "none" }}>
-        {["Link 1", "Link 2", "Link 3"].map((link, index) => (
-          <div className="drpdwn-section" key={index}>
-            <div
-              className={`drpdwn-border ${
-                activeButton === index
-                  ? "drpdwn-border-active"
-                  : "drpdwn-border-none"
-              }`}></div>
-            <button
-              onClick={(event) => button_click(event, index)}
-              className="button">
-              {link}
-            </button>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-}
-
-function Contacts() {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [activeButton, setActiveButton] = useState(null);
-
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
-
-  const button_click = (event, index) => {
-    setActiveButton(index);
-  };
-
-  return (
-    <>
-      <div className="profile-container" onClick={toggleDropdown}>
-        <div className="main-containers">
-          <img src={ContactsIMG} alt="dashboard-icon" />
-          <p>Contacts</p>
-        </div>
-        <div>
-          <img src={dropdownOpen ? DropdownIconDown : DropdownIcon}></img>
-        </div>
-      </div>
-      <div
-        className="dropdown-container"
-        style={{ display: dropdownOpen ? "block" : "none" }}>
-        {["Link 1", "Link 2", "Link 3"].map((link, index) => (
-          <div className="drpdwn-section" key={index}>
-            <div
-              className={`drpdwn-border ${
-                activeButton === index
-                  ? "drpdwn-border-active"
-                  : "drpdwn-border-none"
-              }`}></div>
-            <button
-              onClick={(event) => button_click(event, index)}
-              className="button">
-              {link}
-            </button>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-}
-
-function Email() {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [activeButton, setActiveButton] = useState(null);
-
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
-
-  const button_click = (event, index) => {
-    setActiveButton(index);
-  };
-
-  return (
-    <>
-      <div className="profile-container" onClick={toggleDropdown}>
-        <div className="main-containers">
-          <img src={EmailIMG} alt="dashboard-icon" />
-          <p>E-mail</p>
-        </div>
-        <div>
-          <img src={dropdownOpen ? DropdownIconDown : DropdownIcon}></img>
-        </div>
-      </div>
-      <div
-        className="dropdown-container"
-        style={{ display: dropdownOpen ? "block" : "none" }}>
-        {["Link 1", "Link 2", "Link 3"].map((link, index) => (
-          <div className="drpdwn-section" key={index}>
-            <div
-              className={`drpdwn-border ${
-                activeButton === index
-                  ? "drpdwn-border-active"
-                  : "drpdwn-border-none"
-              }`}></div>
-            <button
-              onClick={(event) => button_click(event, index)}
-              className="button">
-              {link}
-            </button>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-}
-
-function Messaging() {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [activeButton, setActiveButton] = useState(null);
-
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
-
-  const button_click = (event, index) => {
-    setActiveButton(index);
-  };
-
-  return (
-    <>
-      <div className="profile-container" onClick={toggleDropdown}>
-        <div className="main-containers">
-          <img src={MessagingIMG} alt="dashboard-icon" />
-          <p>Messaging</p>
-        </div>
-        <div>
-          <img src={dropdownOpen ? DropdownIconDown : DropdownIcon}></img>
-        </div>
-      </div>
-      <div
-        className="dropdown-container"
-        style={{ display: dropdownOpen ? "block" : "none" }}>
-        {["Link 1", "Link 2", "Link 3"].map((link, index) => (
-          <div className="drpdwn-section" key={index}>
-            <div
-              className={`drpdwn-border ${
-                activeButton === index
-                  ? "drpdwn-border-active"
-                  : "drpdwn-border-none"
-              }`}></div>
-            <button
-              onClick={(event) => button_click(event, index)}
-              className="button">
-              {link}
-            </button>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-}
-
-function Ecommerce() {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [activeButton, setActiveButton] = useState(null);
-
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
-
-  const button_click = (event, index) => {
-    setActiveButton(index);
-  };
-
-  return (
-    <>
-      <div className="profile-container" onClick={toggleDropdown}>
-        <div className="main-containers">
-          <img src={EcommerceIMG} alt="dashboard-icon" />
-          <p>Ecommerce</p>
-        </div>
-        <div>
-          <img src={dropdownOpen ? DropdownIconDown : DropdownIcon}></img>
-        </div>
-      </div>
-      <div
-        className="dropdown-container"
-        style={{ display: dropdownOpen ? "block" : "none" }}>
-        {["Link 1", "Link 2", "Link 3"].map((link, index) => (
-          <div className="drpdwn-section" key={index}>
-            <div
-              className={`drpdwn-border ${
-                activeButton === index
-                  ? "drpdwn-border-active"
-                  : "drpdwn-border-none"
-              }`}></div>
-            <button
-              onClick={(event) => button_click(event, index)}
-              className="button">
-              {link}
-            </button>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-}
-
-function Calendar() {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [activeButton, setActiveButton] = useState(null);
-
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
-
-  const button_click = (event, index) => {
-    setActiveButton(index);
-  };
-
-  return (
-    <>
-      <div className="profile-container" onClick={toggleDropdown}>
-        <div className="main-containers">
-          <img src={CalendarIMG} alt="dashboard-icon" />
-          <p>Calendar</p>
-        </div>
-        <div>
-          <img src={dropdownOpen ? DropdownIconDown : DropdownIcon}></img>
-        </div>
-      </div>
-      <div
-        className="dropdown-container"
-        style={{ display: dropdownOpen ? "block" : "none" }}>
-        {["Link 1", "Link 2", "Link 3"].map((link, index) => (
-          <div className="drpdwn-section" key={index}>
-            <div
-              className={`drpdwn-border ${
-                activeButton === index
-                  ? "drpdwn-border-active"
-                  : "drpdwn-border-none"
-              }`}></div>
-            <button
-              onClick={(event) => button_click(event, index)}
-              className="button">
-              {link}
-            </button>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-}
-
-function Cards() {
-  return (
-    <>
-      <div className="components">
-        <img src={CardsIMG} alt="components" />
-        <p>Cards</p>
-      </div>
-    </>
-  );
-}
-
-function Forms() {
-  return (
-    <>
-      <div className="components">
-        <img src={FormsIMG} alt="components" />
-        <p>Forms</p>
-      </div>
-    </>
-  );
-}
-function Tables() {
-  return (
-    <>
-      <div className="components">
-        <img src={TabelsIMG} alt="components" />
-        <p>Tables</p>
-      </div>
-    </>
-  );
-}
-function Icons() {
-  return (
-    <>
-      <div className="components">
-        <img src={IconsIMG} alt="components" />
-        <p>Icons</p>
-      </div>
-    </>
-  );
-}
-function Charts() {
-  return (
-    <>
-      <div className="components">
-        <img src={ChartsIMG} alt="components" />
-        <p>Charts</p>
-      </div>
-    </>
-  );
-}
-function Auth() {
-  return (
-    <>
-      <div className="components">
-        <img src={AuthIMG} alt="components" />
-        <p>Authentications</p>
-      </div>
-    </>
-  );
-}
-
-function Settings() {
-  return (
-    <>
-      <div className="components">
-        <img src={SettingsIMG} alt="components" />
-        <p>Settings</p>
-      </div>
-    </>
-  );
-}
-function Roles() {
-  return (
-    <>
-      <div className="components">
-        <img src={RolesIMG} alt="components" />
-        <p>Roles and Permissions</p>
-      </div>
-    </>
-  );
-}
-function Payments() {
-  return (
-    <>
-      <div className="components">
-        <img src={PaymentsIMG} alt="components" />
-        <p>Payments</p>
-      </div>
-    </>
-  );
-}
-function Users() {
-  return (
-    <>
-      <div className="components">
-        <img src={UsersIMG} alt="components" />
-        <p>Users</p>
-      </div>
-    </>
-  );
-}
 function Sidebar() {
   return (
     <>
@@ -1072,46 +141,186 @@ function Sidebar() {
         </div>
 
         {/* Add Dropdown Component Here */}
-        <YRAccouunt />
+        <DropdownComponent
+          imageSrc={Account}
+          title="Your Account"
+          dropdownItems={["Link 1", "Link 2", "Link 3"]}
+          linkpath={links["YourAccount"]}
+        />
 
         <div className="applications">
           <p className="applications-text">APPLICATIONS</p>
         </div>
+        <DropdownComponent
+          imageSrc={LogistcsIMG}
+          title="Logistics"
+          dropdownItems={["Analytics", "Tracking", "Data"]}
+          linkpath={links["Home"]}
+        />
 
-        <Logistics />
-        <Education />
-        <Cryptocurrency />
-        <Invoicing />
-        <Restaurant />
-        <Banking />
-        <Hrmanagement />
-        <Ticketing />
-        <Pointofsales />
-        <Hospital />
-        <Kanban />
-        <File />
-        <Contacts />
-        <Email />
-        <Messaging />
-        <Ecommerce />
-        <Calendar />
+        <DropdownComponent
+          imageSrc={EducationIMG}
+          title="Education"
+          dropdownItems={["Analytics", "Class Projects", "Data"]}
+          linkpath={links["Education"]}
+        />
+
+        <DropdownComponent
+          imageSrc={CryptocurrencyiMG}
+          title="Cryptocurrency"
+          dropdownItems={["Analytics", "Transactions", "Exchange"]}
+          linkpath={links["Cryptocurrency"]}
+        />
+
+        <DropdownComponent
+          imageSrc={InvoicingIMG}
+          title="Invoicing"
+          dropdownItems={["Analytics", "Transactions", "Create New"]}
+          linkpath={links["Invoicing"]}
+        />
+
+        <DropdownComponent
+          imageSrc={RestaurantIMG}
+          title="Restaurant"
+          dropdownItems={["Analytics", "Orders", "Data"]}
+          linkpath={links["Restaurant"]}
+        />
+
+        <DropdownComponent
+          imageSrc={BankingIMG}
+          title="Banking"
+          dropdownItems={["Analytics", "Transactions", "Data"]}
+          linkpath={links["Banking"]}
+        />
+
+        <DropdownComponent
+          imageSrc={HrmanagementIMG}
+          title="HR Management"
+          dropdownItems={["Analytics", "Employees", "Data"]}
+          linkpath={links["Hrmanagement"]}
+        />
+
+        <DropdownComponent
+          imageSrc={TicketingIMG}
+          title="Ticketing"
+          dropdownItems={["Analytics", "Transactions", "Data"]}
+          linkpath={links["Ticketing"]}
+        />
+
+        <DropdownComponent
+          imageSrc={PointofsalesIMG}
+          title="Point of Sales"
+          dropdownItems={["Analytics", "Transactions", "Data"]}
+          linkpath={links["Pointofsales"]}
+        />
+
+        <DropdownComponent
+          imageSrc={HospitalIMG}
+          title="Hospital Management"
+          dropdownItems={["Analytics", "Class Projects", "Data"]}
+          linkpath={links["Hospital"]}
+        />
+
+        <DropdownComponent
+          imageSrc={KanbanIMG}
+          title="Kanban"
+          dropdownItems={["Link 1", "Link 2", "Link 3"]}
+          linkpath={links["Kanban"]}
+        />
+
+        <DropdownComponent
+          imageSrc={FileIMG}
+          title="File Manager"
+          dropdownItems={["Link 1", "Link 2", "Link 3"]}
+          linkpath={links["File"]}
+        />
+        <DropdownComponent
+          imageSrc={ContactsIMG}
+          title="Contacts"
+          dropdownItems={["Link 1", "Link 2", "Link 3"]}
+          linkpath={links["Contacts"]}
+        />
+        <DropdownComponent
+          imageSrc={EmailIMG}
+          title="E-mail"
+          dropdownItems={["Link 1", "Link 2", "Link 3"]}
+          linkpath={links["Email"]}
+        />
+        <DropdownComponent
+          imageSrc={MessagingIMG}
+          title="Messaging"
+          dropdownItems={["Link 1", "Link 2", "Link 3"]}
+          linkpath={links["Messaging"]}
+        />
+        <DropdownComponent
+          imageSrc={EcommerceIMG}
+          title="Ecommerce"
+          dropdownItems={["Link 1", "Link 2", "Link 3"]}
+          linkpath={links["Ecommerce"]}
+        />
+        <DropdownComponent
+          imageSrc={CalendarIMG}
+          title="Calendar"
+          dropdownItems={["Link 1", "Link 2", "Link 3"]}
+          linkpath={links["Calendar"]}
+        />
 
         <div className="applications">
           <p className="applications-text">COMPONENTS</p>
         </div>
-        <Cards />
-        <Forms />
-        <Tables />
-        <Icons />
-        <Charts />
-        <Auth />
+        <Component
+          imageSrc={CardsIMG}
+          title="Cards"
+          altText="Cards Component"
+        />
+        <Component
+          imageSrc={FormsIMG}
+          title="Forms"
+          altText="Forms Component"
+        />
+        <Component
+          imageSrc={TabelsIMG}
+          title="Tables"
+          altText="Tables Component"
+        />
+        <Component
+          imageSrc={IconsIMG}
+          title="Icons"
+          altText="Icons Component"
+        />
+        <Component
+          imageSrc={ChartsIMG}
+          title="Charts"
+          altText="Charts Component"
+        />
+        <Component
+          imageSrc={AuthIMG}
+          title="Authentications"
+          altText="Auth Component"
+        />
         <div className="applications">
           <p className="applications-text">Settings</p>
         </div>
-        <Settings />
-        <Roles />
-        <Payments />
-        <Users />
+        <Component
+          imageSrc={SettingsIMG}
+          title="Settings"
+          altText="Settings Component"
+        />
+        <Component
+          imageSrc={RolesIMG}
+          title="Roles and Permissions"
+          altText="Roles Component"
+        />
+        <Component
+          imageSrc={PaymentsIMG}
+          title="Payments"
+          altText="Payments Component"
+        />
+        <Component
+          imageSrc={UsersIMG}
+          title="Users"
+          altText="Users Component"
+        />
       </div>
     </>
   );
