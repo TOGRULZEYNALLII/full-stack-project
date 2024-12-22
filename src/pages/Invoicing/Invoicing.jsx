@@ -676,7 +676,9 @@ const Invoicing = () => {
                           name="status"
                           value={editTransaction.status}
                           onChange={handleInputChange}>
-                          <option className="pending" value="PENDING">PENDING</option>
+                          <option className="pending" value="PENDING">
+                            PENDING
+                          </option>
                           <option value="COMPLETED">COMPLETED</option>
                           <option value="CANCELED">CANCELED</option>
                         </select>
@@ -739,8 +741,6 @@ const Invoicing = () => {
           <button className="next">Next</button>
         </div>
       </section>
-
-    
     </>
   );
 };

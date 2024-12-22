@@ -655,6 +655,22 @@ body {
   align-items: center;
   justify-content: space-between;
 }
-.height-10{
+.height-10 {
   height: 10px;
+}
+.hiring-container-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.hiring-container-text {
+  display: flex;
+  margin-top: 20px;
+  align-items: center;
+  justify-content: space-between;
+}
+.hiring-container-text-price-p {
+  font-size: 26px;
+  font-weight: 600;
+  color: hsla(0, 0%, 13%, 1);
 }

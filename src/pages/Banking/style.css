@@ -282,7 +282,7 @@
   padding: 5px;
   gap: 10px;
   border-radius: 10px;
-  background-color: rgba(144, 146, 148, 0.08);
+  /* background-color: rgba(144, 146, 148, 0.08); */
   opacity: 0px;
 }
 .Banking-Previous-Transactions-container-header-right-button-first :hover {

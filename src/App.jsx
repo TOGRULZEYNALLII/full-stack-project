@@ -11,6 +11,8 @@ import Restaurant from "./pages/Restaurant/Restaurant";
 import Banking from "./pages/Banking/Banking";
 import Hrmanagement from "./pages/Hrmanagement/Hrmanagement";
 import HospitalManagement from "./pages/Hospitalmanagement/Hospitalmanagement";
+4;
+import Ticketing from "./pages/Ticketing/Ticketing";
 const routes = [
   {
     path: "/",
@@ -47,6 +49,10 @@ const routes = [
       {
         path: "/hospital",
         element: <HospitalManagement />,
+      },
+      {
+        path: "/ticketing",
+        element: <Ticketing />,
       },
     ],
   },

@@ -1,0 +1,33 @@
+.Previous-Transactions-container-header-right-button-first {
+  background-color: white;
+  font-size: 15px;
+  font-weight: 550;
+  border: 1px solid hsla(0, 0%, 91%, 1);
+  color: hsla(206, 4%, 32%, 1);
+}
+.Previous-Transactions-container-header-right-button-first:hover {
+  background-color: hsla(240, 62%, 59%, 1);
+  color: white;
+}
+.Previous-Transactions-container-header-right-button {
+  background-color: white;
+  color: hsla(206, 4%, 32%, 1);
+  border: 1px solid hsla(0, 0%, 91%, 1);
+  font-size: 15px;
+  font-weight: 550;
+}
+.Previous-Transactions-container-header-right-button:hover {
+  background-color: hsla(240, 62%, 59%, 1);
+  color: white;
+}
+.Previous-Transactions-container-header-right-button-last {
+  background-color: white;
+  font-size: 15px;
+  border: 1px solid hsla(0, 0%, 91%, 1);
+  font-weight: 550;
+  color: hsla(206, 4%, 32%, 1);
+}
+.Previous-Transactions-container-header-right-button-last:hover {
+  background-color: hsla(240, 62%, 59%, 1);
+  color: white;
+}

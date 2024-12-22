@@ -12,6 +12,7 @@ import Attendancegraph from "./assets/attendancestatistics/barchartgraph.svg";
 import Darkbluebutton from "./assets/attendancestatistics/darkbluebutton.svg";
 import Lightbluebutton from "./assets/attendancestatistics/lightbluebutton.svg";
 import Bluegraph from "./assets/todayattendance/bluegraph.svg";
+import Green25 from "../Invoicing/assets/header/green25.svg";
 import Greengraph from "./assets/todayattendance/greengraph.svg";
 import Redgraph from "./assets/todayattendance/redgraph.svg";
 import Orangegraph from "./assets/todayattendance/orangegraph.svg";
@@ -802,6 +803,36 @@ const Hrmanagement = () => {
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+            <div className="hiring-container">
+              <div className="hiring-container-header">
+                <p>Hiring Analytics</p>
+                <img src={Dot} />
+              </div>
+              <div className="empolyee-rate-container-middle">
+                <select className="select" name="year" id="year">
+                  <option value="2021">2021</option>
+                  <option value="2022">2022</option>
+                  <option value="2023" selected>
+                    2023
+                  </option>
+                  <option value="2024">2024</option>
+                </select>
+              </div>
+
+              <div className="hiring-container-text">
+                <div className="hiring-container-text-price">
+                  <p className="hiring-container-text-price-p">45,741</p>
+                  <p className="gray">Total Applicants</p>
+                </div>
+                <div className="hiring-container-text-button">
+                  <img src={Green25} />
+                  <p className="gray">from last year</p>
+                </div>
+              </div>
+              <div className="empolyee-rate-container-middle">
+                <img src={Hiringchart} />
               </div>
             </div>
           </div>
