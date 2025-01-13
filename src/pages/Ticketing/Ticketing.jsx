@@ -14,6 +14,10 @@ import Graph55 from "./assets/customerstats/graph55.svg";
 import Graph78 from "./assets/customerstats/graph78.svg";
 import Graph65 from "./assets/customerstats/graph65.svg";
 import Dot from "../Sidebar/assets/icons/dot.svg";
+import Footergraph from "./assets/footer/footergraph.svg";
+import Salescomprasion from "./assets/footer/salescomprasion.svg";
+import Salessummary from "./assets/footer/salessummary.svg";
+import Ticketingfooterleftimg from "./assets/footer/ticketingfooterleftimg.svg";
 
 const Ticketing = () => {
   const transactionsData = [
@@ -64,6 +68,7 @@ const Ticketing = () => {
       [name]: value,
     }));
   };
+
   const applyFilters = () => {
     const filtered = transactionsData.filter((transaction) => {
       return (
@@ -75,8 +80,17 @@ const Ticketing = () => {
         (filters.status === "" || transaction.status === filters.status)
       );
     });
-    setFilteredTransactions(filtered);
+
+    // Eğer sonuç boşsa veya hata varsa kontrol et
+    if (filtered.length === 0) {
+      // Boş durumu ele al (örneğin kullanıcıya mesaj göster)
+      console.log("Sonuç bulunamadı.");
+      setFilteredTransactions([]); // Boş sonuç set et veya hata mesajı göster
+    } else {
+      setFilteredTransactions(filtered); // Normal durumda filtrelenmiş verileri ayarla
+    }
   };
+
   return (
     <>
       <section className="Ticketing-header-section">
@@ -274,8 +288,9 @@ const Ticketing = () => {
             <img src={Dot} />
           </div>
           <div>
-            <div>
+            <div className="select-input-container">
               <input
+                className="input-name"
                 type="text"
                 name="name"
                 placeholder="Enter name"
@@ -283,12 +298,14 @@ const Ticketing = () => {
                 onChange={handleFilterChange}
               />
               <input
+                className="input-date"
                 type="date"
                 name="date"
                 value={filters.date}
                 onChange={handleFilterChange}
               />
               <select
+                className="select-input"
                 name="status"
                 value={filters.status}
                 onChange={handleFilterChange}>
@@ -297,7 +314,9 @@ const Ticketing = () => {
                 <option value="Pending">Pending</option>
                 <option value="Refunded">Refunded</option>
               </select>
-              <button onClick={applyFilters}>Apply Filters</button>
+              <button className="apply-filters-button" onClick={applyFilters}>
+                Apply Filters
+              </button>
             </div>
 
             <table>
@@ -323,14 +342,100 @@ const Ticketing = () => {
                   ))
                 ) : (
                   <td>
-                    <span
-                      className={`status-badge ${transaction.status.toLowerCase()}`}>
-                      {transaction.status}
-                    </span>
+                    <span className={`status-badge `}></span>
                   </td>
                 )}
               </tbody>
             </table>
+          </div>
+        </div>
+      </section>
+
+      <section className="ticketing-footer-section">
+        <div className="ticketing-footer-container-left">
+          <div className="ticketing-footer-container-left-header">
+            <p>Ticket Availability</p>
+            <img src={Dot} />
+          </div>
+          <div className="ticketing-footer-container-left-middle  ">
+            <div className="ticketing-footer-container-left-middle-text">
+              <p className="gray">Ticket Sold</p>
+              <p className="bold-little ">21,512 pcs</p>
+            </div>
+            <div>
+              <img src={Ticketingfooterleftimg} />
+            </div>
+          </div>
+          <div className="ticketing-footer-container-left-bottom">
+            <div>
+              <p className="bold-little">25 left</p>
+              <p className="gray">Available Tickets</p>
+            </div>
+            <div>
+              <img src={Footergraph} />
+            </div>
+          </div>
+        </div>
+
+        <div className="ticketing-footer-container-left">
+          <div className="ticketing-footer-container-left-header">
+            <p>Sales Summary</p>
+            <img src={Dot} />
+          </div>
+          <div className="ticketing-footer-container-left-middle  ">
+            <div className="ticketing-footer-container-left-middle-text">
+              <p className="gray">Ticket Sold</p>
+              <p className="bold-little ">21,512 pcs</p>
+            </div>
+            <div>
+              <img src={Salessummary} />
+            </div>
+          </div>
+          <div className="ticketing-footer-container-middle-bottom">
+            <div className="ticketing-footer-container-middle-text">
+              <div className="blue-dot"></div>
+              <div className="blue-dot-text">
+                <p className="blue-dot-text-item">VIP</p>
+                <p className="blue-dot-text-gray">30%</p>
+              </div>
+            </div>
+            <div className="ticketing-footer-container-middle-text">
+              <div className="black-dot"></div>
+              <div className="blue-dot-text">
+                <p className="blue-dot-text-item">Exclusive</p>
+                <p className="blue-dot-text-gray">24%</p>
+              </div>
+            </div>
+            <div className="ticketing-footer-container-middle-text">
+              <div className="blue-dot-gray-cold"></div>
+              <div className="blue-dot-text">
+                <p className="blue-dot-text-item">Regular</p>
+                <p className="blue-dot-text-gray">33%</p>
+              </div>
+            </div>
+            <div className="ticketing-footer-container-middle-text">
+              <div className="white-dot"></div>
+              <div className="blue-dot-text">
+                <p className="blue-dot-text-item">Economy</p>
+                <p className="blue-dot-text-gray">36%</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="ticketing-footer-container-right">
+          <div className="header">
+            <p>Sales Comparison</p>
+            <img src={Dot} />
+          </div>
+          <div className="ticketing-footer-container-right-middle">
+            <p className="bold">21,512 pcs</p>
+            <div>
+              <img src="" alt="" />
+              <p className="gray">from last week</p>
+            </div>
+          </div>
+          <div>
+            <img src={Salescomprasion} />
           </div>
         </div>
       </section>
