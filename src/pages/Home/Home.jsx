@@ -40,7 +40,33 @@ import Editcon from "./assets/carryingcosts/editicon.svg";
 import Deleteicon from "./assets/carryingcosts/deleteicon.svg";
 import Okeyiucon from "./assets/invoices/okeyblue.png";
 import xicon from "./assets/invoices/close.png";
+import { useEffect } from "react";
+import { use } from "react";
 function LogistcsPage() {
+  // fecthing data
+
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  useEffect(() => {
+    setLoading(true); // Veri yükleniyor
+    fetch("http://localhost:8088/api/LogisticsPage/QuickReview")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setData(data); // Veri başarıyla alındı
+        setLoading(false);
+      })
+      .catch((error) => {
+        setError(error.message); // Hata durumu
+        setLoading(false);
+      });
+  }, []);
+  // end data fetcing
   const initialInvoices = [
     {
       id: 1,
@@ -744,8 +770,7 @@ function LogistcsPage() {
                     style={{
                       borderBottom: "2px solid #ddd",
                       backgroundColor: "rgba(247, 248, 250, 1)",
-                    }}
-                  >
+                    }}>
                     <th style={{ padding: "10px" }}>No</th>
                     <th style={{ padding: "10px" }}>Invoice ID</th>
                     <th style={{ padding: "10px" }}>Customer</th>
@@ -758,8 +783,7 @@ function LogistcsPage() {
                   {invoices.map((invoice, index) => (
                     <tr
                       key={invoice.id}
-                      style={{ borderBottom: "1px solid #ddd" }}
-                    >
+                      style={{ borderBottom: "1px solid #ddd" }}>
                       <td style={{ padding: "10px", textAlign: "center" }}>
                         {index + 1}
                       </td>

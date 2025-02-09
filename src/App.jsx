@@ -11,7 +11,8 @@ import Restaurant from "./pages/Restaurant/Restaurant";
 import Banking from "./pages/Banking/Banking";
 import Hrmanagement from "./pages/Hrmanagement/Hrmanagement";
 import HospitalManagement from "./pages/Hospitalmanagement/Hospitalmanagement";
-4;
+import Pos from "./pages/Pos/Pos";
+
 import Ticketing from "./pages/Ticketing/Ticketing";
 const routes = [
   {
@@ -53,6 +54,10 @@ const routes = [
       {
         path: "/ticketing",
         element: <Ticketing />,
+      },
+      {
+        path: "/pointofsales",
+        element: <Pos />,
       },
     ],
   },
