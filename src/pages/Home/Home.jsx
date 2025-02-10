@@ -44,13 +44,13 @@ import { useEffect } from "react";
 import { use } from "react";
 function LogistcsPage() {
   // fecthing data
-
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
   useEffect(() => {
     setLoading(true); // Veri yükleniyor
-    fetch("http://localhost:8088/api/LogisticsPage/QuickReview")
+    fetch("http://localhost:8088/api/InvoicingPage/QuickReview")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -58,6 +58,7 @@ function LogistcsPage() {
         return response.json();
       })
       .then((data) => {
+        console.log(data); // Veri konsola yazdırılıyor
         setData(data); // Veri başarıyla alındı
         setLoading(false);
       })
@@ -66,6 +67,18 @@ function LogistcsPage() {
         setLoading(false);
       });
   }, []);
+
+  if (loading) {
+    return <div>Loading...</div>; // Yükleniyor mesajı
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>; // Hata mesajı
+  }
+
+  if (!data) {
+    return null; // Veri yoksa bir şey göstermiyoruz
+  }
   // end data fetcing
   const initialInvoices = [
     {
@@ -104,46 +117,46 @@ function LogistcsPage() {
       amount: 224,
     },
   ];
-  const [invoices, setInvoices] = useState(initialInvoices);
-  const [editInvoiceId, setEditInvoiceId] = useState(null);
-  const [editFormData, setEditFormData] = useState({
-    customer: "",
-    date: "",
-    amount: "",
-  });
-  const handleEditClick = (invoice) => {
-    setEditInvoiceId(invoice.id);
-    setEditFormData({
-      customer: invoice.customer,
-      date: invoice.date,
-      amount: invoice.amount,
-    });
-  };
+  // const [invoices, setInvoices] = useState(initialInvoices);
+  // const [editInvoiceId, setEditInvoiceId] = useState(null);
+  // const [editFormData, setEditFormData] = useState({
+  //   customer: "",
+  //   date: "",
+  //   amount: "",
+  // });
+  // const handleEditClick = (invoice) => {
+  //   setEditInvoiceId(invoice.id);
+  //   setEditFormData({
+  //     customer: invoice.customer,
+  //     date: invoice.date,
+  //     amount: invoice.amount,
+  //   });
+  // };
 
-  const handleEditFormChange = (event) => {
-    const { name, value } = event.target;
-    setEditFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-    }));
-  };
+  // const handleEditFormChange = (event) => {
+  //   const { name, value } = event.target;
+  //   setEditFormData((prevFormData) => ({
+  //     ...prevFormData,
+  //     [name]: value,
+  //   }));
+  // };
 
-  const handleSaveClick = () => {
-    const updatedInvoices = invoices.map((invoice) =>
-      invoice.id === editInvoiceId ? { ...invoice, ...editFormData } : invoice
-    );
-    setInvoices(updatedInvoices);
-    setEditInvoiceId(null);
-  };
+  // const handleSaveClick = () => {
+  //   const updatedInvoices = invoices.map((invoice) =>
+  //     invoice.id === editInvoiceId ? { ...invoice, ...editFormData } : invoice
+  //   );
+  //   setInvoices(updatedInvoices);
+  //   setEditInvoiceId(null);
+  // };
 
-  const handleCancelClick = () => {
-    setEditInvoiceId(null);
-  };
+  // const handleCancelClick = () => {
+  //   setEditInvoiceId(null);
+  // };
 
-  const handleDelete = (id) => {
-    const filteredInvoices = invoices.filter((invoice) => invoice.id !== id);
-    setInvoices(filteredInvoices);
-  };
+  // const handleDelete = (id) => {
+  //   const filteredInvoices = invoices.filter((invoice) => invoice.id !== id);
+  //   setInvoices(filteredInvoices);
+  // };
 
   return (
     <>
@@ -155,7 +168,7 @@ function LogistcsPage() {
               <p className="moneybag-p">Revenue</p>
             </div>
             <div className="money-container">
-              <p className="money">$12,234</p>
+              <p className="money">${data.unpaidInvoices}</p>
             </div>
             <div className="container-text">
               <p className="text">From last month</p>
@@ -165,7 +178,7 @@ function LogistcsPage() {
             <img src={Greenline} alt="line" />
             <button className="card-button">
               <img src={Vector} alt="vector" />
-              <p>25%</p>
+              <p>{data.unpaidInvoicesPercentage}%</p>
             </button>
           </div>
         </div>
@@ -176,7 +189,7 @@ function LogistcsPage() {
               <p className="moneybag-p">Costs</p>
             </div>
             <div className="money-container">
-              <p className="money">$2,495</p>
+              <p className="money">${data.paidInvoices}</p>
             </div>
             <div className="container-text">
               <p className="text">From last month</p>
@@ -186,7 +199,7 @@ function LogistcsPage() {
             <img src={Redline} alt="line" />
             <button className="card-button-red">
               <img src={Reddown} alt="vector" />
-              <p>5%</p>
+              <p>{data.paidInvoicesPercentage}%</p>
             </button>
           </div>
         </div>
@@ -198,7 +211,7 @@ function LogistcsPage() {
               <p className="moneybag-p">Profits</p>
             </div>
             <div className="money-container">
-              <p className="money">$9,274</p>
+              <p className="money">${data.totalInvoices}</p>
             </div>
             <div className="container-text">
               <p className="text">From last month</p>
@@ -208,7 +221,7 @@ function LogistcsPage() {
             <img src={Greenline} alt="line" />
             <button className="card-button">
               <img src={Vector} alt="vector" />
-              <p>15%</p>
+              <p>{data.totalInvoicesPercentage}%</p>
             </button>
           </div>
         </div>
@@ -220,7 +233,7 @@ function LogistcsPage() {
               <p className="moneybag-p">Shipments</p>
             </div>
             <div className="money-container">
-              <p className="money">$8,472</p>
+              <p className="money">${data.invoiceSent}</p>
             </div>
             <div className="container-text">
               <p className="text">From last month</p>
@@ -230,7 +243,7 @@ function LogistcsPage() {
             <img src={Redline} alt="line" />
             <button className="card-button-red">
               <img src={Reddown} alt="vector" />
-              <p>10%</p>
+              <p>{data.invoiceSentPercentage}%</p>
             </button>
           </div>
         </div>
@@ -764,7 +777,7 @@ function LogistcsPage() {
           <div className="warehousing-vertical-border"></div>
           <div className="users-invocing-container">
             <div style={{ padding: "0px" }}>
-              <table className="table-invoices">
+              {/* <table className="table-invoices">
                 <thead>
                   <tr
                     style={{
@@ -866,7 +879,7 @@ function LogistcsPage() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </table> */}
             </div>
 
             {/* <div className="users-invocing-container-header">
