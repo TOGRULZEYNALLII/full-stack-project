@@ -43,120 +43,123 @@ import xicon from "./assets/invoices/close.png";
 import { useEffect } from "react";
 import { use } from "react";
 function LogistcsPage() {
-  // fecthing data
+  // Tüm birleşik veriyi tutan state
   const [data, setData] = useState(null);
+  // Fatura (invoice) verilerini tutan state
+  const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // API linkleri (ilk 6 tanesi farklı veri, 7. URL fatura verilerini içeriyor)
+  const apiLinks = [
+    "http://localhost:8088/api/LogisticsPage/QuickReview",
+    "http://localhost:8088/api/LogisticsPage/CarryingCosts",
+    "http://localhost:8088/api/LogisticsPage/DeliveryStatus",
+    "http://localhost:8088/api/LogisticsPage/WarehousingService",
+    "http://localhost:8088/api/LogisticsPage/DeliveriesByCounties",
+    "http://localhost:8088/api/LogisticsPage/ShipmentReview",
+    "http://localhost:8088/api/LogisticsPage/Invoices",
+  ];
+
+  // Düzenleme (edit) işlemi için state'ler
+  const [editInvoiceId, setEditInvoiceId] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    invoiceId: "",
+    customer: "",
+    invoiceDate: "",
+    amount: "",
+  });
+
+  // Verileri çekip, faturaları ayırıyoruz
   useEffect(() => {
-    setLoading(true); // Veri yükleniyor
-    fetch("http://localhost:8088/api/InvoicingPage/QuickReview")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data); // Veri konsola yazdırılıyor
-        setData(data); // Veri başarıyla alındı
+    const fetchData = async () => {
+      setLoading(true); // Veri yükleniyor
+      try {
+        const responses = await Promise.all(
+          apiLinks.map((link) =>
+            fetch(link).then((response) => {
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              return response.json();
+            })
+          )
+        );
+        // Tüm verileri birleştiriyoruz
+        const combinedData = responses.flat();
+        setData(combinedData);
+        // İlk 10 öğe farklı veriler ise, faturalar 11. öğeden (index 10) başlıyor:
+        const invoiceData = combinedData.slice(10);
+        setInvoices(invoiceData);
+        console.log("Combined Data:", combinedData);
+      } catch (error) {
+        setError(error.message);
+      } finally {
         setLoading(false);
-      })
-      .catch((error) => {
-        setError(error.message); // Hata durumu
-        setLoading(false);
-      });
+      }
+    };
+
+    fetchData();
   }, []);
 
-  if (loading) {
-    return <div>Loading...</div>; // Yükleniyor mesajı
-  }
+  // "Edit" butonuna tıklandığında ilgili faturayı düzenleme moduna alıyoruz
+  const handleEditClick = (invoice) => {
+    setEditInvoiceId(invoice.invoiceId);
+    setEditFormData({
+      invoiceId: invoice.invoiceId,
+      customer: invoice.customer,
+      invoiceDate: invoice.invoiceDate, // ISO formatındaki tarih
+      amount: invoice.amount,
+    });
+  };
 
-  if (error) {
-    return <div>Error: {error}</div>; // Hata mesajı
-  }
+  // Inputlardaki değişiklikleri state'e yansıtıyoruz
+  const handleEditFormChange = (event) => {
+    const { name, value } = event.target;
+    setEditFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
-  if (!data) {
-    return null; // Veri yoksa bir şey göstermiyoruz
-  }
-  // end data fetcing
-  const initialInvoices = [
-    {
-      id: 1,
-      invoiceId: "#874729",
-      customer: "Cahaya Dewi",
-      date: "08/09/23",
-      amount: 728,
-    },
-    {
-      id: 2,
-      invoiceId: "#874730",
-      customer: "Samantha Olie",
-      date: "02/11/22",
-      amount: 182,
-    },
-    {
-      id: 3,
-      invoiceId: "#874731",
-      customer: "Daniel Gallego",
-      date: "22/08/23",
-      amount: 456,
-    },
-    {
-      id: 4,
-      invoiceId: "#874732",
-      customer: "Avery Davis",
-      date: "02/12/22",
-      amount: 359,
-    },
-    {
-      id: 5,
-      invoiceId: "#874733",
-      customer: "Taylor Alonso",
-      date: "13/04/23",
-      amount: 224,
-    },
-  ];
-  // const [invoices, setInvoices] = useState(initialInvoices);
-  // const [editInvoiceId, setEditInvoiceId] = useState(null);
-  // const [editFormData, setEditFormData] = useState({
-  //   customer: "",
-  //   date: "",
-  //   amount: "",
-  // });
-  // const handleEditClick = (invoice) => {
-  //   setEditInvoiceId(invoice.id);
-  //   setEditFormData({
-  //     customer: invoice.customer,
-  //     date: invoice.date,
-  //     amount: invoice.amount,
-  //   });
-  // };
+  // "Save" butonuna tıklandığında PUT isteği göndererek backend'te güncelleme yapıyoruz
+  const handleSaveClick = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:8088/api/LogisticsPage/InvoicesEdit",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(editFormData),
+        }
+      );
 
-  // const handleEditFormChange = (event) => {
-  //   const { name, value } = event.target;
-  //   setEditFormData((prevFormData) => ({
-  //     ...prevFormData,
-  //     [name]: value,
-  //   }));
-  // };
+      if (!response.ok) {
+        throw new Error("Failed to update invoice");
+      }
+      const updatedInvoice = await response.json();
 
-  // const handleSaveClick = () => {
-  //   const updatedInvoices = invoices.map((invoice) =>
-  //     invoice.id === editInvoiceId ? { ...invoice, ...editFormData } : invoice
-  //   );
-  //   setInvoices(updatedInvoices);
-  //   setEditInvoiceId(null);
-  // };
+      // Yerel invoices dizisinde ilgili faturayı güncelliyoruz
+      setInvoices((prevInvoices) =>
+        prevInvoices.map((inv) =>
+          inv.invoiceId === updatedInvoice.invoiceId ? updatedInvoice : inv
+        )
+      );
+      setEditInvoiceId(null);
+    } catch (err) {
+      console.error("Error updating invoice:", err);
+      setError(err.message);
+    }
+  };
 
-  // const handleCancelClick = () => {
-  //   setEditInvoiceId(null);
-  // };
+  const handleCancelClick = () => {
+    setEditInvoiceId(null);
+  };
 
-  // const handleDelete = (id) => {
-  //   const filteredInvoices = invoices.filter((invoice) => invoice.id !== id);
-  //   setInvoices(filteredInvoices);
-  // };
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <>
@@ -168,7 +171,7 @@ function LogistcsPage() {
               <p className="moneybag-p">Revenue</p>
             </div>
             <div className="money-container">
-              <p className="money">${data.unpaidInvoices}</p>
+              <p className="money">${data?.[0]?.revenue}</p>
             </div>
             <div className="container-text">
               <p className="text">From last month</p>
@@ -178,7 +181,7 @@ function LogistcsPage() {
             <img src={Greenline} alt="line" />
             <button className="card-button">
               <img src={Vector} alt="vector" />
-              <p>{data.unpaidInvoicesPercentage}%</p>
+              <p>{data?.[0]?.revenuePercentage}%</p>
             </button>
           </div>
         </div>
@@ -189,7 +192,7 @@ function LogistcsPage() {
               <p className="moneybag-p">Costs</p>
             </div>
             <div className="money-container">
-              <p className="money">${data.paidInvoices}</p>
+              <p className="money">${data?.[0]?.costs}</p>
             </div>
             <div className="container-text">
               <p className="text">From last month</p>
@@ -199,7 +202,7 @@ function LogistcsPage() {
             <img src={Redline} alt="line" />
             <button className="card-button-red">
               <img src={Reddown} alt="vector" />
-              <p>{data.paidInvoicesPercentage}%</p>
+              <p>{data?.[0]?.costsPercentage}%</p>
             </button>
           </div>
         </div>
@@ -211,7 +214,7 @@ function LogistcsPage() {
               <p className="moneybag-p">Profits</p>
             </div>
             <div className="money-container">
-              <p className="money">${data.totalInvoices}</p>
+              <p className="money">${data?.[0]?.profits}</p>
             </div>
             <div className="container-text">
               <p className="text">From last month</p>
@@ -221,7 +224,7 @@ function LogistcsPage() {
             <img src={Greenline} alt="line" />
             <button className="card-button">
               <img src={Vector} alt="vector" />
-              <p>{data.totalInvoicesPercentage}%</p>
+              <p>{data?.[0]?.profitsPercentage}%</p>
             </button>
           </div>
         </div>
@@ -233,7 +236,7 @@ function LogistcsPage() {
               <p className="moneybag-p">Shipments</p>
             </div>
             <div className="money-container">
-              <p className="money">${data.invoiceSent}</p>
+              <p className="money">${data?.[0]?.shipments}</p>
             </div>
             <div className="container-text">
               <p className="text">From last month</p>
@@ -243,7 +246,7 @@ function LogistcsPage() {
             <img src={Redline} alt="line" />
             <button className="card-button-red">
               <img src={Reddown} alt="vector" />
-              <p>{data.invoiceSentPercentage}%</p>
+              <p>{data?.[0]?.shipmentsPercentage}%</p>
             </button>
           </div>
         </div>
@@ -332,13 +335,12 @@ function LogistcsPage() {
           </div>
           <div className="border-right-container"></div>
           <div>
-            {" "}
-            <p className="border-right-container-price">$2,847.90</p>
+            <p className="border-right-container-price">${data?.[1]?.costs}</p>
           </div>
           <div className="blue-button-down-container">
             <button className="blue-button-down">
               <img src={Bluedownvector} alt="vector" />
-              <p>25%</p>
+              <p>{data?.[1]?.costsPercentage}%</p>
             </button>
             <p>from last week </p>
           </div>
@@ -381,12 +383,12 @@ function LogistcsPage() {
                   <div></div>
                   <div className="dellivery-status-prices-container">
                     <p className="dellivery-status-prices-containe-price">
-                      2,948
+                      {data?.[2]?.delivered}
                     </p>
                     <div>
                       <button className="card-button">
                         <img src={Vector} alt="vector" />
-                        <p>25%</p>
+                        <p>{data?.[2]?.deliveredPercentage}%</p>
                       </button>
                       <p>from last week</p>
                     </div>
@@ -403,12 +405,12 @@ function LogistcsPage() {
                   <div></div>
                   <div className="dellivery-status-prices-container">
                     <p className="dellivery-status-prices-containe-price">
-                      673
+                      {data?.[2]?.onProgress}
                     </p>
                     <div>
                       <button className="card-button">
                         <img src={Vector} alt="vector" />
-                        <p>25%</p>
+                        <p>{data?.[2]?.onProgressPercentage}%</p>
                       </button>
                       <p>from last week</p>
                     </div>
@@ -480,13 +482,13 @@ function LogistcsPage() {
           <div className="warehousing-texts">
             <div className="warehousing-texts-item">
               <img src={Costssquere} alt="staff costs icon" />
-              <p>Cost Per Square Foot of Warehouse Space</p>
+              <p>{data?.[3]?.cost[0].serviceName}</p>
             </div>
             <div className="warehousing-texts-button">
-              <p>$6.53</p>
+              <p>${data?.[3]?.cost[0].servicePayment}</p>
               <button className="card-button-green-gray">
                 <img src={Vector} alt="vector" />
-                <p>5%</p>
+                <p>{data?.[3]?.cost[0].servicePaymentPercentage}%</p>
               </button>
             </div>
           </div>
@@ -495,40 +497,40 @@ function LogistcsPage() {
           <div className="warehousing-texts">
             <div className="warehousing-texts-item">
               <img src={Staffcosts} alt="staff costs icon" />
-              <p>Cost of Warehouse Management Staff Per Year</p>
+              <p>{data?.[3]?.cost[1].serviceName}</p>
             </div>
             <div className="warehousing-texts-button">
-              <p>$47,500</p>
+              <p>${data?.[3]?.cost[1].servicePayment}</p>
               <button className="card-button-red">
                 <img src={Reddown} alt="vector" />
-                <p>3%</p>
+                <p>{data?.[3]?.cost[1].servicePaymentPercentage}%</p>
               </button>
             </div>
           </div>
           <div className="warehousing-texts">
             <div className="warehousing-texts-item">
               <img src={Perhourcosts} alt="hour costs icon" />
-              <p>Cost of Warehouse Staff Per Hour</p>
+              <p>{data?.[3]?.cost[2].serviceName}</p>
             </div>
             <div className="warehousing-texts-button">
-              <p>$11.44</p>
+              <p>${data?.[3]?.cost[2].servicePayment}</p>
               <button className="yellowdownbutton">
                 {" "}
                 <img src={Yellowdown} alt="down vector" />
-                4%
+                {data?.[3]?.cost[2].servicePaymentPercentage}%
               </button>
             </div>
           </div>
           <div className="warehousing-texts">
             <div className="warehousing-texts-item">
               <img src={Profitcosts} alt="profit costs" />
-              <p>Corporate Profit % For Warehouses</p>
+              <p>{data?.[3]?.cost[3].serviceName}</p>
             </div>
             <div className="warehousing-texts-button">
-              <p>8.83%</p>
+              <p>${data?.[3]?.cost[3].servicePayment}</p>
               <button className="blueupbttuon">
                 <img src={Blueup} alt="blue up vector" />
-                <p>11%</p>
+                <p>{data?.[3]?.cost[3].servicePaymentPercentage}%</p>
               </button>
             </div>
           </div>
@@ -537,13 +539,13 @@ function LogistcsPage() {
           <div className="warehousing-texts">
             <div className="warehousing-texts-item">
               <img src={Plcosts} alt="3pl cost icon" />
-              <p>What Percentage Do 3PL Warehouses Increase Pricing</p>
+              <p>{data?.[3]?.cost[4].serviceName}</p>
             </div>
             <div className="warehousing-texts-button">
-              <p>2.37%</p>
+              <p>${data?.[3]?.cost[4].servicePayment}</p>
               <button className="lightblueupbutton">
                 <img src={Lightblueup} alt="light blue up vector" />
-                <p> 4%</p>
+                <p> {data?.[3]?.cost[4].servicePaymentPercentage}% </p>
               </button>
             </div>
           </div>
@@ -570,8 +572,10 @@ function LogistcsPage() {
           <div className="delivers-country-lines-container">
             <div className="delivers-country-lines">
               <div className="country-percentage">
-                <p>America</p>
-                <button className="country-percentage-lightblue">20%</button>
+                <p>{data?.[4]?.country}</p>
+                <button className="country-percentage-lightblue">
+                  {data?.[4]?.deliveryPercentage}%
+                </button>
               </div>
               <div className="country-percentage-blue-line-countainer">
                 <div className="country-percentage-blue-line"></div>
@@ -581,8 +585,10 @@ function LogistcsPage() {
 
             <div className="delivers-country-lines">
               <div className="country-percentage">
-                <p>Netherlands</p>
-                <button className="country-percentage-lightgreen">25%</button>
+                <p>{data?.[5]?.country}</p>
+                <button className="country-percentage-lightgreen">
+                  {data?.[5]?.deliveryPercentage}%
+                </button>
               </div>
               <div className="country-percentage-blue-line-countainer">
                 <div className="country-percentage-green-line"></div>
@@ -592,8 +598,10 @@ function LogistcsPage() {
 
             <div className="delivers-country-lines">
               <div className="country-percentage">
-                <p>France</p>
-                <button className="country-percentage-red">30%</button>
+                <p>{data?.[6]?.country}</p>
+                <button className="country-percentage-red">
+                  {data?.[6]?.deliveryPercentage}%
+                </button>
               </div>
               <div className="country-percentage-blue-line-countainer">
                 <div className="country-percentage-red-line"></div>
@@ -603,8 +611,11 @@ function LogistcsPage() {
 
             <div className="delivers-country-lines">
               <div className="country-percentage">
-                <p>Spain</p>
-                <button className="country-percentage-yellow">35%</button>
+                <p>{data?.[7]?.country}</p>
+                <button className="country-percentage-yellow">
+                  {" "}
+                  {data?.[7]?.deliveryPercentage}%
+                </button>
               </div>
               <div className="country-percentage-yellow-line-countainer">
                 <div className="country-percentage-yellow-line"></div>
@@ -614,9 +625,9 @@ function LogistcsPage() {
 
             <div className="delivers-country-lines">
               <div className="country-percentage">
-                <p>India</p>
+                <p>{data?.[8]?.country}</p>
                 <button className="country-percentage-lightblue-two">
-                  45%
+                  {data?.[8]?.deliveryPercentage}%
                 </button>
               </div>
               <div className="country-percentage-light-blue-line-countainer">
@@ -627,8 +638,11 @@ function LogistcsPage() {
 
             <div className="delivers-country-lines">
               <div className="country-percentage">
-                <p>Indonesia</p>
-                <button className="country-percentage-black">65%</button>
+                <p>{data?.[4]?.country}</p>
+                <button className="country-percentage-black">
+                  {" "}
+                  {data?.[4]?.deliveryPercentage}%
+                </button>
               </div>
               <div className="country-percentage-black-line-countainer">
                 <div className="country-percentage-black-line"></div>
@@ -653,12 +667,16 @@ function LogistcsPage() {
               </div>
               <div className="cancelled-text">
                 <div className="container-32-cancelled">
-                  <p className="cancelled-text-item-number">32</p>
+                  <p className="cancelled-text-item-number">
+                    {data?.[9]?.canceled}
+                  </p>
                   <p className="cancelled-text-item">Cancelled</p>
                 </div>
                 <div className="cancelled-text-item-container">
                   <img className="cancelled-text-item" src={Squereupright} />
-                  <p className="cancelled-text-item-percentage">+13%</p>
+                  <p className="cancelled-text-item-percentage">
+                    {data?.[9]?.canceledPercentage}%
+                  </p>
                 </div>
               </div>
             </div>
@@ -673,12 +691,16 @@ function LogistcsPage() {
               </div>
               <div className="cancelled-text">
                 <div className="container-32-cancelled">
-                  <p className="cancelled-text-item-number">176</p>
+                  <p className="cancelled-text-item-number">
+                    {data?.[9]?.delivered}
+                  </p>
                   <p className="cancelled-text-item">Delivered</p>
                 </div>
                 <div className="cancelled-text-item-container">
                   <img className="cancelled-text-item" src={Leftdownvector} />
-                  <p className="cancelled-text-item-percentage-red">-7%</p>
+                  <p className="cancelled-text-item-percentage-red">
+                    {data?.[9]?.deliveredPercentage}%
+                  </p>
                 </div>
               </div>
             </div>
@@ -695,12 +717,18 @@ function LogistcsPage() {
               </div>
               <div className="cancelled-text">
                 <div className="container-32-cancelled">
-                  <p className="cancelled-text-item-number">384</p>
+                  <p className="cancelled-text-item-number">
+                    {" "}
+                    {data?.[9]?.orders}
+                  </p>
                   <p className="cancelled-text-item">Orders</p>
                 </div>
                 <div className="cancelled-text-item-container">
                   <img className="cancelled-text-item" src={Squereupright} />
-                  <p className="cancelled-text-item-percentage">+25%</p>
+                  <p className="cancelled-text-item-percentage">
+                    {" "}
+                    {data?.[9]?.ordersPercentage}%
+                  </p>
                 </div>
               </div>
             </div>
@@ -715,12 +743,18 @@ function LogistcsPage() {
               </div>
               <div className="cancelled-text">
                 <div className="container-32-cancelled">
-                  <p className="cancelled-text-item-number">42</p>
+                  <p className="cancelled-text-item-number">
+                    {" "}
+                    {data?.[9]?.pending}
+                  </p>
                   <p className="cancelled-text-item">Pending</p>
                 </div>
                 <div className="cancelled-text-item-container">
                   <img className="cancelled-text-item" src={Squereupright} />
-                  <p className="cancelled-text-item-percentage">+2%</p>
+                  <p className="cancelled-text-item-percentage">
+                    {" "}
+                    {data?.[9]?.pendingPercentage}%
+                  </p>
                 </div>
               </div>
             </div>
@@ -737,12 +771,16 @@ function LogistcsPage() {
               </div>
               <div className="cancelled-text">
                 <div className="container-32-cancelled">
-                  <p className="cancelled-text-item-number">$982</p>
+                  <p className="cancelled-text-item-number">
+                    ${data?.[9]?.revenue}
+                  </p>
                   <p className="cancelled-text-item">Revenue</p>
                 </div>
                 <div className="cancelled-text-item-container">
                   <img className="cancelled-text-item" src={Squereupright} />
-                  <p className="cancelled-text-item-percentage">+35%</p>
+                  <p className="cancelled-text-item-percentage">
+                    {data?.[9]?.revenuePercentage}%
+                  </p>
                 </div>
               </div>
             </div>
@@ -757,12 +795,18 @@ function LogistcsPage() {
               </div>
               <div className="cancelled-text">
                 <div className="container-32-cancelled">
-                  <p className="cancelled-text-item-number">18</p>
+                  <p className="cancelled-text-item-number">
+                    {" "}
+                    ${data?.[9]?.refunded}
+                  </p>
                   <p className="cancelled-text-item">Refunded</p>
                 </div>
                 <div className="cancelled-text-item-container">
                   <img className="cancelled-text-item" src={Leftdownvector} />
-                  <p className="cancelled-text-item-percentage-red">-8%</p>
+                  <p className="cancelled-text-item-percentage-red">
+                    {" "}
+                    {data?.[9]?.refundedPercentage}%
+                  </p>
                 </div>
               </div>
             </div>
@@ -777,7 +821,7 @@ function LogistcsPage() {
           <div className="warehousing-vertical-border"></div>
           <div className="users-invocing-container">
             <div style={{ padding: "0px" }}>
-              {/* <table className="table-invoices">
+              <table className="table-invoices">
                 <thead>
                   <tr
                     style={{
@@ -795,7 +839,7 @@ function LogistcsPage() {
                 <tbody>
                   {invoices.map((invoice, index) => (
                     <tr
-                      key={invoice.id}
+                      key={invoice.invoiceId}
                       style={{ borderBottom: "1px solid #ddd" }}>
                       <td style={{ padding: "10px", textAlign: "center" }}>
                         {index + 1}
@@ -803,11 +847,10 @@ function LogistcsPage() {
                       <td style={{ padding: "10px", textAlign: "center" }}>
                         {invoice.invoiceId}
                       </td>
-                      {editInvoiceId === invoice.id ? (
+                      {editInvoiceId === invoice.invoiceId ? (
                         <>
                           <td style={{ padding: "10px", textAlign: "center" }}>
                             <input
-                              className="input-customer"
                               type="text"
                               name="customer"
                               value={editFormData.customer}
@@ -816,37 +859,24 @@ function LogistcsPage() {
                           </td>
                           <td style={{ padding: "10px", textAlign: "center" }}>
                             <input
-                              className="input-customer"
-                              type="text"
-                              name="date"
-                              value={editFormData.date}
+                              type="date"
+                              name="invoiceDate"
+                              // ISO formatındaki tarih bilgisinin ilk 10 karakteri (YYYY-MM-DD)
+                              value={editFormData.invoiceDate.slice(0, 10)}
                               onChange={handleEditFormChange}
-                              style={{ width: "100%" }}
                             />
                           </td>
                           <td style={{ padding: "10px", textAlign: "center" }}>
                             <input
-                              className="input-customer"
                               type="number"
                               name="amount"
                               value={editFormData.amount}
                               onChange={handleEditFormChange}
-                              style={{ width: "100%" }}
                             />
                           </td>
-                          <td className="xokeycontainer">
-                            <img
-                              className="okeyxbutton"
-                              src={Okeyiucon}
-                              alt="okeyicon"
-                              onClick={handleSaveClick}
-                            />
-                            <img
-                              className="xbutton"
-                              src={xicon}
-                              alt=""
-                              onClick={handleCancelClick}
-                            />
+                          <td style={{ padding: "10px", textAlign: "center" }}>
+                            <button onClick={handleSaveClick}>Save</button>
+                            <button onClick={handleCancelClick}>Cancel</button>
                           </td>
                         </>
                       ) : (
@@ -855,110 +885,23 @@ function LogistcsPage() {
                             {invoice.customer}
                           </td>
                           <td style={{ padding: "10px", textAlign: "center" }}>
-                            {invoice.date}
+                            {new Date(invoice.invoiceDate).toLocaleDateString()}
                           </td>
                           <td style={{ padding: "10px", textAlign: "center" }}>
                             ${invoice.amount}
                           </td>
-                          <td className="Td-editdelete">
-                            <img
-                              style={{ height: "30px", cursor: "pointer" }}
-                              onClick={() => handleEditClick(invoice)}
-                              src={Editcon}
-                              alt="edit icon"
-                            />
-                            <img
-                              style={{ height: "30px", cursor: "pointer" }}
-                              onClick={() => handleDelete(invoice.id)}
-                              src={Deleteicon}
-                              alt=""
-                            />
+                          <td style={{ padding: "10px", textAlign: "center" }}>
+                            <button onClick={() => handleEditClick(invoice)}>
+                              Edit
+                            </button>
                           </td>
                         </>
                       )}
                     </tr>
                   ))}
                 </tbody>
-              </table> */}
+              </table>
             </div>
-
-            {/* <div className="users-invocing-container-header">
-              <div className="users-invocing-container-header-text">
-                <p>No</p>
-                <p>Invoices ID</p>
-                <p>Customer</p>
-              </div>
-              <div className="users-invocing-container-header-text-right">
-                <p>Date</p>
-                <p>Amount</p>
-                <p>Action</p>
-              </div>
-            </div>
-
-            <div className="users-invocing-container-header">
-              <div className="users-invocing-container-header-text">
-                <p>No</p>
-                <p>Invoices ID</p>
-                <p>Customer</p>
-              </div>
-              <div className="users-invocing-container-header-text-right">
-                <p>Date</p>
-                <p>Amount</p>
-                <p>Action</p>
-              </div>
-            </div>
-
-            <div className="users-invocing-container-header">
-              <div className="users-invocing-container-header-text">
-                <p></p>
-                <p>Invoices ID</p>
-                <p>Customer</p>
-              </div>
-              <div className="users-invocing-container-header-text-right">
-                <p>Date</p>
-                <p>Amount</p>
-                <p>Action</p>
-              </div>
-            </div>
-
-            <div className="users-invocing-container-header">
-              <div className="users-invocing-container-header-text">
-                <p>No</p>
-                <p>Invoices ID</p>
-                <p>Customer</p>
-              </div>
-              <div className="users-invocing-container-header-text-right">
-                <p>Date</p>
-                <p>Amount</p>
-                <p>Action</p>
-              </div>
-            </div>
-
-            <div className="users-invocing-container-header">
-              <div className="users-invocing-container-header-text">
-                <p>4</p>
-                <p>Invoices ID</p>
-                <p>Customer</p>
-              </div>
-              <div className="users-invocing-container-header-text-right">
-                <p>Date</p>
-                <p>Amount</p>
-                <p>Action</p>
-              </div>
-            </div>
-
-            <div className="users-invocing-container-header">
-              <div className="users-invocing-container-header-text">
-                <p>No</p>
-                <p>Invoices ID</p>
-                <p>Customer</p>
-              </div>
-              <div className="users-invocing-container-header-text-right">
-                <p>Date</p>
-                <p>Amount</p>
-                <p>Action</p>
-              </div>
-            </div>   */}
           </div>
         </div>
       </section>
