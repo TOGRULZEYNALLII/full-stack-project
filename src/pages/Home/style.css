@@ -753,10 +753,68 @@
   padding: "10px";
   display: flex;
   align-items: center;
-margin-left: 6px;
+  margin-left: 6px;
 }
-.input-customer{
-  height:20px;
+.input-customer {
+  height: 20px;
   border-radius: 20px;
   border: none;
+}
+
+/* table  */
+/* .table-invoices {
+  display: flex;
+  align-items: center;
+} */
+.table-invoices-header {
+  border-bottom: "2px solid #ddd";
+  background-color: "rgba(247, 248, 250, 1)";
+  width: "1000px";
+  display: "flex";
+}
+.table {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.table-invoices-header-content {
+  padding: 10px;
+  width: 160px;
+}
+.table-body-content {
+  padding: 8.3px;
+  width: 160px;
+}
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  /* margin-left: 50px; */
+}
+.save {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: green;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+.cancel {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background-color: red;
+  color: white;
+}
+.save:hover {
+  background-color: darkgreen;
+}
+.cancel:hover {
+  background-color: darkred;
+}
+.table-buttons {
+  cursor: pointer;
+  height: 30px;
 }

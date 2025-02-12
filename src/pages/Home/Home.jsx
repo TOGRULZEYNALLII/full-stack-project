@@ -122,11 +122,10 @@ function LogistcsPage() {
     }));
   };
 
-  // "Save" butonuna tıklandığında PUT isteği göndererek backend'te güncelleme yapıyoruz
   const handleSaveClick = async () => {
     try {
       const response = await fetch(
-        "http://localhost:8088/api/LogisticsPage/InvoicesEdit",
+        `http://localhost:8088/api/LogisticsPage/InvoicesEdit?id=${editFormData.invoiceId}`,
         {
           method: "PUT",
           headers: {
@@ -139,21 +138,45 @@ function LogistcsPage() {
       if (!response.ok) {
         throw new Error("Failed to update invoice");
       }
-      const updatedInvoice = await response.json();
 
-      // Yerel invoices dizisinde ilgili faturayı güncelliyoruz
+      const updatedInvoice =
+        response.status !== 204 ? await response.json() : {};
+
       setInvoices((prevInvoices) =>
         prevInvoices.map((inv) =>
           inv.invoiceId === updatedInvoice.invoiceId ? updatedInvoice : inv
         )
       );
+
       setEditInvoiceId(null);
     } catch (err) {
       console.error("Error updating invoice:", err);
       setError(err.message);
     }
+    window.location.reload();
   };
+  const handleDeleteClick = async (invoiceId) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8088/api/LogisticsPage/InvoicesDelete?id=${invoiceId}`, // editFormData yerine invoiceId'yi kullanıyoruz
+        {
+          method: "DELETE",
+        }
+      );
 
+      if (!response.ok) {
+        throw new Error("Failed to delete invoice");
+      }
+
+      // Faturayı yerel diziden siliyoruz
+      setInvoices((prevInvoices) =>
+        prevInvoices.filter((inv) => inv.invoiceId !== invoiceId)
+      );
+    } catch (err) {
+      console.error("Error deleting invoice:", err);
+      setError(err.message);
+    }
+  };
   const handleCancelClick = () => {
     setEditInvoiceId(null);
   };
@@ -820,20 +843,18 @@ function LogistcsPage() {
           </div>
           <div className="warehousing-vertical-border"></div>
           <div className="users-invocing-container">
-            <div style={{ padding: "0px" }}>
-              <table className="table-invoices">
-                <thead>
-                  <tr
-                    style={{
-                      borderBottom: "2px solid #ddd",
-                      backgroundColor: "rgba(247, 248, 250, 1)",
-                    }}>
-                    <th style={{ padding: "10px" }}>No</th>
-                    <th style={{ padding: "10px" }}>Invoice ID</th>
-                    <th style={{ padding: "10px" }}>Customer</th>
-                    <th style={{ padding: "10px" }}>Date</th>
-                    <th style={{ padding: "10px" }}>Amount</th>
-                    <th style={{ padding: "10px" }}>Action</th>
+            <div className="table">
+              <table className="table">
+                <thead className="table-invoices-header-main">
+                  <tr className="table-invoices-header">
+                    <th className="table-invoices-header-content">No</th>
+                    <th className="table-invoices-header-content">
+                      Invoice ID
+                    </th>
+                    <th className="table-invoices-header-content">Customer</th>
+                    <th className="table-invoices-header-content">Date</th>
+                    <th className="table-invoices-header-content">Amount</th>
+                    <th className="table-invoices-header-content">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -841,15 +862,21 @@ function LogistcsPage() {
                     <tr
                       key={invoice.invoiceId}
                       style={{ borderBottom: "1px solid #ddd" }}>
-                      <td style={{ padding: "10px", textAlign: "center" }}>
+                      <td
+                        className="table-body-content"
+                        style={{ padding: "10px", textAlign: "center" }}>
                         {index + 1}
                       </td>
-                      <td style={{ padding: "10px", textAlign: "center" }}>
+                      <td
+                        className="table-body-content"
+                        style={{ padding: "10px", textAlign: "center" }}>
                         {invoice.invoiceId}
                       </td>
                       {editInvoiceId === invoice.invoiceId ? (
                         <>
-                          <td style={{ padding: "10px", textAlign: "center" }}>
+                          <td
+                            className="table-body-content"
+                            style={{ padding: "10px", textAlign: "center" }}>
                             <input
                               type="text"
                               name="customer"
@@ -857,7 +884,9 @@ function LogistcsPage() {
                               onChange={handleEditFormChange}
                             />
                           </td>
-                          <td style={{ padding: "10px", textAlign: "center" }}>
+                          <td
+                            className="table-body-content"
+                            style={{ padding: "10px", textAlign: "center" }}>
                             <input
                               type="date"
                               name="invoiceDate"
@@ -866,7 +895,9 @@ function LogistcsPage() {
                               onChange={handleEditFormChange}
                             />
                           </td>
-                          <td style={{ padding: "10px", textAlign: "center" }}>
+                          <td
+                            className="table-body-content"
+                            style={{ padding: "10px", textAlign: "center" }}>
                             <input
                               type="number"
                               name="amount"
@@ -874,26 +905,49 @@ function LogistcsPage() {
                               onChange={handleEditFormChange}
                             />
                           </td>
-                          <td style={{ padding: "10px", textAlign: "center" }}>
-                            <button onClick={handleSaveClick}>Save</button>
-                            <button onClick={handleCancelClick}>Cancel</button>
+                          <td
+                            className="table-body-content action-button action-buttons"
+                            style={{ padding: "10px", textAlign: "center" }}>
+                            <button className="save" onClick={handleSaveClick}>
+                              Save
+                            </button>
+                            <button
+                              className="cancel"
+                              onClick={handleCancelClick}>
+                              Cancel
+                            </button>
                           </td>
                         </>
                       ) : (
                         <>
-                          <td style={{ padding: "10px", textAlign: "center" }}>
+                          <td className="table-body-content">
                             {invoice.customer}
                           </td>
-                          <td style={{ padding: "10px", textAlign: "center" }}>
+                          <td
+                            className="table-body-content"
+                            style={{ padding: "10px", textAlign: "center" }}>
                             {new Date(invoice.invoiceDate).toLocaleDateString()}
                           </td>
-                          <td style={{ padding: "10px", textAlign: "center" }}>
+                          <td
+                            className="table-body-content"
+                            style={{ padding: "10px", textAlign: "center" }}>
                             ${invoice.amount}
                           </td>
-                          <td style={{ padding: "10px", textAlign: "center" }}>
-                            <button onClick={() => handleEditClick(invoice)}>
-                              Edit
-                            </button>
+                          <td
+                            className="table-body-content action-buttons"
+                            style={{ padding: "10px", textAlign: "center" }}>
+                            <img
+                              className="table-buttons"
+                              src={Editcon}
+                              onClick={() => handleEditClick(invoice)}
+                            />
+                            <img
+                              className="table-buttons"
+                              src={Deleteicon}
+                              onClick={() =>
+                                handleDeleteClick(invoice.invoiceId)
+                              }
+                            />
                           </td>
                         </>
                       )}

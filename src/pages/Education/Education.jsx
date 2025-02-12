@@ -56,6 +56,8 @@ import Magic from "../Education/assets/lastsection/magic.svg";
 import Piceture from "../Education/assets/lastsection/piceture.svg";
 
 const Education = () => {
+
+  
   const initialInvoices = [
     {
       id: 1,
