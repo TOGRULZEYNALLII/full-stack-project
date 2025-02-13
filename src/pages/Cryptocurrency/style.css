@@ -212,7 +212,7 @@
 }
 .select-currenct-container {
   display: flex;
-  padding: 15px;
+  padding: 10px;
   width: 300px;
   border-color: rgba(220, 220, 220, 1);
 }
@@ -245,6 +245,7 @@
   display: flex;
   flex-direction: column;
 }
+
 .label-selectde-currency {
   border: 1px solid black;
   padding: 5px;
@@ -457,6 +458,52 @@
   border-radius: 4px;
   opacity: 0px;
 }
-.min{
+.min {
   height: 50px;
+}
+
+/* sell order td  */
+.sell-order-td {
+  display: flex;
+}
+.sell-order-tbody {
+  display: flex;
+  flex-direction: column;
+  padding: 0px;
+}
+.sell-order-tr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+}
+.sell-order-tr-main {
+  display: flex;
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+  gap: 50px;
+}
+.notth {
+  background-color: white;
+}
+.overwiev-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  background: transparent;
+  cursor: pointer;
+  border: 1px solid rgba(166, 168, 169, 1);
+}
+.overwiev-button:hover {
+  background-color: hsla(240, 62%, 59%, 1);
+  color: white;
+  transition: 0.5s;
+}
+.wallet-activity-container-middle-container-bluebutton-none:hover {
+  background-color: hsla(240, 62%, 59%, 1);
+  color: white;
+  transition: 0.5s;
 }

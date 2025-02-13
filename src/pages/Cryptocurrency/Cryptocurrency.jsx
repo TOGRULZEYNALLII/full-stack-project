@@ -121,64 +121,39 @@ const Sellbuyorder = () => {
     </div>
   );
 };
-const SellOrder = () => {
-  const bitcoinOrders = [
-    { price: 82.3, amount: 0.15, total: 134.12 },
-    { price: 84.2, amount: 0.25, total: 252.58 },
-    { price: 86.2, amount: 0.18, total: 237.31 },
-    { price: 83.9, amount: 0.16, total: 126.26 },
-    { price: 91.6, amount: 0.75, total: 46.92 },
-    { price: 92.6, amount: 0.21, total: 123.27 },
-    { price: 94.2, amount: 0.18, total: 129.26 },
-  ];
-
-  const ethereumOrders = [
-    { price: 152.3, amount: 0.25, total: 380.75 },
-    { price: 154.8, amount: 0.35, total: 541.8 },
-    { price: 148.5, amount: 0.22, total: 326.7 },
-    { price: 155.0, amount: 0.1, total: 155.0 },
-    { price: 149.4, amount: 0.45, total: 672.3 },
-    { price: 157.2, amount: 0.18, total: 282.96 },
-    { price: 150.6, amount: 0.33, total: 497.0 },
-  ];
-
-  const lightcoinOrders = [
-    { price: 72.3, amount: 0.2, total: 144.6 },
-    { price: 74.5, amount: 0.3, total: 223.5 },
-    { price: 76.1, amount: 0.25, total: 190.25 },
-    { price: 71.9, amount: 0.12, total: 86.28 },
-    { price: 75.6, amount: 0.4, total: 302.4 },
-    { price: 73.8, amount: 0.22, total: 162.36 },
-    { price: 70.4, amount: 0.5, total: 352.0 },
-  ];
-
-  const rippleOrders = [
-    { price: 1.02, amount: 150, total: 153.0 },
-    { price: 1.04, amount: 200, total: 208.0 },
-    { price: 1.01, amount: 175, total: 176.75 },
-    { price: 1.03, amount: 120, total: 123.6 },
-    { price: 1.05, amount: 220, total: 231.0 },
-    { price: 1.02, amount: 190, total: 193.8 },
-    { price: 1.01, amount: 250, total: 252.5 },
-  ];
+const Buyorder = () => {
   const [currency, setCurrency] = useState("Bitcoin");
-  const [orders, setOrders] = useState(bitcoinOrders);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleCurrencyChange = (e) => {
-    const selectedCurrency = e.target.value;
-    setCurrency(selectedCurrency);
-
-    // Switch between static Bitcoin and Ethereum data
-    if (selectedCurrency === "Bitcoin") {
-      setOrders(bitcoinOrders);
-    } else if (selectedCurrency === "Ethereum") {
-      setOrders(ethereumOrders);
-    } else if (selectedCurrency === "Ripple") {
-      setOrders(rippleOrders);
-    } else if (selectedCurrency === "Lightcoin") {
-      setOrders(lightcoinOrders);
-    }
+    setCurrency(e.target.value);
   };
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `http://localhost:8088/api/CryptocurrencyPage/BuyOrder?currencyName=${currency}`
+        );
+        if (!response.ok) {
+          throw new Error("API call failed");
+        }
+        const data = await response.json();
+        setOrders(data); // API'den gelen veriler
+        console.log(data);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, [currency]); // Currency değiştiğinde API'yi yeniden çağır
 
   return (
     <div>
@@ -193,24 +168,103 @@ const SellOrder = () => {
         <option value="Ripple">Ripple</option>
       </select>
 
-      <table className="gray-container">
-        <thead>
-          <tr className="thead-tr-container">
-            <th>Price</th>
-            <th>Amount</th>
-            <th>Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          {orders.map((order, index) => (
-            <tr className="tr-body-container" key={index}>
-              <td>{order.price}</td>
-              <td>{order.amount}</td>
-              <td>${order.total}</td>
+      {loading && <p>Loading...</p>}
+      {error && <p>Error: {error}</p>}
+
+      {!loading && !error && (
+        <table className="gray-container">
+          <thead>
+            <tr className="sell-order-tr-main">
+              <th className="notth">Price</th>
+              <th className="notth">Amount</th>
+              <th className="notth">Total</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="sell-order-tbody">
+            {orders.map((order, index) => (
+              <tr className="sell-order-tr" key={index}>
+                <td className="sell-order-td">{order.price}</td>
+                <td className="sell-order-td">{order.amount}</td>
+                <td className="sell-order-td">${order.total}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  );
+};
+
+const SellOrder = () => {
+  const [currency, setCurrency] = useState("Bitcoin");
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleCurrencyChange = (e) => {
+    setCurrency(e.target.value);
+  };
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `http://localhost:8088/api/CryptocurrencyPage/SellOrder?currencyName=${currency}`
+        );
+        if (!response.ok) {
+          throw new Error("API call failed");
+        }
+        const data = await response.json();
+        setOrders(data); // API'den gelen veriler
+        console.log(data);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, [currency]); // Currency değiştiğinde API'yi yeniden çağır
+
+  return (
+    <div>
+      <select
+        className="select-currenct-container"
+        id="currency"
+        value={currency}
+        onChange={handleCurrencyChange}>
+        <option value="Bitcoin">Bitcoin</option>
+        <option value="Ethereum">Ethereum</option>
+        <option value="Lightcoin">Lightcoin</option>
+        <option value="Ripple">Ripple</option>
+      </select>
+
+      {loading && <p>Loading...</p>}
+      {error && <p>Error: {error}</p>}
+
+      {!loading && !error && (
+        <table className="gray-container">
+          <thead>
+            <tr className="sell-order-tr-main">
+              <th className="notth">Price</th>
+              <th className="notth">Amount</th>
+              <th className="notth">Total</th>
+            </tr>
+          </thead>
+          <tbody className="sell-order-tbody">
+            {orders.map((order, index) => (
+              <tr className="sell-order-tr" key={index}>
+                <td className="sell-order-td">{order.price}</td>
+                <td className="sell-order-td">{order.amount}</td>
+                <td className="sell-order-td">${order.total}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };
@@ -238,12 +292,126 @@ const Bitcoinoption = () => {
             <img src={Lightcoinicon} alt="icon of bitcoin" /> Lightcoin
           </div>
           <div onClick={() => handleSelect("Bitcoin")}>
-            <img src={Ethereum} alt="icon of bitcoin" />
+            <img
+              style={{ cursor: "pointer" }}
+              src={Ethereum}
+              alt="icon of bitcoin"
+            />{" "}
             Etherium
           </div>
         </div>
       </div>
     </>
+  );
+};
+
+const OverviewBalance = () => {
+  const [month, setMonth] = useState("January");
+  const [year, setYear] = useState("2023");
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleMonthChange = (e) => {
+    setMonth(e.target.value);
+  };
+
+  const handleYearChange = (e) => {
+    setYear(e.target.value);
+  };
+
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `http://localhost:8088/api/CryptocurrencyPage/OverviewBalance?month=${month}&year=${year}&userId=1`
+      );
+      if (!response.ok) {
+        throw new Error("API call failed");
+      }
+      const result = await response.json();
+      setData(result); // Gelen veriyi sakla
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div>
+      <div className="left-side-container">
+        <div className="balance-header-container">
+          <div>
+            <p> Overview Balance</p>
+          </div>
+          <div className="select-container">
+            <select
+              onChange={handleMonthChange}
+              value={month}
+              className="selectfrom">
+              <option>--Select Month--</option>
+              <option value="January">January</option>
+              <option value="February">February</option>
+              <option value="March">March</option>
+              <option value="April">April</option>
+              <option value="May">May</option>
+              <option value="June">June</option>
+              <option value="July">July</option>
+              <option value="August">August</option>
+              <option value="September">September</option>
+              <option value="October">October</option>
+              <option value="November">November</option>
+              <option value="December">December</option>
+            </select>
+
+            <select
+              value={year}
+              onChange={handleYearChange}
+              className="selectfromx datefield year"
+              name="dob-year">
+              <option value="">Year</option>
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+              <option value="2023">2023</option>
+              <option value="2022">2022</option>
+              <option value="2021">2021</option>
+              <option value="2020">2020</option>
+            </select>
+            <button className="overwiev-button" onClick={fetchData}>
+              Fetch Data
+            </button>
+          </div>
+        </div>
+
+        <div className="balance-middle-container-left">
+          <div>
+            <p className="balance-middle-container-left-text">
+              Last week balance
+            </p>
+          </div>
+          <div className="price-container">
+            <p className="balance-middle-container-left-price">
+              ${data?.lastWeekBalance || 0}
+            </p>
+            {data?.percentageDifference && (
+              <>
+                {/* {data.percentageDifference}% */}
+                <button className="card-button">
+                  <img src={Vector} alt="vector" />
+                  <p>{data.percentageDifference}%</p>
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <img src={Balancegraph} alt="Balance graph" />
+        </div>
+      </div>
+    </div>
   );
 };
 const Statisticspanel = () => {
@@ -377,6 +545,111 @@ const Statisticspanel = () => {
     </div>
   );
 };
+
+const WalletActivity = () => {
+  const [data, setData] = useState([]); // Tüm veriyi saklamak için state
+  const [displayData, setDisplayData] = useState([]); // Görüntülenen veriyi saklamak için state
+  const [activeTab, setActiveTab] = useState("Today"); // Hangi tab aktif
+
+  // API'den veri al
+  useEffect(() => {
+    fetch(
+      "http://localhost:8088/api/CryptocurrencyPage/WalletActivity?timestamp=1&userId=1"
+    )
+      .then((response) => response.json())
+      .then((result) => {
+        setData(result); // Tüm veriyi sakla
+        setDisplayData(result.slice(0, 6)); // İlk 6 veriyi "Today" için göster
+      });
+  }, []);
+
+  // Butonlara tıklandığında veriyi filtreleme
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+    if (tab === "Today") {
+      setDisplayData(data.slice(0, 6)); // İlk 6
+    } else if (tab === "Weekly") {
+      setDisplayData(data.slice(6, 12)); // Sonraki 6
+    } else if (tab === "Monthly") {
+      setDisplayData(data.slice(12, 18)); // Sonraki 6
+    } else if (tab === "Yearly") {
+      setDisplayData(data.slice(18, 24)); // Sonraki 6
+    }
+  };
+
+  return (
+    <div className="wallet-activity-container">
+      <div className="wallet-activity-container-header">
+        <p className="wallet-activity-container-header-text">Wallet Activity</p>
+        <img src={Treedot} alt="icon" />
+      </div>
+
+      <div className="wallet-activity-container-middle-container">
+        <button
+          className={`wallet-activity-container-middle-container-bluebutton-none  ${
+            activeTab === "Today" ? "active" : ""
+          }`}
+          onClick={() => handleTabClick("Today")}>
+          Today
+        </button>
+        <button
+          className={`wallet-activity-container-middle-container-bluebutton-none ${
+            activeTab === "Weekly" ? "active" : ""
+          }`}
+          onClick={() => handleTabClick("Weekly")}>
+          Weekly
+        </button>
+        <button
+          className={`wallet-activity-container-middle-container-bluebutton-none ${
+            activeTab === "Monthly" ? "active" : ""
+          }`}
+          onClick={() => handleTabClick("Monthly")}>
+          Monthly
+        </button>
+        <button
+          className={`wallet-activity-container-middle-container-bluebutton-none ${
+            activeTab === "Yearly" ? "active" : ""
+          }`}
+          onClick={() => handleTabClick("Yearly")}>
+          Yearly
+        </button>
+      </div>
+
+      <div className="wallet-activity-container-last">
+        {displayData.map((item, index) => (
+          <div
+            key={index}
+            className="wallet-activity-container-last-text-container">
+            <div className="wallet-activity-container-last-text-container-itemandicon">
+              <img
+                src={
+                  item.status === "Completed"
+                    ? Completedgreen
+                    : item.status === "Pending"
+                    ? Pendingyellow
+                    : Cancelledred
+                }
+                alt="status icon"
+              />
+              <p>{item.transactionType}</p>
+            </div>
+            <div className="wallet-activity-container-last-text-container-prices">
+              <p>
+                {item.transactionType === "Withdrawal"
+                  ? `-$${item.amount.toFixed(2)}`
+                  : `+$${item.amount.toFixed(2)}`}
+              </p>
+              <p style={{ color: "rgba(166, 168, 169, 1)" }}>
+                {new Date(item.timestamp).toLocaleString()}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const Cryptocurrency = () => {
   const [data, setData] = useState([]);
   const [invoices, setInvoices] = useState([]);
@@ -595,7 +868,7 @@ const Cryptocurrency = () => {
             </div>
             <div></div>
             <div>
-              <SellOrder />
+              <Buyorder />
             </div>
           </div>
         </div>
@@ -615,7 +888,7 @@ const Cryptocurrency = () => {
       </section>
 
       <section className="balance">
-        <div className="left-side-container">
+        {/* <div className="left-side-container">
           <div className="balance-header-container">
             <div>
               <p> Overview Balance</p>
@@ -675,9 +948,10 @@ const Cryptocurrency = () => {
           <div>
             <img src={Balancegraph} />
           </div>
-        </div>
+        </div> */}
+        <OverviewBalance />
 
-        <div className="wallet-activity-container">
+        {/* <div className="wallet-activity-container">
           <div className="wallet-activity-container-header">
             <p className="wallet-activity-container-header-text">
               Wallet Activity
@@ -778,7 +1052,8 @@ const Cryptocurrency = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
+        <WalletActivity />
       </section>
     </>
   );

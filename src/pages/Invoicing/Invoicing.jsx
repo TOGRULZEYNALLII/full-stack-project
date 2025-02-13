@@ -24,58 +24,70 @@ import Yellowprogressbar from "../Invoicing/assets/spending/yellowporgressbar.sv
 import Blackprogressbar from "../Invoicing/assets/spending/blackprogressbar.svg";
 import lightblueprogressbar from "../Invoicing/assets/spending/lightblueprogressbar.svg";
 import Redprogressbar from "../Invoicing/assets/spending/redprogressbar.svg";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Transactionoverviewgraph from "../Invoicing/assets/transactionoverview/transactionoverviewgraph.svg";
 import Downloadbuttonicon from "../Invoicing/assets/transactionoverview/downloadbuttonicon.svg";
 import walletgraph from "../Invoicing/assets/transactionoverview/walletgraph.svg";
 import Eye from "../Invoicing/assets/list/Eye.svg";
 import Edit from "../Invoicing/assets/list/Edit.svg";
 import Printer from "../Invoicing/assets/list/Printer.svg";
+import Blueup from "../Education/assets/vectorblueup.svg";
 const Invoicing = () => {
+  useEffect(() => {
+    fetch("http://localhost:8088/api/InvoicingPage/QuickReview?userId=1")
+      .then((response) => response.json())
+      .then((data) => {
+        setTransactions(data.transactions);
+        setData(data);
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
+  const [transactions, setTransactions] = useState([]);
+  const [data, setData] = useState([]);
   const [amount, setAmount] = useState(875);
   const balance = 456345.62;
-  const [transactions, setTransactions] = useState([
-    {
-      name: "XYZ Store ID",
-      date: "November 28, 2023",
-      time: "05:34 AM",
-      type: "Cashback",
-      amount: "+ $53.98",
-      status: "PENDING",
-    },
-    {
-      name: "Restaurant ABC",
-      date: "November 28, 2023",
-      time: "07:56 AM",
-      type: "Transfer Out",
-      amount: "- $148.63",
-      status: "COMPLETED",
-    },
-    {
-      name: "Cindy Alexandro",
-      date: "November 28, 2023",
-      time: "10:13 AM",
-      type: "Transfer Out",
-      amount: "- $33.47",
-      status: "COMPLETED",
-    },
-    {
-      name: "Payment CME",
-      date: "November 28, 2023",
-      time: "12:34 PM",
-      type: "Transfer In",
-      amount: "+ $550.33",
-      status: "PENDING",
-    },
-    {
-      name: "Hawkins Jr.",
-      date: "November 28, 2023",
-      time: "04:34 PM",
-      type: "Transfer In",
-      amount: "+ $63.75",
-      status: "CANCELED",
-    },
-  ]);
+  // const [transactions, setTransactions] = useState([
+  //   {
+  //     name: "XYZ Store ID",
+  //     date: "November 28, 2023",
+  //     time: "05:34 AM",
+  //     type: "Cashback",
+  //     amount: "+ $53.98",
+  //     status: "PENDING",
+  //   },
+  //   {
+  //     name: "Restaurant ABC",
+  //     date: "November 28, 2023",
+  //     time: "07:56 AM",
+  //     type: "Transfer Out",
+  //     amount: "- $148.63",
+  //     status: "COMPLETED",
+  //   },
+  //   {
+  //     name: "Cindy Alexandro",
+  //     date: "November 28, 2023",
+  //     time: "10:13 AM",
+  //     type: "Transfer Out",
+  //     amount: "- $33.47",
+  //     status: "COMPLETED",
+  //   },
+  //   {
+  //     name: "Payment CME",
+  //     date: "November 28, 2023",
+  //     time: "12:34 PM",
+  //     type: "Transfer In",
+  //     amount: "+ $550.33",
+  //     status: "PENDING",
+  //   },
+  //   {
+  //     name: "Hawkins Jr.",
+  //     date: "November 28, 2023",
+  //     time: "04:34 PM",
+  //     type: "Transfer In",
+  //     amount: "+ $63.75",
+  //     status: "CANCELED",
+  //   },
+  // ]);
 
   const [editIndex, setEditIndex] = useState(null);
   const [editTransaction, setEditTransaction] = useState({});
@@ -115,15 +127,17 @@ const Invoicing = () => {
               <img src={Notepad} />
               <div>
                 <p className="header-container-total-invoices-icon-conatiner-text">
-                  2,478
+                  {data?.totalInvoices}
                 </p>
                 <p className="header-container-total-invoices-icon-conatiner-text-gray">
-                  Total Invoices{" "}
+                  Total Invoices
                 </p>
               </div>
             </div>
             <div>
-              <img src={Blue25} />
+              <button className="total-invoices-button">
+                {data?.totalInvoicesPercentage}%
+              </button>
             </div>
           </div>
           <div>
@@ -137,15 +151,17 @@ const Invoicing = () => {
               <img src={Dollar} />
               <div>
                 <p className="header-container-total-invoices-icon-conatiner-text">
-                  2,478
+                  {data?.paidInvoices}
                 </p>
                 <p className="header-container-total-invoices-icon-conatiner-text-gray">
-                  Total Invoices{" "}
+                  Paid invoices
                 </p>
               </div>
             </div>
             <div>
-              <img src={Green25} />
+              <button className="total-invoices-button">
+                {data?.paidInvoicesPercentage}%
+              </button>
             </div>
           </div>
           <div>
@@ -159,7 +175,7 @@ const Invoicing = () => {
               <img src={Page} />
               <div>
                 <p className="header-container-total-invoices-icon-conatiner-text">
-                  2,478
+                  {data?.unpaidInvoices}
                 </p>
                 <p className="header-container-total-invoices-icon-conatiner-text-gray">
                   Total Invoices{" "}
@@ -167,7 +183,9 @@ const Invoicing = () => {
               </div>
             </div>
             <div>
-              <img src={Reddown5} />
+              <button className="total-invoices-button">
+                {data?.unpaidInvoicesPercentage}%
+              </button>
             </div>
           </div>
           <div>
@@ -181,7 +199,7 @@ const Invoicing = () => {
               <img src={Telegram} />
               <div>
                 <p className="header-container-total-invoices-icon-conatiner-text">
-                  2,478
+                  {data?.invoiceSent}
                 </p>
                 <p className="header-container-total-invoices-icon-conatiner-text-gray">
                   Total Invoices{" "}
@@ -189,7 +207,9 @@ const Invoicing = () => {
               </div>
             </div>
             <div>
-              <img src={Lightblue3} />
+              <button className="total-invoices-button">
+                {data?.invoiceSentPercentage}%
+              </button>
             </div>
           </div>
           <div>
@@ -204,7 +224,6 @@ const Invoicing = () => {
             <p>Spending</p>
             <img src={Treedotmenu} />
           </div>
-
           <div className="spending-container-left-investment">
             <div className="spending-leftside-bars-container">
               <div className="spending-container-left-investment">
@@ -627,7 +646,7 @@ const Invoicing = () => {
                 <th className="th-black">Action</th>
               </tr>
             </thead>
-            <tbody>
+            {/* <tbody>
               {transactions.map((transaction, index) => (
                 <tr key={index}>
                   {editIndex === index ? (
@@ -731,7 +750,7 @@ const Invoicing = () => {
                   )}
                 </tr>
               ))}
-            </tbody>
+            </tbody> */}
           </table>
         </div>
 

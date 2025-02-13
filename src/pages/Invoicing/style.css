@@ -601,7 +601,7 @@
   opacity: 0px;
 }
 .next {
-   width: 84.57px;
+  width: 84.57px;
   height: 40.74px;
   padding: 10.37px 17.29px 10.37px 17.29px;
   gap: 8.64px;
@@ -614,4 +614,17 @@
 }
 .pending {
   background-color: red;
+}
+
+.total-invoices-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 56px;
+  border-radius: 20px;
+  height: 21px;
+  border: none;
+  background-color: hsla(240, 62%, 59%, 0.16);
+
+  color: hsla(240, 62%, 59%, 1);
 }
