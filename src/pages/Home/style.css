@@ -82,16 +82,17 @@
   display: flex;
   gap: 10px;
 }
-.card-button-red {
+/* .card-button-red {
   display: flex;
   align-items: center;
   gap: 5px;
   border-radius: 90px;
   height: 20px;
+  width: 200px;
   color: red;
   background-color: rgb(255, 145, 145);
   border: none;
-}
+} */
 
 /* CARRYING COSTS SECTION */
 .left-container-costs-year {
@@ -637,7 +638,7 @@
 }
 
 .card-button-red {
-  width: 50px;
+  width: 90px;
   height: 21px;
   border-radius: 90px;
   padding: 4px, 8px, 4px, 8px;

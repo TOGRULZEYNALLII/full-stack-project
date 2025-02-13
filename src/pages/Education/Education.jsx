@@ -54,85 +54,130 @@ import Shoes from "../Education/assets/lastsection/shoes.svg";
 import Hazard from "../Education/assets/lastsection/hazard.svg";
 import Magic from "../Education/assets/lastsection/magic.svg";
 import Piceture from "../Education/assets/lastsection/piceture.svg";
+import { useEffect } from "react";
 
 const Education = () => {
+  // Tüm birleşik veriyi tutan state
+  const [data, setData] = useState(null);
+  // Fatura (invoice) verilerini tutan state
+  const [invoices, setInvoices] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  
-  const initialInvoices = [
-    {
-      id: 1,
-      // invoiceId: "#874729",
-      customer: "Comparative Literary Analysis",
-      date: "English Literature",
-      // amount: "English Literature",
-    },
-    {
-      id: 2,
-      // invoiceId: "#874730",
-      customer: "Investigating the Laws of Motion",
-      date: "Physics",
-      // amount: 182,
-    },
-    {
-      id: 3,
-      customer: "Historical Event Analysis",
-      date: "History",
-      // amount: 456,
-    },
-    {
-      id: 4,
-      // invoiceId: "#874732",
-      customer: "Real-World Mathematical",
-      date: "Mathematics",
-      // amount: 359,
-    },
-    {
-      id: 5,
-      // invoiceId: "#874733",
-      customer: "Chemical Reactions in Everyday",
-      date: "Chemistry",
-      // amount: 224,
-    },
+  // API linkleri (ilk 6 tanesi farklı veri, 7. URL fatura verilerini içeriyor)
+  const apiLinks = [
+    "http://localhost:8088/api/EducationPage/QuickReview",
+    "http://localhost:8088/api/EducationPage/WeeklyTarget",
+    "http://localhost:8088/api/EducationPage/SubjectsProgress",
+    "http://localhost:8088/api/EducationPage/Progress",
+    "http://localhost:8088/api/EducationPage/TaskLists",
+    "http://localhost:8088/api/EducationPage/StudentPerformanceMetrics",
+    "http://localhost:8088/api/EducationPage/OnTimeArrival",
+    "http://localhost:8088/api/EducationPage/CafeteriaAndNutrition",
+    "http://localhost:8088/api/EducationPage/DailyAttendanceAndParticipation",
   ];
-  const [invoices, setInvoices] = useState(initialInvoices);
+
+  // Düzenleme (edit) işlemi için state'ler
   const [editInvoiceId, setEditInvoiceId] = useState(null);
   const [editFormData, setEditFormData] = useState({
-    customer: "",
-    date: "",
-    amount: "",
+    title: "",
+    subject: "",
   });
-  const handleEditClick = (invoice) => {
-    setEditInvoiceId(invoice.id);
+
+  // Verileri çekip, faturaları ayırıyoruz
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true); // Veri yükleniyor
+      try {
+        const responses = await Promise.all(
+          apiLinks.map((link) =>
+            fetch(link).then((response) => {
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              return response.json();
+            })
+          )
+        );
+        // Tüm verileri birleştiriyoruz
+        const combinedData = responses.flat();
+        setData(combinedData);
+        // Faturaları ayırıyoruz (11. öğeden itibaren)
+        const invoiceData = combinedData.slice(7, 12).map((invoice, index) => ({
+          ...invoice,
+          id: invoice.id || index, // Eğer id yoksa, index kullanılabilir
+        }));
+        setInvoices(invoiceData);
+        console.log("Combined Data:", combinedData);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // "Edit" butonuna tıklandığında ilgili faturayı düzenleme moduna alıyoruz
+  const handleEditClick = (index) => {
+    const invoice = invoices[index];
+    setEditInvoiceId(invoice.id); // index yerine id kullanıyoruz
     setEditFormData({
-      customer: invoice.customer,
-      date: invoice.date,
-      amount: invoice.amount,
+      title: invoice.title,
+      subject: invoice.subject,
     });
   };
 
+  // Inputlardaki değişiklikleri state'e yansıtıyoruz
   const handleEditFormChange = (event) => {
     const { name, value } = event.target;
-    setEditFormData((prevFormData) => ({
-      ...prevFormData,
+    setEditFormData((prevData) => ({
+      ...prevData,
       [name]: value,
     }));
   };
 
-  const handleSaveClick = () => {
-    const updatedInvoices = invoices.map((invoice) =>
-      invoice.id === editInvoiceId ? { ...invoice, ...editFormData } : invoice
-    );
-    setInvoices(updatedInvoices);
-    setEditInvoiceId(null);
-  };
+  // Veriyi kaydetme işlemi
+  const handleSaveClick = async () => {
+    if (!editInvoiceId) {
+      console.error("No invoice id selected.");
+      return; // ID seçilmediyse işlemi durdur
+    }
 
-  const handleCancelClick = () => {
-    setEditInvoiceId(null);
-  };
+    try {
+      const response = await fetch(
+        `http://localhost:8088/api/EducationPage/TaskListsUpdate?id=${editInvoiceId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: editInvoiceId,
+            title: editFormData.title,
+            subject: editFormData.subject,
+          }),
+        }
+      );
 
-  const handleDelete = (id) => {
-    const filteredInvoices = invoices.filter((invoice) => invoice.id !== id);
-    setInvoices(filteredInvoices);
+      if (!response.ok) {
+        throw new Error("Failed to update invoice");
+      }
+
+      const updatedInvoice = await response.json();
+
+      setInvoices((prevInvoices) =>
+        prevInvoices.map((inv) =>
+          inv.id === editInvoiceId ? updatedInvoice : inv
+        )
+      );
+
+      setEditInvoiceId(null);
+    } catch (err) {
+      console.error("Error updating invoice:", err);
+      setError(err.message);
+    }
   };
 
   return (
@@ -144,13 +189,13 @@ const Education = () => {
               <img src={Persons} alt="pesrons-icon" />
             </div>
             <div className="person-item-text">
-              <p>1,253</p>
+              <p>{data?.[0]?.totalStudents}</p>
               <p>Total Students</p>
             </div>
             <div>
               <button className="button-blue-up">
                 <img src={Blueupvector} alt="blueup" />
-                <p>25%</p>
+                <p>{data?.[0]?.totalStudentsPercentage}%</p>
               </button>
             </div>
           </div>
@@ -160,13 +205,13 @@ const Education = () => {
               <img src={Schedule} alt="schedule" />
             </div>
             <div className="person-item-text">
-              <p>93%</p>
+              <p>{data?.[0]?.dailyAttendance}%</p>
               <p>Daily Attendance</p>
             </div>
             <div>
               <button className="button-blue-up">
                 <img src={Greenupvector} alt="green vector up " />
-                <p>15%</p>
+                <p>{data?.[0]?.dailyAttendancePercentage}%</p>
               </button>
             </div>
           </div>
@@ -176,13 +221,13 @@ const Education = () => {
               <img src={Schedulenone} alt="none schodule" />
             </div>
             <div className="person-item-text">
-              <p>145</p>
+              <p>{data?.[0]?.absence}</p>
               <p>Absences(Today)</p>
             </div>
             <div>
               <button className="button-red-down">
                 <img src={Redvectordown} alt="red vector down" />
-                <p>5%</p>
+                <p>{data?.[0]?.absencePercentage}%</p>
               </button>
             </div>
           </div>
@@ -192,13 +237,13 @@ const Education = () => {
               <img src={Clock} alt="clock icon" />
             </div>
             <div className="person-item-text">
-              <p>65</p>
+              <p>{data?.[0]?.lateArrival}</p>
               <p>Late Arrivals(Today)</p>
             </div>
             <div>
               <button className="button-yellow-down">
                 <img src={Yellowdown} alt="yellow down" />
-                <p>5%</p>
+                <p>{data?.[0]?.lateArrivalPercentage}%</p>
               </button>
             </div>
           </div>
@@ -219,11 +264,13 @@ const Education = () => {
 
             <div className="container-medium">
               <div className="left-container-text">
-                <h7 style={{ fontSize: "60px", margin: "0px" }}>38,482</h7>
+                <h7 style={{ fontSize: "60px", margin: "0px" }}>
+                  {data?.[1]?.totalTasks}
+                </h7>
                 <div className="button-text-container">
                   <button className="green-up-button-bg">
                     <img src={Greenupvector} alt="" />
-                    25%
+                    {data?.[1]?.totalTasksPercentage}%
                   </button>
                   <p>from last month</p>
                 </div>
@@ -231,8 +278,10 @@ const Education = () => {
               <div className="horziontal-vector"></div>
               <div>
                 <div className="button-blue-container">
-                  <p className="text-item">19,241</p>
-                  <button className="button-blue">50%</button>
+                  <p className="text-item">{data?.[1]?.completedTasks}</p>
+                  <button className="button-blue">
+                    {data?.[1]?.completedTasksPercentage}%
+                  </button>
                 </div>
                 <div className="complated-container">
                   <img src={Ellipseblue} alt="blue ellipse" />
@@ -241,8 +290,10 @@ const Education = () => {
               </div>
               <div>
                 <div className="button-blue-container">
-                  <p className="text-item">8,394</p>
-                  <button className="button-light-blue">25%</button>
+                  <p className="text-item">{data?.[1]?.inProgressTasks}</p>
+                  <button className="button-light-blue">
+                    {data?.[1]?.inProgressTasksPercentage}%
+                  </button>
                 </div>
                 <div className="complated-container">
                   <img src={Ellipselightblue} alt="light blue ellipse " />
@@ -251,8 +302,10 @@ const Education = () => {
               </div>
               <div>
                 <div className="button-blue-container">
-                  <p className="text-item">1,589</p>
-                  <button className="button-orange">6%</button>
+                  <p className="text-item">{data?.[1]?.pendingTasks}</p>
+                  <button className="button-orange">
+                    {data?.[1]?.pendingTasksPercentage}%
+                  </button>
                 </div>
                 <div className="complated-container">
                   <img src={Ellipseorange} alt="orange ellipse" />
@@ -267,30 +320,30 @@ const Education = () => {
               <div className="progress-circle-container">
                 <img src={Progresscircle} alt="progress circle" />
                 <div>
-                  <p>30%</p>
-                  <p>Art and Design</p>
+                  <p>{data?.[5]?.completedTasksPercentage}%</p>
+                  <p>{data?.[5]?.subject}</p>
                 </div>
               </div>
 
               <div className="progress-circle-container">
                 <img src={Circlelightblue} alt="progress circle" />
                 <div>
-                  <p>48%</p>
-                  <p>Mathematics</p>
+                  <p>{data?.[3]?.completedTasksPercentage}%</p>
+                  <p>{data?.[3]?.subject}</p>
                 </div>
               </div>
               <div className="progress-circle-container">
                 <img src={Circlegreen} alt="progress circle" />
                 <div>
-                  <p>75%</p>
-                  <p>English</p>
+                  <p>{data?.[2]?.completedTasksPercentage}%</p>
+                  <p>{data?.[2]?.subject}</p>
                 </div>
               </div>
               <div className="progress-circle-container">
                 <img src={Circleyellow} alt="progress circle" />
                 <div>
-                  <p>47%</p>
-                  <p>Chemistry</p>
+                  <p>{data?.[4]?.completedTasksPercentage}%</p>
+                  <p>{data?.[4]?.subject}</p>
                 </div>
               </div>
             </div>
@@ -310,7 +363,7 @@ const Education = () => {
                 <img src={Dotblue} alt="dot blue" />
                 <p>Complated</p>
               </button>
-              <p className="numbers-progress">32,948</p>
+              <p className="numbers-progress">{data?.[6]?.completedTasks}</p>
               <p style={{ display: "contents" }}>Total tasks</p>
             </div>
             <div className="vertical-vector"></div>
@@ -319,7 +372,7 @@ const Education = () => {
                 <img src={Dotlightblue} alt="dot light blue" />
                 <p>In progress</p>
               </button>
-              <p className="numbers-progress"> 16,927</p>
+              <p className="numbers-progress">{data?.[6]?.inProgressTasks}</p>
               <p>Total tasks</p>
             </div>
           </div>
@@ -348,73 +401,68 @@ const Education = () => {
                 </thead>
                 <tbody>
                   {invoices.map((invoice, index) => (
-                    <tr
-                      key={invoice.id}
-                      style={{ borderBottom: "1px solid #ddd" }}>
+                    <tr key={index} style={{ borderBottom: "1px solid #ddd" }}>
                       <td style={{ padding: "10px", textAlign: "center" }}>
                         {index + 1}
                       </td>
-                      <td style={{ padding: "10px", textAlign: "center" }}>
-                        {invoice.invoiceId}
-                      </td>
-                      {editInvoiceId === invoice.id ? (
-                        <>
-                          <td style={{ padding: "10px", textAlign: "center" }}>
-                            <input
-                              className="input-customer"
-                              type="text"
-                              name="customer"
-                              value={editFormData.customer}
-                              onChange={handleEditFormChange}
-                            />
-                          </td>
-                          <td style={{ padding: "10px", textAlign: "center" }}>
-                            <input
-                              className="input-customer"
-                              type="text"
-                              name="date"
-                              value={editFormData.date}
-                              onChange={handleEditFormChange}
-                              style={{ width: "100%" }}
-                            />
-                          </td>
 
-                          <td className="xokeycontainer">
+                      {editInvoiceId === index ? (
+                        <>
+                          {/* Düzenleme modunda inputlar */}
+                          <td style={{ padding: "10px", textAlign: "center" }}>
+                            <input
+                              className="input-title"
+                              type="text"
+                              name="title"
+                              value={editFormData.title}
+                              onChange={handleEditFormChange}
+                            />
+                          </td>
+                          <td style={{ padding: "10px", textAlign: "center" }}>
+                            <input
+                              className="input-subject"
+                              type="text"
+                              name="subject"
+                              value={editFormData.subject}
+                              onChange={handleEditFormChange}
+                            />
+                          </td>
+                          <td className="Td-editdelete">
                             <img
-                              className="okeyxbutton"
+                              style={{ height: "30px", cursor: "pointer" }}
+                              onClick={handleSaveClick} // Save butonuna bağladık
                               src={Okeyicon}
-                              alt="okeyicon"
-                              onClick={handleSaveClick}
+                              alt="save icon"
                             />
                             <img
-                              className="xbutton"
+                              style={{ height: "30px", cursor: "pointer" }}
+                              onClick={() => setEditInvoiceId(null)} // Cancel işlemi: düzenleme modundan çık
                               src={Closeicon}
-                              alt=""
-                              onClick={handleCancelClick}
+                              alt="cancel icon"
                             />
                           </td>
                         </>
                       ) : (
                         <>
+                          {/* Normal görüntü */}
                           <td style={{ padding: "10px", textAlign: "center" }}>
-                            {invoice.customer}
+                            {invoice.title}
                           </td>
                           <td style={{ padding: "10px", textAlign: "center" }}>
-                            {invoice.date}
+                            {invoice.subject}
                           </td>
-
                           <td className="Td-editdelete">
                             <img
                               style={{ height: "30px", cursor: "pointer" }}
-                              onClick={() => handleEditClick(invoice)}
+                              onClick={() => handleEditClick(index)}
                               src={Editicon}
                               alt="edit icon"
                             />
                             <img
                               style={{ height: "30px", cursor: "pointer" }}
-                              onClick={() => handleDelete(invoice.id)}
+                              onClick={() => handleDelete(index)}
                               src={Yesicon}
-                              alt=""
+                              alt="delete icon"
                             />
                           </td>
                         </>
@@ -435,23 +483,33 @@ const Education = () => {
             <div className="vector-vertical"></div>
             <div className="graphs-lesson">
               <div className="graphs-lesson-height">
-                <p className="userlist-right-text-item">Mathematics</p>
+                <p className="userlist-right-text-item">
+                  {data?.[12]?.subject}
+                </p>
                 <img className="bars-img" src={Bars} alt="bars 0" />
               </div>
               <div className="graphs-lesson-height">
-                <p className="userlist-right-text-item">English</p>
+                <p className="userlist-right-text-item">
+                  {data?.[13]?.subject}
+                </p>
                 <img className="bars-img" src={Bars1} alt="1" />
               </div>
               <div className="graphs-lesson-height">
-                <p className="userlist-right-text-item">Science</p>
+                <p className="userlist-right-text-item">
+                  {data?.[14]?.subject}
+                </p>
                 <img className="bars-img" src={Bars2} alt="3" />
               </div>
               <div className="graphs-lesson-height">
-                <p className="userlist-right-text-item">History</p>
+                <p className="userlist-right-text-item">
+                  {data?.[15]?.subject}
+                </p>
                 <img className="bars-img" src={Bars2} alt="4" />
               </div>
               <div className="graphs-lesson-height">
-                <p className="userlist-right-text-item">IT Technology</p>
+                <p className="userlist-right-text-item">
+                  {data?.[16]?.subject}
+                </p>
                 <img className="bars-img" src={Bars3} alt="5" />
               </div>
             </div>
@@ -542,14 +600,14 @@ const Education = () => {
             <div className="persentage-container-sepiceal">
               <button className="blue-persantge">
                 <img src={Vectorwhiteup} alt="vectro" />
-                5%
+                {data?.[18]?.schoolLunch}%
               </button>
               <p className="persentage-container-sepiceal-text">School Lunch</p>
             </div>
             <div className="persentage-container-sepiceal">
               <button className="light-blue-persantge">
                 <img src={Vectorwhiteup} alt="vectro" />
-                45%
+                {data?.[18]?.lunchFromHome}%
               </button>
               <p className="persentage-container-sepiceal-text">
                 Lunch from Home
@@ -558,7 +616,7 @@ const Education = () => {
             <div className="persentage-container-sepiceal">
               <button className="orange-persantage">
                 <img src={Vectorwhiteup} alt="vectro" />
-                20%
+                {data?.[18]?.skippingLunch}%
               </button>
               <p className="persentage-container-sepiceal-text">
                 Skipping Lunch
@@ -579,7 +637,9 @@ const Education = () => {
                   <p>Attendance Rate</p>
                 </div>
                 <div>
-                  <button className="bar-button">95%</button>
+                  <button className="bar-button">
+                    {data?.[19]?.attendanceRate}%
+                  </button>
                 </div>
               </div>
 
@@ -594,7 +654,9 @@ const Education = () => {
                   <p>Attendance Rate</p>
                 </div>
                 <div>
-                  <button className="bar-ligjt-blue-button">90%</button>
+                  <button className="bar-ligjt-blue-button">
+                    {data?.[19]?.onTimeArriva}%
+                  </button>
                 </div>
               </div>
 
@@ -609,7 +671,9 @@ const Education = () => {
                   <p>Attendance Rate</p>
                 </div>
                 <div>
-                  <button className="bar-orange-button">40%</button>
+                  <button className="bar-orange-button">
+                    {data?.[19]?.lateArrivals}%
+                  </button>
                 </div>
               </div>
 
@@ -624,7 +688,9 @@ const Education = () => {
                   <p>Attendance Rate</p>
                 </div>
                 <div>
-                  <button className="bar-red-button ">20%</button>
+                  <button className="bar-red-button ">
+                    {data?.[19]?.unexcusedAbsences}%
+                  </button>
                 </div>
               </div>
 
@@ -639,7 +705,9 @@ const Education = () => {
                   <p>Attendance Rate</p>
                 </div>
                 <div>
-                  <button className="bar-black-button">17%</button>
+                  <button className="bar-black-button">
+                    {data?.[19]?.studentsSick}%
+                  </button>
                 </div>
               </div>
 
@@ -664,7 +732,7 @@ const Education = () => {
                 <div>
                   <p className="text-item-lastcontainer">Literary Analysis</p>
                   <p className="text-item-lastcontainersmall">
-                    English Literature
+                    {data?.[7]?.subject}
                   </p>
                 </div>
               </div>
@@ -684,7 +752,7 @@ const Education = () => {
                   <div>
                     <p className="text-item-lastcontainer">Literary Analysis</p>
                     <p className="text-item-lastcontainersmall">
-                      English Literature
+                      {data?.[8]?.subject}
                     </p>
                   </div>
                 </div>
@@ -705,7 +773,7 @@ const Education = () => {
                   <div>
                     <p className="text-item-lastcontainer">Literary Analysis</p>
                     <p className="text-item-lastcontainersmall">
-                      English Literature
+                      {data?.[9]?.subject}
                     </p>
                   </div>
                 </div>
@@ -726,7 +794,7 @@ const Education = () => {
                   <div>
                     <p className="text-item-lastcontainer">Literary Analysis</p>
                     <p className="text-item-lastcontainersmall">
-                      English Literature
+                      {data?.[10]?.subject}
                     </p>
                   </div>
                 </div>
@@ -747,7 +815,7 @@ const Education = () => {
                   <div>
                     <p className="text-item-lastcontainer">Literary Analysis</p>
                     <p className="text-item-lastcontainersmall">
-                      English Literature
+                      {data?.[11]?.subject}
                     </p>
                   </div>
                 </div>
@@ -768,7 +836,7 @@ const Education = () => {
                   <div>
                     <p className="text-item-lastcontainer">Literary Analysis</p>
                     <p className="text-item-lastcontainersmall">
-                      English Literature
+                      {data?.[12]?.subject}
                     </p>
                   </div>
                 </div>

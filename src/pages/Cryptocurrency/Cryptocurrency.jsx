@@ -9,10 +9,11 @@ import Ethereum from "../Cryptocurrency/assets/headertop/Etheriumicon.svg";
 import Greenup3 from "../Cryptocurrency/assets/headertop/greenup3.svg";
 import Bluegraph from "../Cryptocurrency/assets/headertop/bluegraph.svg";
 import Lightbluegraph from "../Cryptocurrency/assets/headertop/lightbluegraph.svg";
+import Vector from "../Home/assets/icons/Vector.svg";
 import Reddown5 from "../Cryptocurrency/assets/headertop/reddown5.svg";
 import Lightcoinicon from "../Cryptocurrency/assets/headertop/lightcoinicon.svg";
 import Treedot from "../Sidebar/assets/icons/dot.svg";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Bitcoinbarhuge from "../Cryptocurrency/assets/portfolio/bitcoinbarhuge.svg";
 import Chart from "../Cryptocurrency/assets/portfolio/Chart.svg";
 import Balancegraph from "../Cryptocurrency/assets/lastsection/graphmonth.svg";
@@ -21,6 +22,7 @@ import Completedgreen from "../Cryptocurrency/assets/lastsection/complatedgreen.
 import Greenx from "../Cryptocurrency/assets/lastsection/greenx.svg";
 import Redx from "../Cryptocurrency/assets/lastsection/redx.svg";
 import Pendingyellow from "../Cryptocurrency/assets/lastsection/pendingyellow.svg";
+import Reddown from "../Home/assets/icons/reddown.svg";
 const Sellbuyorder = () => {
   const [selectedCurrency, setSelectedCurrency] = useState("Litecoin");
   const [amount, setAmount] = useState(18.56879);
@@ -236,27 +238,212 @@ const Bitcoinoption = () => {
             <img src={Lightcoinicon} alt="icon of bitcoin" /> Lightcoin
           </div>
           <div onClick={() => handleSelect("Bitcoin")}>
-            <img src={Ethereum} alt="icon of bitcoin" /> Etherium
+            <img src={Ethereum} alt="icon of bitcoin" />
+            Etherium
           </div>
         </div>
       </div>
     </>
   );
 };
+const Statisticspanel = () => {
+  // State tanımlamaları
+  const [selectedValue, setSelectedValue] = useState("Bitcoin");
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [invoices, setInvoices] = useState([]);
 
+  // Dropdown'dan seçimi güncelleyen fonksiyon
+  const handleSelect = (value) => {
+    setSelectedValue(value);
+  };
+
+  // API URL'sini dinamik olarak oluşturuyoruz
+  const apiLinks = [
+    `http://localhost:8088/api/CryptocurrencyPage/Statistics?currencyName=${selectedValue}&userId=1`,
+  ];
+
+  // Verileri çekme işlemi
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true); // Veri yükleniyor
+      try {
+        const responses = await Promise.all(
+          apiLinks.map((link) =>
+            fetch(link).then((response) => {
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              return response.json();
+            })
+          )
+        );
+        // API'den gelen verileri birleştiriyoruz
+        const combinedData = responses.flat();
+        setData(combinedData);
+        // Örnek: İlk 10 öğe farklı veriler ise, faturaları 11. öğeden (index 10) başlatıyoruz
+        const invoiceData = combinedData.slice(10);
+        setInvoices(invoiceData);
+        console.log("Combined Data:", combinedData);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [selectedValue]); // selectedValue değiştiğinde API çağrısı tekrar çalışsın
+
+  return (
+    <div className="Statistics">
+      <div className="statistics-container-header">
+        <p>Statistics</p>
+        <div className="dropdown">
+          <button className="dropbtn">
+            <img src={Bitocoinicon} alt="icon of bitcoin" /> {selectedValue}
+          </button>
+          <div className="dropdown-content">
+            <div onClick={() => handleSelect("Bitcoin")}>
+              <img src={Bitocoinicon} alt="icon of bitcoin" /> Bitcoin
+            </div>
+            <div onClick={() => handleSelect("Ripple")}>
+              <img src={Ripple} alt="icon of ripple" /> Ripple
+            </div>
+            <div onClick={() => handleSelect("Litecoin")}>
+              <img src={Lightcoinicon} alt="icon of litecoin" /> Litecoin
+            </div>
+            <div onClick={() => handleSelect("Ethereum")}>
+              <img src={Ethereum} alt="icon of ethereum" /> Ethereum
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="vertical-line-small"></div>
+      <div>
+        <img src={Chart} alt="chart svg" />
+      </div>
+
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>Error: {error}</p>
+      ) : (
+        <>
+          <div className="statistics-last-text-item-container">
+            <div className="circleflex">
+              <div className="bluecircle"></div>
+              <p>Income ({data?.[0]?.incomePercentage}%)</p>
+            </div>
+            <div>
+              <p>${data?.[0]?.income}</p>
+            </div>
+          </div>
+
+          <div className="statistics-last-text-item-container">
+            <div className="circleflex">
+              <div className="lightbluecircle"></div>
+
+              <p>Spends (${data?.[0]?.spendsPercentage})</p>
+            </div>
+            <div>
+              <p> {data?.[0]?.spends}% </p>
+            </div>
+          </div>
+
+          <div className="statistics-last-text-item-container">
+            <div className="circleflex">
+              <div className="greencircle"></div>
+              <p>Installment ({data?.[0]?.installmentsPercentage}%)</p>
+            </div>
+            <div>
+              <p>${data?.[0]?.installments}</p>
+            </div>
+          </div>
+
+          <div className="statistics-last-text-item-container">
+            <div className="circleflex">
+              <div className="orangecircle"></div>
+              <p>Invest ({data?.[0]?.investsPercentage}%)</p>
+            </div>
+            <div>
+              <p>${data?.[0]?.invests}</p>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
 const Cryptocurrency = () => {
+  const [data, setData] = useState([]);
+  const [invoices, setInvoices] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [selectedValue, setSelectedValue] = useState(); // Başlangıçta Bitcoin
+
+  const handleSelect = (value) => {
+    setSelectedValue(value);
+  };
+
+  // API linkleri (seçilen coin'e göre URL dinamik olacak)
+  const apiLinks = ["http://localhost:8088/api/CryptocurrencyPage/QuickReview"];
+
+  // Verileri çekip, faturaları ayırıyoruz
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true); // Veri yükleniyor
+      try {
+        const responses = await Promise.all(
+          apiLinks.map((link) =>
+            fetch(link).then((response) => {
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              return response.json();
+            })
+          )
+        );
+        // Tüm verileri birleştiriyoruz
+        const combinedData = responses.flat();
+        setData(combinedData);
+        // İlk 10 öğe farklı veriler ise, faturalar 11. öğeden (index 10) başlıyor:
+        const invoiceData = combinedData.slice(10);
+        setInvoices(invoiceData);
+        console.log("Combined Data:", combinedData);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [selectedValue]); // selectedValue değiştiğinde API çağrısını tekrar yap
+
   return (
     <>
       <section className="top-container">
         <div className="Bitcoin-container">
           <div>
             <div className="bitcoin-prices-container">
-              <img src={Bitocoinicon} alt="icon of bitcoin" />
+              <img
+                className="min"
+                src={data?.[0]?.image}
+                alt="icon of bitcoin"
+              />
               <div>
-                <p>Bitcoin</p>
-                <p>$33.568,60</p>
+                <p>{data?.[0]?.id}</p>
+                <p>${data?.[0]?.currentPrice} </p>
               </div>
-              <img src={Greenupbutton} alt="GREENUP BUTton" />
+              <div className="graphic">
+                <button className="card-button">
+                  <img src={Vector} alt="vector" />
+                  <p>{data?.[0]?.priceChangePercentage}%</p>
+                </button>
+              </div>
             </div>
             <div>
               <img src={Yellowgraph} alt="yellow graph" />
@@ -267,12 +454,19 @@ const Cryptocurrency = () => {
         <div className="Bitcoin-container">
           <div>
             <div className="bitcoin-prices-container">
-              <img src={Ethereum} alt="icon of bitcoin" />
+              <img
+                className="min"
+                src={data?.[1]?.image}
+                alt="icon of bitcoin"
+              />
               <div>
-                <p>Ethereum</p>
-                <p>$12.568,90</p>
+                <p>{data?.[1]?.id}</p>
+                <p>${data?.[1]?.currentPrice}</p>
               </div>
-              <img src={Reddown5} alt="GREENUP BUTton" />
+              <button className="card-button-red">
+                <img src={Reddown} alt="vector" />
+                <p>{data?.[1]?.priceChangePercentage}%</p>
+              </button>
             </div>
             <div>
               <img src={Bluegraph} alt="yellow graph" />
@@ -283,12 +477,21 @@ const Cryptocurrency = () => {
         <div className="Bitcoin-container">
           <div>
             <div className="bitcoin-prices-container">
-              <img src={Lightcoinicon} alt="icon of bitcoin" />
+              <img
+                className="min"
+                src={data?.[2]?.image}
+                alt="icon of bitcoin"
+              />
               <div>
-                <p>Litecoin</p>
-                <p>$23.456,70</p>
+                <p>{data?.[2]?.id}</p>
+                <p>${data?.[2]?.currentPrice} </p>
               </div>
-              <img src={Greenup3} alt="GREENUP BUTton" />
+              <div className="graphic">
+                <button className="card-button">
+                  <img src={Vector} alt="vector" />
+                  <p>{data?.[2]?.priceChangePercentage}%</p>
+                </button>
+              </div>
             </div>
             <div>
               <img src={Lightbluegraph} alt="yellow graph" />
@@ -299,12 +502,21 @@ const Cryptocurrency = () => {
         <div className="Bitcoin-container">
           <div>
             <div className="bitcoin-prices-container">
-              <img src={Ripple} alt="icon of bitcoin" />
+              <img
+                className="min"
+                src={data?.[3]?.image}
+                alt="icon of bitcoin"
+              />
               <div>
-                <p>Ripple</p>
-                <p>$12.568,90</p>
+                <p>{data?.[3]?.id}</p>
+                <p>${data?.[3]?.currentPrice} </p>
               </div>
-              <img src={Reddown5} alt="GREENUP BUTton" />
+              <div className="graphic">
+                <button className="card-button">
+                  <img src={Vector} alt="vector" />
+                  <p>{data?.[3]?.priceChangePercentage}%</p>
+                </button>
+              </div>
             </div>
             <div>
               <img src={Greengraph} alt="yellow graph" />
@@ -361,55 +573,7 @@ const Cryptocurrency = () => {
             <img src={Bitcoinbarhuge} alt="bitcoin graphs" />
           </div>
         </div>
-        <div className="Statistics">
-          <div className="statistics-container-header">
-            <p>Statistics</p>
-            <Bitcoinoption />
-          </div>
-          <div className="vertical-line-small"></div>
-          <div>
-            <img src={Chart} alt="chart svg" />
-          </div>
-          <div className="statistics-last-text-item-container">
-            <div className="circleflex">
-              <div className="bluecircle"></div>
-              <p>Income (66%) </p>
-            </div>
-            <div>
-              <p>$167,884.21</p>
-            </div>
-          </div>
-
-          <div className="statistics-last-text-item-container">
-            <div className="circleflex">
-              <div className="lightbluecircle"></div>
-              <p>Spends (50%) </p>
-            </div>
-            <div>
-              <p>$56,132.95</p>
-            </div>
-          </div>
-
-          <div className="statistics-last-text-item-container">
-            <div className="circleflex">
-              <div className="greencircle"></div>
-              <p>Installment (23%) </p>
-            </div>
-            <div>
-              <p>$23,698.12</p>
-            </div>
-          </div>
-
-          <div className="statistics-last-text-item-container">
-            <div className="circleflex">
-              <div className="orangecircle"></div>
-              <p>Invest (11%) </p>
-            </div>
-            <div>
-              <p>$17,598.69</p>
-            </div>
-          </div>
-        </div>
+        <Statisticspanel />
       </section>
 
       <section className="order-container">
