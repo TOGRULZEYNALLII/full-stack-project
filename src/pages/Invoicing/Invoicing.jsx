@@ -33,17 +33,36 @@ import Edit from "../Invoicing/assets/list/Edit.svg";
 import Printer from "../Invoicing/assets/list/Printer.svg";
 import Blueup from "../Education/assets/vectorblueup.svg";
 const Invoicing = () => {
-  useEffect(() => {
-    fetch("http://localhost:8088/api/InvoicingPage/QuickReview?userId=1")
-      .then((response) => response.json())
-      .then((data) => {
-        setTransactions(data.transactions);
-        setData(data);
-      })
-      .catch((error) => console.error("Error fetching data:", error));
-  }, []);
   const [transactions, setTransactions] = useState([]);
   const [data, setData] = useState([]);
+  const apilins = [
+    "http://localhost:8088/api/InvoicingPage/QuickReview?userId=1",
+    "http://localhost:8088/api/InvoicingPage/SpendingAndSpendingLists?userId=1",
+    "http://localhost:8088/api/InvoicingPage/CalculateBalance?userId=1",
+  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const responses = await Promise.all(
+          apilins.map((url) => fetch(url).then((res) => res.json()))
+        );
+        console.log("API Responses:", responses);
+
+        // Eğer API yanıtı içinde "transactions" adlı alan yoksa,
+        // onu kontrol edin ve uygun şekilde güncelleyin.
+        const allTransactions = responses.flatMap((response) =>
+          response.transactions ? response.transactions : []
+        );
+        setTransactions(allTransactions);
+        setData(responses);
+        console.log(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
   const [amount, setAmount] = useState(875);
   const balance = 456345.62;
   // const [transactions, setTransactions] = useState([
@@ -127,7 +146,7 @@ const Invoicing = () => {
               <img src={Notepad} />
               <div>
                 <p className="header-container-total-invoices-icon-conatiner-text">
-                  {data?.totalInvoices}
+                  {data?.[0]?.totalInvoices}
                 </p>
                 <p className="header-container-total-invoices-icon-conatiner-text-gray">
                   Total Invoices
@@ -136,7 +155,7 @@ const Invoicing = () => {
             </div>
             <div>
               <button className="total-invoices-button">
-                {data?.totalInvoicesPercentage}%
+                {data?.[0]?.totalInvoicesPercentage}%
               </button>
             </div>
           </div>
@@ -151,7 +170,7 @@ const Invoicing = () => {
               <img src={Dollar} />
               <div>
                 <p className="header-container-total-invoices-icon-conatiner-text">
-                  {data?.paidInvoices}
+                  {data?.[0]?.paidInvoices}
                 </p>
                 <p className="header-container-total-invoices-icon-conatiner-text-gray">
                   Paid invoices
@@ -160,7 +179,7 @@ const Invoicing = () => {
             </div>
             <div>
               <button className="total-invoices-button">
-                {data?.paidInvoicesPercentage}%
+                {data?.[0]?.paidInvoicesPercentage}%
               </button>
             </div>
           </div>
@@ -175,7 +194,7 @@ const Invoicing = () => {
               <img src={Page} />
               <div>
                 <p className="header-container-total-invoices-icon-conatiner-text">
-                  {data?.unpaidInvoices}
+                  {data?.[0]?.unpaidInvoices}
                 </p>
                 <p className="header-container-total-invoices-icon-conatiner-text-gray">
                   Total Invoices{" "}
@@ -184,7 +203,7 @@ const Invoicing = () => {
             </div>
             <div>
               <button className="total-invoices-button">
-                {data?.unpaidInvoicesPercentage}%
+                {data?.[0]?.unpaidInvoicesPercentage}%
               </button>
             </div>
           </div>
@@ -199,7 +218,7 @@ const Invoicing = () => {
               <img src={Telegram} />
               <div>
                 <p className="header-container-total-invoices-icon-conatiner-text">
-                  {data?.invoiceSent}
+                  {data?.[0]?.invoiceSent}
                 </p>
                 <p className="header-container-total-invoices-icon-conatiner-text-gray">
                   Total Invoices{" "}
@@ -208,7 +227,7 @@ const Invoicing = () => {
             </div>
             <div>
               <button className="total-invoices-button">
-                {data?.invoiceSentPercentage}%
+                {data?.[0]?.invoiceSentPercentage}%
               </button>
             </div>
           </div>
@@ -236,14 +255,14 @@ const Invoicing = () => {
                   <div
                     style={{ fontSize: "17px", height: "7px" }}
                     className="spending-container-left-investment-blue-number-gray">
-                    Investment
+                    {data?.[1]?.[0].spending}
                   </div>
                   <div className="spending-container-left-investment-blue-text-number">
                     <p className="spending-container-left-investment-blue-number">
-                      $1,415
+                      $ {data?.[1]?.[0].amount}
                     </p>
                     <p className="spending-container-left-investment-blue-number-gray">
-                      /$2,000
+                      /${data?.[1]?.[0].limit}
                     </p>
                   </div>
                 </div>
@@ -259,14 +278,14 @@ const Invoicing = () => {
                   <div
                     style={{ fontSize: "17px", height: "7px" }}
                     className="spending-container-left-investment-blue-number-gray">
-                    Installment
+                    {data?.[1]?.[1].spending}
                   </div>
                   <div className="spending-container-left-investment-blue-text-number">
                     <p className="spending-container-left-investment-blue-number">
-                      $1,567
+                      $ {data?.[1]?.[1].amount}
                     </p>
                     <p className="spending-container-left-investment-blue-number-gray">
-                      /$5,000
+                      /${data?.[1]?.[1].limit}
                     </p>
                   </div>
                 </div>
@@ -282,14 +301,14 @@ const Invoicing = () => {
                   <div
                     style={{ fontSize: "17px", height: "7px" }}
                     className="spending-container-left-investment-blue-number-gray">
-                    Restaurant
+                    {data?.[1]?.[2].spending}
                   </div>
                   <div className="spending-container-left-investment-blue-text-number">
                     <p className="spending-container-left-investment-blue-number">
-                      $487
+                      $ {data?.[1]?.[2].amount}
                     </p>
                     <p className="spending-container-left-investment-blue-number-gray">
-                      /$10,000
+                      /${data?.[1]?.[2].limit}
                     </p>
                   </div>
                 </div>
@@ -305,14 +324,14 @@ const Invoicing = () => {
                   <div
                     style={{ fontSize: "17px", height: "7px" }}
                     className="spending-container-left-investment-blue-number-gray">
-                    Property
+                    {data?.[1]?.[3].spending}
                   </div>
                   <div className="spending-container-left-investment-blue-text-number">
                     <p className="spending-container-left-investment-blue-number">
-                      $3,890
+                      $ {data?.[1]?.[3].amount}
                     </p>
                     <p className="spending-container-left-investment-blue-number-gray">
-                      /$4,000
+                      /${data?.[1]?.[3].limit}
                     </p>
                   </div>
                 </div>
@@ -322,23 +341,35 @@ const Invoicing = () => {
             <div className="spending-box-common-container">
               <div className="spending-box-cotanier">
                 <div className="spending-box-blue">
-                  <img src={Boxbluegraph} />
+                  <img className="displayrelative" src={Boxbluegraph} />
+                  <p className="displayabsolute">
+                    {data?.[1]?.[0].spendingPercentage}%
+                  </p>
                   <p>Investment</p>
                 </div>
 
                 <div className="spending-box-green">
-                  <img src={Boxgreengraph} />
+                  <img className="boxgraph" src={Boxgreengraph} />
+                  <p className="displayabsolute2">
+                    {data?.[1]?.[2].spendingPercentage}%
+                  </p>
                   <p>Installment</p>
                 </div>
               </div>
               <div className="spending-box-cotanier">
                 <div className="spending-box-orange">
-                  <img src={Boxorangegraph} />
+                  <img className="boxgraph" src={Boxorangegraph} />
+                  <p className="displayabsoluteorange">
+                    {data?.[1]?.[1].spendingPercentage}%
+                  </p>
                   <p>Restaurant</p>
                 </div>
 
                 <div className="spending-box-light-blue">
                   <img src={Boxlightbluegraph} />
+                  <p className="displayabsoluteorange2">
+                    {data?.[1]?.[3].spendingPercentage}%
+                  </p>
                   <p>Property</p>
                 </div>
               </div>
@@ -374,7 +405,7 @@ const Invoicing = () => {
                 onChange={(e) => setAmount(Number(e.target.value))}
               />
               <p className="selectamount-item-your-balance">
-                Your Balance: ${balance.toLocaleString()}
+                Your Balance: ${data?.[2]}
               </p>
             </div>
           </div>
@@ -397,15 +428,15 @@ const Invoicing = () => {
               <div className="rightside-container-spending-lists-middle-text">
                 <div>
                   <p className="rightside-container-spending-lists-middle-text-item-one">
-                    Investment
+                    {data?.[1]?.[0].spending}
                   </p>
                 </div>
                 <div className="rightside-container-spending-lists-middle-text-item-second-container">
                   <p className="rightside-container-spending-lists-middle-text-item-two">
-                    $1,415
+                    $ {data?.[1]?.[0].amount}
                   </p>
                   <p className="rightside-container-spending-lists-middle-text-item-three">
-                    /$4,560
+                    /${data?.[1]?.[0].limit}
                   </p>
                 </div>
               </div>
@@ -420,15 +451,15 @@ const Invoicing = () => {
               <div className="rightside-container-spending-lists-middle-text">
                 <div>
                   <p className="rightside-container-spending-lists-middle-text-item-one">
-                    Restaurant
+                    {data?.[1]?.[1].spending}
                   </p>
                 </div>
                 <div className="rightside-container-spending-lists-middle-text-item-second-container">
                   <p className="rightside-container-spending-lists-middle-text-item-two">
-                    $2,395
+                    $ {data?.[1]?.[1].amount}
                   </p>
                   <p className="rightside-container-spending-lists-middle-text-item-three">
-                    /$4,000
+                    /${data?.[1]?.[1].limit}
                   </p>
                 </div>
               </div>
@@ -443,15 +474,15 @@ const Invoicing = () => {
               <div className="rightside-container-spending-lists-middle-text">
                 <div>
                   <p className="rightside-container-spending-lists-middle-text-item-one">
-                    Installment
+                    {data?.[1]?.[2].spending}
                   </p>
                 </div>
                 <div className="rightside-container-spending-lists-middle-text-item-second-container">
                   <p className="rightside-container-spending-lists-middle-text-item-two">
-                    $1,869
+                    $ {data?.[1]?.[2].amount}
                   </p>
                   <p className="rightside-container-spending-lists-middle-text-item-three">
-                    /$3,259
+                    /${data?.[1]?.[2].limit}
                   </p>
                 </div>
               </div>
@@ -466,15 +497,15 @@ const Invoicing = () => {
               <div className="rightside-container-spending-lists-middle-text">
                 <div>
                   <p className="rightside-container-spending-lists-middle-text-item-one">
-                    Property
+                    {data?.[1]?.[3].spending}
                   </p>
                 </div>
                 <div className="rightside-container-spending-lists-middle-text-item-second-container">
                   <p className="rightside-container-spending-lists-middle-text-item-two">
-                    $1,200
+                    $ {data?.[1]?.[3].amount}
                   </p>
                   <p className="rightside-container-spending-lists-middle-text-item-three">
-                    /$3,000
+                    /${data?.[1]?.[3].limit}
                   </p>
                 </div>
               </div>
@@ -489,15 +520,15 @@ const Invoicing = () => {
               <div className="rightside-container-spending-lists-middle-text">
                 <div>
                   <p className="rightside-container-spending-lists-middle-text-item-one">
-                    Hobbies
+                    {data?.[1]?.[4].spending}
                   </p>
                 </div>
                 <div className="rightside-container-spending-lists-middle-text-item-second-container">
                   <p className="rightside-container-spending-lists-middle-text-item-two">
-                    $2,000
+                    $ {data?.[1]?.[4].amount}
                   </p>
                   <p className="rightside-container-spending-lists-middle-text-item-three">
-                    /$4,000
+                    /${data?.[1]?.[4].limit}
                   </p>
                 </div>
               </div>
@@ -511,15 +542,15 @@ const Invoicing = () => {
               <div className="rightside-container-spending-lists-middle-text">
                 <div>
                   <p className="rightside-container-spending-lists-middle-text-item-one">
-                    Travel
+                    {data?.[1]?.[5].spending}
                   </p>
                 </div>
                 <div className="rightside-container-spending-lists-middle-text-item-second-container">
                   <p className="rightside-container-spending-lists-middle-text-item-two">
-                    $1,840
+                    $ {data?.[1]?.[5].amount}
                   </p>
                   <p className="rightside-container-spending-lists-middle-text-item-three">
-                    /$3,870
+                    /${data?.[1]?.[5].limit}
                   </p>
                 </div>
               </div>
