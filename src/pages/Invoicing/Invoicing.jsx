@@ -32,6 +32,422 @@ import Eye from "../Invoicing/assets/list/Eye.svg";
 import Edit from "../Invoicing/assets/list/Edit.svg";
 import Printer from "../Invoicing/assets/list/Printer.svg";
 import Blueup from "../Education/assets/vectorblueup.svg";
+const PreviousTransactions = () => {
+  const [transactions, setTransactions] = useState([]);
+  const [filter, setFilter] = useState("all"); // varsayılan tüm işlemler
+  const [currentPage, setCurrentPage] = useState(0);
+  const [editTransaction, setEditTransaction] = useState(null); // düzenleme modundaki işlem
+  const pageSize = 6;
+
+  useEffect(() => {
+    fetch(
+      "http://localhost:8088/api/InvoicingPage/PreviousTransactions?timestamp=1&userId=1"
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setTransactions(data);
+      })
+      .catch((error) => console.error("Error fetching transactions:", error));
+  }, []);
+
+  // Tarih formatlama (display için)
+  const formatDate = (isoString) => {
+    const dateObj = new Date(isoString);
+    return dateObj.toLocaleDateString() + " " + dateObj.toLocaleTimeString();
+  };
+
+  // Filtreleme fonksiyonu (today, weekly, monthly, yearly)
+  const filterTransactions = (transactions, filter) => {
+    const now = new Date();
+    if (filter === "today") {
+      return transactions.filter((tx) => {
+        const txDate = new Date(tx.date);
+        return txDate.toDateString() === now.toDateString();
+      });
+    } else if (filter === "weekly") {
+      const startOfWeek = new Date(now);
+      startOfWeek.setDate(now.getDate() - now.getDay());
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(startOfWeek.getDate() + 6);
+      return transactions.filter((tx) => {
+        const txDate = new Date(tx.date);
+        return txDate >= startOfWeek && txDate <= endOfWeek;
+      });
+    } else if (filter === "monthly") {
+      return transactions.filter((tx) => {
+        const txDate = new Date(tx.date);
+        return (
+          txDate.getMonth() === now.getMonth() &&
+          txDate.getFullYear() === now.getFullYear()
+        );
+      });
+    } else if (filter === "yearly") {
+      return transactions.filter((tx) => {
+        const txDate = new Date(tx.date);
+        return txDate.getFullYear() === now.getFullYear();
+      });
+    } else {
+      return transactions;
+    }
+  };
+
+  const filteredTransactions = filterTransactions(transactions, filter);
+  const totalPages = Math.ceil(filteredTransactions.length / pageSize);
+  const displayedTransactions = filteredTransactions.slice(
+    currentPage * pageSize,
+    (currentPage + 1) * pageSize
+  );
+
+  // Filtre butonlarına tıklandığında
+  const handleFilterClick = (filterName) => {
+    setFilter(filterName);
+    setCurrentPage(0);
+  };
+
+  // Sayfalama
+  const handleNextPage = () => {
+    if ((currentPage + 1) * pageSize < filteredTransactions.length) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  // Edit butonuna tıklandığında ilgili işlem düzenleme moduna alınır
+  const handleEditClick = (transaction) => {
+    setEditTransaction({ ...transaction });
+  };
+
+  // Input alanlarındaki değişiklikleri yakalar
+  const handleInputChange = (e, field) => {
+    setEditTransaction({
+      ...editTransaction,
+      [field]: e.target.value,
+    });
+  };
+
+  // Save butonuna tıklandığında backend’e güncelleme isteği gönderilir.
+  // URL'de:
+  // - Id, TransactionName, Date, TransactionType, Amount dinamik olarak eklenir.
+  // - Status bilgisi boşsa "active" olarak gönderilir.
+  // - transactionId, id ile aynıdır.
+  // - userId örnekte "1" olarak sabitlenmiştir.
+  const handleSaveClick = (editedTransaction) => {
+    const status = editedTransaction.status
+      ? editedTransaction.status
+      : "active";
+    const url = `http://localhost:8088/api/InvoicingPage/PreviousTransactionsEdit?Id=${
+      editedTransaction.id
+    }&TransactionName=${encodeURIComponent(
+      editedTransaction.transactionName
+    )}&Date=${encodeURIComponent(
+      editedTransaction.date
+    )}&TransactionType=${encodeURIComponent(
+      editedTransaction.transactionType
+    )}&Amount=${editedTransaction.amount}&Status=${encodeURIComponent(
+      status
+    )}&transactionId=${editedTransaction.id}&userId=1`;
+
+    fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        // Eğer response status 204 (No Content) ise boş obje döndür
+        if (response.status === 204) {
+          return {};
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // Güncellenen veriyi transactions dizisinde güncelle
+        setTransactions((prevTransactions) =>
+          prevTransactions.map((tx) =>
+            tx.id === editedTransaction.id ? editedTransaction : tx
+          )
+        );
+        setEditTransaction(null);
+      })
+      .catch((error) => console.error("Error updating transaction:", error));
+  };
+  return (
+    <div>
+      {/* Üst başlık ve filtre butonları */}
+      <div className="Previous-Transactions-container-header">
+        <div className="Previous-Transactions-container-header-left">
+          <p>Previous Transactions</p>
+          <p className="Previous-Transactions-container-header-left-text">
+            Lorem ipsum dolor sit amet consectetur sit amet ipsum dolor sit amet
+            consectetur.
+          </p>
+        </div>
+        <div className="Previous-Transactions-container-header-right">
+          <button
+            className="Previous-Transactions-container-header-right-button-first"
+            onClick={() => handleFilterClick("today")}>
+            Today
+          </button>
+          <button
+            className="Previous-Transactions-container-header-right-button"
+            onClick={() => handleFilterClick("weekly")}>
+            Weekly
+          </button>
+          <button
+            className="Previous-Transactions-container-header-right-button"
+            onClick={() => handleFilterClick("monthly")}>
+            Monthly
+          </button>
+          <button
+            className="Previous-Transactions-container-header-right-button-last"
+            onClick={() => handleFilterClick("yearly")}>
+            Yearly
+          </button>
+        </div>
+      </div>
+
+      {/* İşlemler tablosu */}
+      <div className="transaction-table">
+        <table className="transaction-table">
+          <thead>
+            <tr>
+              <th className="th-black">Transaction Name</th>
+              <th className="th-black">Date & Time</th>
+              <th className="th-black">Transaction Type</th>
+              <th className="th-black">Amount</th>
+              <th className="th-black">Status</th>
+              <th className="th-black">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {displayedTransactions.map((transaction) => (
+              <tr key={transaction.id}>
+                {editTransaction && editTransaction.id === transaction.id ? (
+                  <>
+                    <td>
+                      <input
+                        type="text"
+                        value={editTransaction.transactionName}
+                        onChange={(e) =>
+                          handleInputChange(e, "transactionName")
+                        }
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="datetime-local"
+                        // datetime-local input için ISO string'in ilk 16 karakterini (YYYY-MM-DDTHH:mm) kullanıyoruz
+                        value={
+                          editTransaction.date
+                            ? editTransaction.date.substring(0, 16)
+                            : ""
+                        }
+                        onChange={(e) =>
+                          setEditTransaction({
+                            ...editTransaction,
+                            date: new Date(e.target.value).toISOString(),
+                          })
+                        }
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        value={editTransaction.transactionType}
+                        onChange={(e) =>
+                          handleInputChange(e, "transactionType")
+                        }
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        value={editTransaction.amount}
+                        onChange={(e) => handleInputChange(e, "amount")}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        value={editTransaction.status || "active"}
+                        onChange={(e) => handleInputChange(e, "status")}
+                      />
+                    </td>
+                    <td>
+                      <button
+                        className="action-button save"
+                        onClick={() => handleSaveClick(editTransaction)}>
+                        Save
+                      </button>
+                    </td>
+                  </>
+                ) : (
+                  <>
+                    <td>{transaction.transactionName}</td>
+                    <td>{formatDate(transaction.date)}</td>
+                    <td>{transaction.transactionType}</td>
+                    <td
+                      className={
+                        transaction.transactionType === "Transfer Out"
+                          ? "negative"
+                          : "positive"
+                      }>
+                      {transaction.amount}
+                    </td>
+                    <td>
+                      <p
+                        className={`status ${transaction.status.toLowerCase()}`}>
+                        {transaction.status}
+                      </p>
+                    </td>
+                    <td>
+                      <img
+                        className="save-button"
+                        onClick={() => handleEditClick(transaction)}
+                        src={Edit}
+                      />
+                      {/* <button>View</button> */}
+                      {/* <button>Delete</button> */}
+                    </td>
+                  </>
+                )}
+              </tr>
+            ))}
+            {displayedTransactions.length === 0 && (
+              <tr>
+                <td colSpan="6" style={{ textAlign: "center" }}>
+                  No transactions found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Sayfalama butonları */}
+      <div className="last-container">
+        <button className="previous" onClick={handlePreviousPage}>
+          Previous
+        </button>
+        <p>
+          Page {currentPage + 1} of {totalPages}
+        </p>
+        <button className="next" onClick={handleNextPage}>
+          Next
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const OverviewBalance = () => {
+  const [month, setMonth] = useState("January");
+  const [year, setYear] = useState("2023");
+  const [data, setData] = useState();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleMonthChange = (e) => {
+    setMonth(e.target.value);
+  };
+
+  const handleYearChange = (e) => {
+    setYear(e.target.value);
+  };
+
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `http://localhost:8088/api/InvoicingPage/WeeklyWalletTransactions?month=${month}&year=${year}&userId=1`
+      );
+      if (!response.ok) {
+        throw new Error("API call failed");
+      }
+      const result = await response.json();
+      setData(result); // Gelen veriyi sakla
+      console.log("API Response:", result);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="left-side-container">
+      <div className="flex-header">
+        <p> Weekly Wallet Transactions</p>
+        <img src={Treedotmenu} />
+      </div>
+
+      <div className="balance-middle-container-left">
+        <div>
+          <div className="select-container">
+            <select
+              onChange={handleMonthChange}
+              value={month}
+              className="selectfrom">
+              <option>--Select Month--</option>
+              <option value="January">January</option>
+              <option value="February">February</option>
+              <option value="March">March</option>
+              <option value="April">April</option>
+              <option value="May">May</option>
+              <option value="June">June</option>
+              <option value="July">July</option>
+              <option value="August">August</option>
+              <option value="September">September</option>
+              <option value="October">October</option>
+              <option value="November">November</option>
+              <option value="December">December</option>
+            </select>
+
+            <select
+              value={year}
+              onChange={handleYearChange}
+              className="selectfromx datefield year"
+              name="dob-year">
+              <option value="">Year</option>
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+              <option value="2023">2023</option>
+              <option value="2022">2022</option>
+              <option value="2021">2021</option>
+              <option value="2020">2020</option>
+            </select>
+            <button className="overwiev-button" onClick={fetchData}>
+              Fetch Data
+            </button>
+          </div>
+        </div>
+        <div className="price-container">
+          <p className="balance-middle-container-left-price">
+            ${data?.transactionsAmount || 0}
+          </p>
+          <button className="overwiev-balance-button">
+            {data?.transactionsAmountPercentage}%
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <img src={walletgraph} alt="Balance graph" />
+      </div>
+    </div>
+  );
+};
 const Invoicing = () => {
   const [transactions, setTransactions] = useState([]);
   const [data, setData] = useState([]);
@@ -591,7 +1007,7 @@ const Invoicing = () => {
           </div>
         </div>
 
-        <div className="weekly-wallet-container">
+        {/* <div className="weekly-wallet-container">
           <div className="weekly-wallet-container-header">
             <p>Weekly Wallet Transactions</p>
             <img src={Treedotmenu} />
@@ -638,11 +1054,12 @@ const Invoicing = () => {
           <div>
             <img src={walletgraph} />
           </div>
-        </div>
+        </div> */}
+        <OverviewBalance />
       </section>
 
       <section className="Previous-Transactions-container">
-        <div className="Previous-Transactions-container-header">
+        {/* <div className="Previous-Transactions-container-header">
           <div className="Previous-Transactions-container-header-left">
             <p>Previous Transactions</p>
             <p className="Previous-Transactions-container-header-left-text">
@@ -676,7 +1093,7 @@ const Invoicing = () => {
                 <th className="th-black">Status</th>
                 <th className="th-black">Action</th>
               </tr>
-            </thead>
+            </thead>w
             {/* <tbody>
               {transactions.map((transaction, index) => (
                 <tr key={index}>
@@ -737,7 +1154,7 @@ const Invoicing = () => {
                         <button
                           className="action-button save"
                           onClick={handleSaveClick}>
-                          💾 Save
+                           Save
                         </button>
                       </td>
                     </>
@@ -782,14 +1199,15 @@ const Invoicing = () => {
                 </tr>
               ))}
             </tbody> */}
-          </table>
-        </div>
+        {/* </table>/ */}
+        {/* </div>
 
         <div className="last-container">
           <button className="previous">Previous</button>
           <p>Page 1 of 12</p>
           <button className="next">Next</button>
-        </div>
+        </div> */}
+        <PreviousTransactions />
       </section>
     </>
   );

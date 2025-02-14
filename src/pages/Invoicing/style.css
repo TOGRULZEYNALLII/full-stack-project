@@ -580,23 +580,42 @@
 }
 
 .transaction-table .status {
-  padding: 5px 10px;
-  border-radius: 12px;
+  padding: 0px;
+  width: 100px;
 }
 
 .transaction-table .status.pending {
-  background-color: rgba(255, 174, 65, 0.16);
-  color: rgba(255, 174, 65, 1);
+  background-color: hsla(34, 100%, 63%, 0.16);
+  color: hsla(34, 100%, 63%, 1);
 }
 
 .transaction-table .status.completed {
-  background-color: rgba(0, 153, 126, 0.16);
-  color: rgba(0, 153, 126, 1);
+  background-color: hsla(169, 100%, 30%, 0.16);
+  color: hsla(169, 100%, 30%, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 89px;
+  height: 21px;
 }
-
+.transaction-table .status.active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 89px;
+  height: 21px;
+  background-color: hsla(169, 100%, 30%, 0.16);
+  color: hsla(169, 100%, 30%, 1);
+  font-size: 14px;
+}
 .transaction-table .status.canceled {
-  background-color: rgba(255, 65, 75, 0.16);
-  color: rgba(255, 65, 75, 1);
+  background-color: hsla(357, 100%, 63%, 0.16);
+  color: hsla(357, 100%, 63%, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 89px;
+  height: 21px;
 }
 
 .action-button {
@@ -609,9 +628,11 @@
 .action-button.edit {
   color: #007bff;
 }
-
 .action-button.save {
-  color: #28a745;
+  color: hsla(169, 100%, 30%, 1);
+}
+.action-button.save:hover {
+  color: white;
 }
 
 .action-button.delete {
@@ -666,4 +687,29 @@
   background-color: hsla(240, 62%, 59%, 0.16);
 
   color: hsla(240, 62%, 59%, 1);
+}
+
+.overwiev-balance-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 55px;
+  height: 21px;
+  border-radius: 90px;
+  background-color: hsla(169, 100%, 30%, 0.16);
+  border: none;
+  color: hsla(169, 100%, 30%, 1);
+}
+.price-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.flex-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.save-button {
+  cursor: pointer;
 }
