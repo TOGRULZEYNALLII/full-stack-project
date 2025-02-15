@@ -40,6 +40,144 @@ import Dailyordergraph from "../Restaurant/assets/trendingitems/dailyordergraph.
 import Vector from "../Home/assets/icons/Vector.svg";
 import Reddown from "../Home/assets/icons/reddown.svg";
 import Days from "../Restaurant/assets/trendingitems/Days.svg";
+import Customreviewsgraph from "../Restaurant/assets/trendingitems/Custom-reviews-graph.svg";
+import Blueellipse from "../Restaurant/assets/trendingitems/Blueellipse.svg";
+import Ellipseorange from "../Restaurant/assets/trendingitems/Ellipseorange.svg";
+const CustomReviews = () => {
+  const [year, setYear] = useState("2025");
+  const [reviewData, setReviewData] = useState(null);
+  const [Download, setDownload] = useState();
+  // Seçilen yıla göre API çağrısı yapılıyor.
+  useEffect(() => {
+    fetch(
+      `http://localhost:8088/api/RestaurantPage/CustomerReviews?year=${year}&restaurantId=1`
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        setReviewData(data);
+      })
+      .catch((error) => console.error("API isteğinde hata:", error));
+  }, [year]);
+
+  // download
+  const handledownload = () => {
+    fetch(
+      `http://localhost:8088/api/RestaurantPage/CustomerReviewsDownload?year=${year}&restaurantId=1`
+    )
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return res.blob(); // Dosyayı blob olarak alıyoruz.
+      })
+      .then((blob) => {
+        // Blob için URL oluşturuyoruz.
+        const url = window.URL.createObjectURL(blob);
+        // İndirme işlemini tetiklemek için dinamik bir <a> etiketi oluşturuyoruz.
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `CustomerReviewsReport_${year}.pdf`; // Dosya adı ve uzantısını backend'e göre ayarla.
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url); // Belleği temizliyoruz.
+      })
+      .catch((error) => console.error("Download API isteğinde hata:", error));
+  };
+  // Yıl seçimi değiştiğinde state güncelleniyor.
+  const handleYearChange = (e) => {
+    setYear(e.target.value);
+  };
+
+  // API'den dönen monthOfYear dizisindeki boş verileri filtreleyelim.
+  const filteredMonths =
+    reviewData && reviewData.monthOfYear
+      ? reviewData.monthOfYear.filter((m) => m.month && m.month.trim() !== "")
+      : [];
+
+  return (
+    <div className="customer-reviews">
+      <div className="reviews-header">
+        <h2>Customer Reviews</h2>
+        <img src={Treedotmenu} alt="Menu" />
+      </div>
+      <div className="border"></div>
+      <div>
+        <div className="filter-container">
+          <select className="filter-select">
+            <option>All Reviews</option>
+          </select>
+          <select
+            className="filter-select"
+            value={year}
+            onChange={handleYearChange}>
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+          </select>
+          <button className="download-btn" onClick={handledownload}>
+            Download Report
+          </button>
+        </div>
+      </div>
+      <div className="reviews-content">
+        <div className="review-summary">
+          <div className="positive-reviews">
+            <div className="postove-reviews-height">
+              <img src={Blueellipse} alt="Blue Ellipse" />
+              <p>Positive Reviews</p>
+            </div>
+            <h3 className="postive-number">
+              {reviewData ? reviewData.positiveReviews : "0"}
+            </h3>
+            <div className="flex-fromlastmonth">
+              <button className="card-button">
+                <img src={Vector} alt="vector" />
+                <p>
+                  {reviewData ? reviewData.positiveReviewsPercentage : "0"}%
+                </p>
+              </button>
+              <p className="small">from last week</p>
+            </div>
+          </div>
+          <div className="positive-reviews">
+            <div className="postove-reviews-height-gap">
+              <img src={Ellipseorange} alt="Blue Ellipse" />
+              <p>Negative Reviews</p>
+            </div>
+            <h3 className="postive-number">
+              {reviewData ? reviewData.negativeReviews : "0"}
+            </h3>
+            <div className="flex-fromlastmonth">
+              <button className="card-button-red">
+                <img src={Reddown} alt="vector" />
+                <p>
+                  {reviewData ? reviewData.negativeReviewsPercentage : "0"}%
+                </p>
+              </button>
+              <p className="small">from last week</p>
+            </div>
+          </div>
+        </div>
+        <div className="reviews-graph">
+          <img src={Customreviewsgraph} alt="Custom Reviews Graph" />
+          {/* İsteğe bağlı: Ay bazlı verileri listeleyebilirsiniz
+          {filteredMonths.length > 0 && (
+            <div className="months-data">
+              {filteredMonths.map((monthData, index) => (
+                <div key={index} className="month-data">
+                  <p>{monthData.date}</p>
+                  <p>Positive: {monthData.positive}</p>
+                  <p>Negative: {monthData.negative}</p>
+                </div>
+              ))}
+            </div>
+          )} */}
+        </div>
+      </div>
+    </div>
+  );
+};
 const TrendingItems = () => {
   const [month, setMonth] = useState("March");
   const [trendingItems, setTrendingItems] = useState([]);
@@ -347,6 +485,7 @@ const Restaurant = () => {
     "http://localhost:8088/api/RestaurantPage/QuickRewiewBottom?restaurantId=1",
     "http://localhost:8088/api/RestaurantPage/TodaysLiveOrders?restaurantId=1",
     "http://localhost:8088/api/RestaurantPage/TopSellingProducts?restaurantId=1",
+    "http://localhost:8088/api/RestaurantPage/DailyOrderReport?restaurantId=1",
   ];
 
   // Verileri çekip, faturaları ayırıyoruz
@@ -696,49 +835,15 @@ const Restaurant = () => {
                 <img src={Days} alt="Days" />
 
                 <div className="order-stats absolute">
-                  <h3 className="small-height-one">456 Order</h3>
-                  <p className="small-height"> Nov 18th, 2023</p>
+                  <h3 className="small-height-one">{data?.[35].orders}</h3>
+                  <p className="small-height"> {data?.[35].date}</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Customer Reviews Section */}
-          <div className="customer-reviews">
-            <div className="reviews-header">
-              <h2>Customer Reviews</h2>
-              <div className="filter-container">
-                <select>
-                  <option>All Reviews</option>
-                </select>
-                <select>
-                  <option>2023</option>
-                </select>
-                <button className="download-btn">
-                  <img src="path/to/download-icon.png" alt="Download Icon" />{" "}
-                  Download Report
-                </button>
-              </div>
-            </div>
-            <div className="reviews-content">
-              <div className="review-summary">
-                <div className="positive-reviews">
-                  <h3>3,628</h3>
-                  <p>Positive Reviews</p>
-                  <span>+25% from last week</span>
-                </div>
-                <div className="negative-reviews">
-                  <h3>274</h3>
-                  <p>Negative Reviews</p>
-                  <span>-25% from last week</span>
-                </div>
-              </div>
-              <div className="reviews-graph">
-                {/* Replace this div with the actual graph component */}
-                <img src="path/to/review-graph-image.png" alt="Reviews Graph" />
-              </div>
-            </div>
-          </div>
+          <CustomReviews />
         </div>
       </section>
     </>

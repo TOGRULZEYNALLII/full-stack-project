@@ -684,10 +684,105 @@
   width: 132px;
   height: 71px;
   text-align: center;
-  border-radius:10px ;
+  border-radius: 10px;
   background-color: hsla(0, 0%, 100%, 1);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   padding-left: 10px;
   padding-right: 10px;
   padding-bottom: 14px;
+}
+
+.customer-reviews {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 538px;
+  height: 407px;
+  border-radius: 10px;
+  padding-top: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  gap: 10px;
+  background-color: hsla(0, 0%, 100%, 1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.trending-items-section-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.dashboard-container {
+  display: flex;
+  gap: 26px;
+}
+.reviews-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 498px;
+  height: 40px;
+}
+.customer-reviews {
+  color: hsla(206, 4%, 32%, 1);
+}
+.filter-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 498px;
+}
+.filter-select {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 150px;
+  cursor: pointer;
+  border: 1px solid hsla(240, 1%, 83%, 1);
+  height: 30px;
+}
+.border {
+  height: 1px;
+  width: 498px;
+  background-color: hsla(240, 1%, 83%, 1);
+}
+.reviews-content {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+}
+.postive-number {
+  font-size: 25px;
+  height: 10px;
+}
+.postove-reviews-height {
+  height: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 140px;
+}
+.review-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.flex-fromlastmonth {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 150px;
+}
+.small{
+  font-size: 13px;
+  color: hsla(216, 2%, 49%, 1);
+}
+.postove-reviews-height-gap{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 150px;
+  height: 10px;
 }
