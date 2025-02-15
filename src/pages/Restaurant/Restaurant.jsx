@@ -263,17 +263,18 @@ const TrendingItems = () => {
 
       {/* Trending Items Listesi */}
       <div className="trending-items-container-middle">
-        {currentItems.map((item) => {
-          const fullImageURL = `http://localhost:8088${item.image}`; // API'den gelen tam görsel URL'si
+        {currentItems.map((item, index) => {
+          // API'den gelen image değeri ile tam URL oluşturuluyor
+          const fullImageURL = `http://localhost:8088${item.image}`;
           return (
             <div
-              key={item.rank}
+              key={index}
               className="trending-items-container-middle-container">
               <div className="trending-items-container-middle-container-img-container">
-                <p className="hastag">#{item.rank}</p>
+                <p className="hastag">#{index + 1}</p>
                 <img
                   style={{ height: "87px", borderRadius: "10px" }}
-                  src={fullImageURL} // Tam URL'yi burada kullanıyoruz
+                  src={fullImageURL}
                   alt={item.name}
                 />
               </div>
@@ -286,15 +287,15 @@ const TrendingItems = () => {
                   {item.name}
                 </p>
                 <p className="trending-items-container-middle-container-text-price">
-                  ${item.price}
+                  Stars: {item.stars}
                 </p>
               </div>
 
               <div className="trending-items-container-middle-container-graph">
                 <img src={Graph1} alt="Graph" />
                 <div className="trending-items-container-middle-container-graph-text">
-                  <p className="price">{item.sales}</p>
-                  <p className="gray">Sales ({item.salesPercentage}%)</p>
+                  <p className="price">{item.stars}</p>
+                  <p className="gray">Rating</p>
                 </div>
               </div>
             </div>
@@ -330,6 +331,7 @@ const TrendingItems = () => {
     </div>
   );
 };
+
 const OrderSummary = () => {
   const [timestamp, setTimestamp] = useState("today"); // Varsayılan olarak 'today' ayarlandı.
   const [data, setData] = useState(null);

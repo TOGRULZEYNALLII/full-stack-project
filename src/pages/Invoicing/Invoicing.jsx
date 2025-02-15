@@ -450,28 +450,24 @@ const OverviewBalance = () => {
 };
 const Invoicing = () => {
   const [transactions, setTransactions] = useState([]);
+
   const [data, setData] = useState([]);
-  const apilins = [
-    "http://localhost:8088/api/InvoicingPage/QuickReview?userId=1",
-    "http://localhost:8088/api/InvoicingPage/SpendingAndSpendingLists?userId=1",
-    "http://localhost:8088/api/InvoicingPage/CalculateBalance?userId=1",
-  ];
+
   useEffect(() => {
+    const urls = [`http://localhost:8088/api/BankingPage/GetCards?userId=1`];
+
     const fetchData = async () => {
       try {
-        const responses = await Promise.all(
-          apilins.map((url) => fetch(url).then((res) => res.json()))
+        // Her URL'den gelen yanıtı fetch ederek array'e alıyoruz
+        const results = await Promise.all(
+          urls.map((url) => fetch(url).then((res) => res.json()))
         );
-        console.log("API Responses:", responses);
 
-        // Eğer API yanıtı içinde "transactions" adlı alan yoksa,
-        // onu kontrol edin ve uygun şekilde güncelleyin.
-        const allTransactions = responses.flatMap((response) =>
-          response.transactions ? response.transactions : []
-        );
-        setTransactions(allTransactions);
-        setData(responses);
-        console.log(data);
+        // Gelen verileri tek bir array içinde birleştiriyoruz
+        setData(results); // results array'ini data state'ine kaydediyoruz
+
+        // Veriyi konsola yazdır (burada data'yı set ettikten sonra değil)
+        console.log(results);
       } catch (error) {
         console.error("Error fetching data:", error);
       }

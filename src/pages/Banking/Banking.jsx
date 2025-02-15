@@ -28,80 +28,372 @@ import Blueprogress from "./assets/spending/blueprogress.svg";
 import Greenprogress from "./assets/spending/greenprogress.svg";
 import Yellowprogress from "./assets/spending/yellowprogress.svg";
 import Lightblueprogress from "./assets/spending/lightblueprogress.svg";
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
+import Statementhgraph from "./assets/spending/statementsgraph.svg";
+import Statementharrows from "./assets/spending/statementharrows.svg";
+const TransactionTable = () => {
+  const [transactions, setTransactions] = useState([]);
+  const [filter, setFilter] = useState("all"); // varsayılan tüm işlemler
+  const [currentPage, setCurrentPage] = useState(0);
+  const [editTransaction, setEditTransaction] = useState(null); // düzenleme modundaki işlem
+  const pageSize = 6;
+
+  useEffect(() => {
+    fetch(
+      `http://localhost:8088/api/BankingPage/PreviousTransactions?timestamp=${filter}&userId=1`
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setTransactions(data);
+      })
+      .catch((error) => console.error("Error fetching transactions:", error));
+  }, [filter]);
+
+  // Tarih formatlama (display için)
+  const formatDate = (isoString) => {
+    const dateObj = new Date(isoString);
+    return dateObj.toLocaleDateString() + " " + dateObj.toLocaleTimeString();
+  };
+
+  // Filtreleme fonksiyonu (today, weekly, monthly, yearly)
+  const filterTransactions = (transactions, filter) => {
+    const now = new Date();
+    if (filter === "today") {
+      return transactions.filter((tx) => {
+        const txDate = new Date(tx.date);
+        return txDate.toDateString() === now.toDateString();
+      });
+    } else if (filter === "weekly") {
+      const startOfWeek = new Date(now);
+      startOfWeek.setDate(now.getDate() - now.getDay());
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(startOfWeek.getDate() + 6);
+      return transactions.filter((tx) => {
+        const txDate = new Date(tx.date);
+        return txDate >= startOfWeek && txDate <= endOfWeek;
+      });
+    } else if (filter === "monthly") {
+      return transactions.filter((tx) => {
+        const txDate = new Date(tx.date);
+        return (
+          txDate.getMonth() === now.getMonth() &&
+          txDate.getFullYear() === now.getFullYear()
+        );
+      });
+    } else if (filter === "yearly") {
+      return transactions.filter((tx) => {
+        const txDate = new Date(tx.date);
+        return txDate.getFullYear() === now.getFullYear();
+      });
+    } else {
+      return transactions;
+    }
+  };
+
+  const filteredTransactions = filterTransactions(transactions, filter);
+  const totalPages = Math.ceil(filteredTransactions.length / pageSize);
+  const displayedTransactions = filteredTransactions.slice(
+    currentPage * pageSize,
+    (currentPage + 1) * pageSize
+  );
+
+  // Filtre butonlarına tıklandığında
+  const handleFilterClick = (filterName) => {
+    setFilter(filterName); // Filtre değerini güncelle
+  };
+
+  // Sayfalama
+  const handleNextPage = () => {
+    if ((currentPage + 1) * pageSize < filteredTransactions.length) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  // Edit butonuna tıklandığında ilgili işlem düzenleme moduna alınır
+  const handleEditClick = (transaction) => {
+    setEditTransaction({ ...transaction });
+  };
+
+  // Input alanlarındaki değişiklikleri yakalar
+  const handleInputChange = (e, field) => {
+    setEditTransaction({
+      ...editTransaction,
+      [field]: e.target.value,
+    });
+  };
+  const handleSaveClick = (editedTransaction) => {
+    // Eğer status boşsa "active" olarak gönderiyoruz.
+    const status = editedTransaction.status
+      ? editedTransaction.status
+      : "active";
+
+    // Tarihi ISO formatına çeviriyoruz.
+    const formattedDate = new Date(editedTransaction.date).toISOString();
+
+    // API URL'sine query parametresi ekleyerek, transactionId'yi dahil ediyoruz.
+    const url = `http://localhost:8088/api/BankingPage/PreviousTransactionsEdit?transactionId=${editedTransaction.id}`;
+
+    // API'nin beklediği alan isimleriyle payload'u oluşturuyoruz.
+    const payload = {
+      id: editedTransaction.id, // API örneğinde "id"
+      name: editedTransaction.name, // API örneğinde "name"
+      date: formattedDate, // ISO formatında tarih
+      time: editedTransaction.time, // Zaman (örn. "09:37")
+      category: editedTransaction.category, // Kategori
+      amount: editedTransaction.amount, // Miktar
+      status: status, // Geçerli bir status değeri (örn. "active")
+      isIncome: editedTransaction.isIncome, // Gelir/gider bilgisi
+      // userId: 1, // API body içinde beklenmiyorsa eklemeyin.
+    };
+
+    console.log("Sending payload:", payload);
+
+    fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload), // JSON formatında veri gönderiyoruz
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        if (response.status === 204) {
+          return {}; // No Content durumunda boş obje döndürüyoruz.
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Response Data:", data);
+        // Güncellenen veriyi transactions dizisinde güncelle
+        setTransactions((prevTransactions) =>
+          prevTransactions.map((tx) =>
+            tx.id === editedTransaction.id ? editedTransaction : tx
+          )
+        );
+        setEditTransaction(null);
+      })
+      .catch((error) => {
+        console.error("Error updating transaction:", error);
+        alert("Bir hata oluştu. Lütfen tekrar deneyin.");
+      });
+  };
+  return (
+    <div>
+      {/* Üst başlık ve filtre butonları */}
+      <div className="Previous-Transactions-container-header">
+        <div className="Previous-Transactions-container-header-left">
+          <p>Previous Transactions</p>
+          <p className="Previous-Transactions-container-header-left-text">
+            Lorem ipsum dolor sit amet consectetur sit amet ipsum dolor sit amet
+            consectetur.
+          </p>
+        </div>
+        <div className="Previous-Transactions-container-header-right">
+          <button
+            className="Previous-Transactions-container-header-right-button-first"
+            onClick={() => handleFilterClick("today")}>
+            Today
+          </button>
+          <button
+            className="Previous-Transactions-container-header-right-button"
+            onClick={() => handleFilterClick("weekly")}>
+            Weekly
+          </button>
+          <button
+            className="Previous-Transactions-container-header-right-button"
+            onClick={() => handleFilterClick("monthly")}>
+            Monthly
+          </button>
+          <button
+            className="Previous-Transactions-container-header-right-button-last"
+            onClick={() => handleFilterClick("yearly")}>
+            Yearly
+          </button>
+        </div>
+      </div>
+
+      {/* İşlemler tablosu */}
+      <div className="transaction-table">
+        <table className="transaction-table">
+          <thead>
+            <tr>
+              <th className="th-black">Transaction Name</th>
+              <th className="th-black">Date & Time</th>
+              <th className="th-black">Category</th>
+              <th className="th-black">Amount</th>
+              <th className="th-black">Status</th>
+              <th className="th-black">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {displayedTransactions.map((transaction) => (
+              <tr key={transaction.id}>
+                {editTransaction && editTransaction.id === transaction.id ? (
+                  <>
+                    <td>
+                      <input
+                        type="text"
+                        value={editTransaction.name}
+                        onChange={(e) => handleInputChange(e, "name")}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="datetime-local"
+                        value={
+                          editTransaction.date && editTransaction.time
+                            ? `${editTransaction.date}T${editTransaction.time}`
+                            : ""
+                        }
+                        onChange={(e) =>
+                          setEditTransaction({
+                            ...editTransaction,
+                            date: e.target.value.split("T")[0],
+                            time: e.target.value.split("T")[1],
+                          })
+                        }
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        value={editTransaction.category}
+                        onChange={(e) => handleInputChange(e, "category")}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        value={editTransaction.amount}
+                        onChange={(e) => handleInputChange(e, "amount")}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        value={editTransaction.status || "active"}
+                        onChange={(e) => handleInputChange(e, "status")}
+                      />
+                    </td>
+                    <td>
+                      <button
+                        className="action-button save"
+                        onClick={() => handleSaveClick(editTransaction)}>
+                        Save
+                      </button>
+                    </td>
+                  </>
+                ) : (
+                  <>
+                    <td>{transaction.name}</td>
+                    <td>{`${transaction.date} ${transaction.time}`}</td>
+                    <td>{transaction.category}</td>
+                    <td
+                      className={
+                        transaction.isIncome ? "positive" : "negative"
+                      }>
+                      {transaction.amount}
+                    </td>
+                    <td>
+                      <p
+                        className={`status ${transaction.status.toLowerCase()}`}>
+                        {transaction.status}
+                      </p>
+                    </td>
+                    <td>
+                      <img
+                        className="save-button"
+                        onClick={() => handleEditClick(transaction)}
+                        src={Edit}
+                        alt="Edit"
+                      />
+                    </td>
+                  </>
+                )}
+              </tr>
+            ))}
+            {displayedTransactions.length === 0 && (
+              <tr>
+                <td colSpan="6" style={{ textAlign: "center" }}>
+                  No transactions found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="last-container">
+        <button className="previous" onClick={handlePreviousPage}>
+          Previous
+        </button>
+        <p>
+          Page {currentPage + 1} of {totalPages}
+        </p>
+        <button className="next" onClick={handleNextPage}>
+          Next
+        </button>
+      </div>
+    </div>
+  );
+};
 const Banking = () => {
-  const [transactions, setTransactions] = useState([
-    {
-      name: "XYZ Store Iasdasdasddasf",
-      date: "November 28, 2023",
-      time: "05:34 AM",
-      type: "Electronic",
-      amount: "+ $53.98",
-      status: "PENDING",
-    },
-    {
-      name: "Restaurant ABC",
-      date: "November 28, 2023",
-      time: "07:56 AM",
-      type: "Food & Beverages",
-      amount: "- $148.63",
-      status: "COMPLETED",
-    },
-    {
-      name: "Cindy Alexandro",
-      date: "November 28, 2023",
-      time: "10:13 AM",
-      type: "Transfer Out",
-      amount: "- $33.47",
-      status: "COMPLETED",
-    },
-    {
-      name: "Payment CME",
-      date: "November 28, 2023",
-      time: "12:34 PM",
-      type: "Transfer In",
-      amount: "+ $550.33",
-      status: "PENDING",
-    },
-    {
-      name: "Hawkins Jr.",
-      date: "November 28, 2023",
-      time: "04:34 PM",
-      type: "Transfer In",
-      amount: "+ $63.75",
-      status: "CANCELED",
-    },
-  ]);
+  const [data, setData] = useState();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const [editIndex, setEditIndex] = useState(null);
-  const [editTransaction, setEditTransaction] = useState({});
+  const apiLinks = [
+    "http://localhost:8088/api/BankingPage/GetCards?userId=1",
+    "http://localhost:8088/api/BankingPage/IncomeExpenseStatistics?userId=1",
+    "http://localhost:8088/api/BankingPage/SpendingCategories?userId=1",
+    "http://localhost:8088/api/BankingPage/MonthlyStatements?userId=1",
+    "http://localhost:8088/api/BankingPage/TransactionHistory?userId=1",
+  ];
 
-  const handleEditClick = (index) => {
-    setEditIndex(index);
-    setEditTransaction({ ...transactions[index] });
-  };
+  // Verileri çekip, faturaları ayırıyoruz
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true); // Veri yükleniyor
+      try {
+        const responses = await Promise.all(
+          apiLinks.map((link) =>
+            fetch(link).then((response) => {
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              return response.json();
+            })
+          )
+        );
 
-  const handleSaveClick = () => {
-    const updatedTransactions = [...transactions];
-    updatedTransactions[editIndex] = editTransaction;
-    setTransactions(updatedTransactions);
-    setEditIndex(null);
-  };
+        // Tüm verileri birleştiriyoruz
+        const combinedData = responses.flat(); // Burada 's' fazlalığı vardı, kaldırıldı
+        setData(combinedData); // Veriyi state'e kaydediyoruz
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditTransaction({ ...editTransaction, [name]: value });
-  };
+        // İlk 10 öğe farklı veriler ise, faturalar 11. öğeden (index 10) başlıyor:
+        // console.log("Combined Data:", combinedData);
+      } catch (error) {
+        setError(error.message); // Hata durumunda mesajı state'e kaydediyoruz
+      } finally {
+        setLoading(false); // Yükleme işlemi bittiğinde loading durumu false oluyor
+      }
+    };
 
-  const handleDeleteClick = (index) => {
-    const updatedTransactions = transactions.filter((_, i) => i !== index);
-    setTransactions(updatedTransactions);
-  };
-
-  const handleViewClick = (index) => {
-    alert(`Viewing details for: ${transactions[index].name}`);
-  };
-
+    fetchData();
+  }, []); // sele
   return (
     <>
       <section className="cards-container">
@@ -109,10 +401,10 @@ const Banking = () => {
           <img className="wave" src={WaweElements} />
           <div className="card-main-walet">
             <p className="card-main-wallet-item">Second Wallet</p>
-            <p className="card-price-item"> $12,637.98</p>
+            <p className="card-price-item"> ${data?.[0].cardBalance}</p>
           </div>
           <div className="card-id">
-            <p className="id">5555 3434 **** 6767</p>
+            <p className="id">{data?.[0].cardNumber}</p>
             <img src={Mastercard} />
           </div>
         </div>
@@ -121,10 +413,10 @@ const Banking = () => {
           <img className="wave" src={WaweElements} />
           <div className="card-main-walet">
             <p className="card-main-wallet-item">Third Wallet</p>
-            <p className="card-price-item">$6,716.33</p>
+            <p className="card-price-item"> ${data?.[1].cardBalance}</p>
           </div>
           <div className="card-id">
-            <p className="id"> 6666 8989 **** 7878</p>
+            <p className="id">{data?.[1].cardNumber}</p>
             <img src={Mastercard} />
           </div>
         </div>
@@ -133,10 +425,10 @@ const Banking = () => {
           <img className="wave" src={WaweElements} />
           <div className="card-main-walet">
             <p className="card-main-wallet-item">Main Wallet</p>
-            <p className="card-price-item"> $45,500.12</p>
+            <p className="card-price-item"> ${data?.[2].cardBalance}</p>
           </div>
           <div className="card-id">
-            <p className="id"> 4444 2121 **** 2424</p>
+            <p className="id">{data?.[2].cardNumber}</p>
             <img src={Mastercard} />
           </div>
         </div>
@@ -160,13 +452,13 @@ const Banking = () => {
 
                 <div className="income-cotanier-left-middle-prices-container-left-prices">
                   <p className="income-cotanier-left-middle-prices-container-left-prices-p">
-                    $8,294.89
+                    ${data?.[3].income}
                   </p>
                 </div>
                 <div className="income-cotanier-left-middle-prices-container-footer">
                   <img src={Greenup} />
                   <p className="income-cotanier-left-middle-prices-container-footer-percentage">
-                    25%
+                    {data?.[3].incomePercentage}%
                   </p>
                   <p className="income-cotanier-left-middle-prices-container-footer-text-item">
                     Bigger than last month
@@ -178,19 +470,19 @@ const Banking = () => {
                 <div className="blue-circle-container">
                   <div className="blue-circle"></div>
                   <p className="income-cotanier-left-middle-prices-container-left-p">
-                    income
+                    expense
                   </p>
                 </div>
 
                 <div className="income-cotanier-left-middle-prices-container-left-prices">
                   <p className="income-cotanier-left-middle-prices-container-left-prices-p">
-                    $8,294.89
+                    ${data?.[3].expense}
                   </p>
                 </div>
                 <div className="income-cotanier-left-middle-prices-container-footer">
                   <img src={Greenup} />
                   <p className="income-cotanier-left-middle-prices-container-footer-percentage">
-                    25%
+                    {data?.[3].expensePercentage}%
                   </p>
                   <p className="income-cotanier-left-middle-prices-container-footer-text-item">
                     Bigger than last month
@@ -271,160 +563,7 @@ const Banking = () => {
       </section>
 
       <section className="Previous-Transactions-container">
-        <div className="Previous-Transactions-container-header">
-          <div className="Previous-Transactions-container-header-left">
-            <p>Previous Transactions</p>
-            <p className="Previous-Transactions-container-header-left-text">
-              Lorem ipsum dolor sit amet consectetur sit amet ipsum dolor sit
-              amet consectetur.
-            </p>
-          </div>
-          <div className="Previous-Transactions-container-header-right">
-            <button className="Banking-Previous-Transactions-container-header-right-button-first">
-              <p className="Banking-Previous-Transactions-container-header-right-button-text">
-                Today
-              </p>
-            </button>
-            <button className="Banking-Previous-Transactions-container-header-right-button-first">
-              <p className="Banking-Previous-Transactions-container-header-right-button-text">
-                Weekly
-              </p>
-            </button>
-            <button className="Banking-Previous-Transactions-container-header-right-button-first">
-              <p className="Banking-Previous-Transactions-container-header-right-button-text">
-                Monthly
-              </p>
-            </button>
-            <button className="Banking-Previous-Transactions-container-header-right-button-first">
-              <p className="Banking-Previous-Transactions-container-header-right-button-text">
-                Yearly
-              </p>
-            </button>
-          </div>
-        </div>
-        <div className="transaction-table">
-          <table className="transaction-table">
-            <thead>
-              <tr>
-                <th className="white-th">Transaction Name</th>
-                <th className="white-th">Date & Time</th>
-                <th className="white-th">CATEGORY</th>
-                <th className="white-th">Amount</th>
-                <th className="white-th">Status</th>
-                <th className="white-th">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {transactions.map((transaction, index) => (
-                <tr key={index}>
-                  {editIndex === index ? (
-                    <>
-                      <td>
-                        <input
-                          type="text"
-                          name="name"
-                          value={editTransaction.name}
-                          onChange={handleInputChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          name="date"
-                          value={editTransaction.date}
-                          onChange={handleInputChange}
-                        />
-                        <input
-                          type="text"
-                          name="time"
-                          value={editTransaction.time}
-                          onChange={handleInputChange}
-                          style={{ marginLeft: "10px" }}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          name="type"
-                          value={editTransaction.type}
-                          onChange={handleInputChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          name="amount"
-                          value={editTransaction.amount}
-                          onChange={handleInputChange}
-                        />
-                      </td>
-                      <td>
-                        <select
-                          name="status"
-                          value={editTransaction.status}
-                          onChange={handleInputChange}>
-                          <option value="PENDING">PENDING</option>
-                          <option value="COMPLETED">COMPLETED</option>
-                          <option value="CANCELED">CANCELED</option>
-                        </select>
-                      </td>
-                      <td>
-                        <button
-                          className="action-button save"
-                          onClick={handleSaveClick}>
-                          💾 Save
-                        </button>
-                      </td>
-                    </>
-                  ) : (
-                    <>
-                      <td>{transaction.name}</td>
-                      <td>{`${transaction.date} ${transaction.time}`}</td>
-                      <td>{transaction.type}</td>
-                      <td
-                        className={
-                          transaction.amount.startsWith("+")
-                            ? "positive"
-                            : "negative"
-                        }>
-                        {transaction.amount}
-                      </td>
-                      <td>
-                        <span
-                          className={`status ${transaction.status.toLowerCase()}`}>
-                          {transaction.status}
-                        </span>
-                      </td>
-                      <td>
-                        <button
-                          className="action-button edit"
-                          onClick={() => handleEditClick(index)}>
-                          <img src={Edit} />
-                        </button>
-                        <button
-                          className="action-button view"
-                          onClick={() => handleViewClick(index)}>
-                          <img src={Printer} />
-                        </button>
-                        <button
-                          className="action-button delete"
-                          onClick={() => handleDeleteClick(index)}>
-                          <img src={Eye} />
-                        </button>
-                      </td>
-                    </>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="last-container">
-          <button className="previous">Previous</button>
-          <p>Page 1 of 12</p>
-          <button className="next">Next</button>
-        </div>
+        <TransactionTable />
       </section>
 
       <section className="Banking-footer">
@@ -439,17 +578,17 @@ const Banking = () => {
                 <img src={Pig} />
               </div>
               <div className="banking-footer-icon-container-main">
-                <p className="instalment">Installment</p>
+                <p className="instalment">{data?.[4].category}</p>
                 <div className="progressbar-container">
                   <img className="progressbar" src={Blueprogress} />
                 </div>
 
                 <div className="banking-footer-icon-container-main-price">
                   <p className="banking-footer-icon-container-main-price-default  ">
-                    $720.26 used /
+                    ${data?.[4].amount} used /
                   </p>
                   <p className="banking-footer-icon-container-main-price-gray">
-                    from $1,000
+                    from ${data?.[4].limit}
                   </p>
                 </div>
               </div>
@@ -459,17 +598,19 @@ const Banking = () => {
                 <img src={Basketmeal} />
               </div>
               <div className="banking-footer-icon-container-main">
-                <p className="instalment">Food and Beverages</p>
+                <p className="instalment">
+                  <p className="instalment">{data?.[5].category}</p>
+                </p>
                 <div className="progressbar-container">
                   <img className="progressbar" src={Greenprogress} />
                 </div>
 
                 <div className="banking-footer-icon-container-main-price">
                   <p className="banking-footer-icon-container-main-price-default  ">
-                    $304.57 used /
+                    ${data?.[5].amount} used /
                   </p>
                   <p className="banking-footer-icon-container-main-price-gray">
-                    from $1,300
+                    from ${data?.[5].limit}
                   </p>
                 </div>
               </div>
@@ -480,17 +621,17 @@ const Banking = () => {
                 <img src={Car} />
               </div>
               <div className="banking-footer-icon-container-main">
-                <p className="instalment">Transportation</p>
+                <p className="instalment">{data?.[6].category}</p>
                 <div className="progressbar-container">
                   <img className="progressbar" src={Yellowprogress} />
                 </div>
 
                 <div className="banking-footer-icon-container-main-price">
                   <p className="banking-footer-icon-container-main-price-default  ">
-                    $230.89 used /
+                    ${data?.[6].amount} used /
                   </p>
                   <p className="banking-footer-icon-container-main-price-gray">
-                    from $750
+                    from ${data?.[6].limit}
                   </p>
                 </div>
               </div>
@@ -501,17 +642,20 @@ const Banking = () => {
                 <img src={Balon} />
               </div>
               <div className="banking-footer-icon-container-main">
-                <p className="instalment">Travel and Holiday</p>
+                <p className="instalment">
+                  {" "}
+                  <p className="instalment">{data?.[7].category}</p>
+                </p>
                 <div className="progressbar-container">
                   <img className="progressbar" src={Lightblueprogress} />
                 </div>
 
                 <div className="banking-footer-icon-container-main-price">
                   <p className="banking-footer-icon-container-main-price-default  ">
-                    $956.27 used /
+                    ${data?.[7].amount} used /
                   </p>
                   <p className="banking-footer-icon-container-main-price-gray">
-                    from $1,350
+                    from ${data?.[7].limit}
                   </p>
                 </div>
               </div>
@@ -525,31 +669,53 @@ const Banking = () => {
             <img src={Treedotmenu} />
           </div>
           <div className="graph-container-price">
-            <img src={Graphnumbers} />
+            <img
+              className="graph-container-price-maingraph"
+              src={Statementhgraph}
+            />
+            <img
+              className="graph-container-price-maingraph-arrows"
+              src={Statementharrows}
+            />
+            <p className="graph-container-price-installment">
+              {data?.[8].percentage}%
+            </p>
+            <p className="graph-container-price-food">
+              {data?.[9].percentage}%
+            </p>
+            <p className="graph-container-price-trasnporation">
+              {data?.[10].percentage}%
+            </p>
+            <p className="graph-container-price-travel">
+              {data?.[11].percentage}%
+            </p>
+            <p className="graph-container-price-investment">
+              {data?.[12].percentage}%
+            </p>
           </div>
           <div className="dots-container">
             <div className="dots-container-left">
               <div className="dots-container-left-color">
                 <div className="blue-squere"></div>
-                <p>Food</p>
+                <p>{data?.[8].category}</p>
               </div>
               <div className="dots-container-left-color">
                 <div className="green-squere"></div>
-                <p>Transportation </p>
+                <p>{data?.[9].category}</p>
               </div>
               <div className="dots-container-left-color">
                 <div className="red-squere"></div>
-                <p>Investment</p>
+                <p>{data?.[10].category}</p>
               </div>
             </div>
             <div className="dots-container-right">
               <div className="dots-container-left-color">
                 <div className="light-blue-squere"></div>
-                <p>Rent</p>
-              </div>{" "}
+                <p>{data?.[11].category}</p>
+              </div>
               <div className="dots-container-left-color">
                 <div className="yellow-squere"></div>
-                <p>Installment</p>
+                <p>{data?.[12].category}</p>
               </div>
             </div>
           </div>
@@ -564,61 +730,61 @@ const Banking = () => {
             <div className="history-container-main">
               <img src={Redup} />
               <div className="history-container-main-text">
-                <p>Pay Bills</p>
+                <p>{data?.[13].name}</p>
                 <p className="history-container-main-text-gray">
-                  2 Nov 2023, 13:45 PM
+                  {data?.[13].date} {data?.[13].time}
                 </p>
               </div>
               <div>
-                <p className="price-history">-100.99$</p>
+                <p className="price-history">{data?.[13].amount}$ </p>
               </div>
             </div>
             <div className="history-container-main">
               <img src={Greendown} />
               <div className="history-container-main-text">
-                <p>Payment Received</p>
+                <p>{data?.[14].name}</p>
                 <p className="history-container-main-text-gray">
-                  30 Oct 2023, 13:45 PM
+                  {data?.[14].date} {data?.[14].time}
                 </p>
               </div>
               <div>
-                <p className="price-history-green">+547.90$</p>
+                <p className="price-history-green">{data?.[14].amount}$ </p>
               </div>
             </div>
             <div className="history-container-main">
               <img src={Greendown} />
               <div className="history-container-main-text">
-                <p>Project Payment </p>
+                <p>{data?.[15].name}</p>
                 <p className="history-container-main-text-gray">
-                  28 Oct 2023, 13:45 PM
+                  {data?.[15].date} {data?.[15].time}
                 </p>
               </div>
               <div>
-                <p className="price-history-green">+1,325.68$</p>
+                <p className="price-history-green">{data?.[15].amount}$ </p>
               </div>
             </div>
             <div className="history-container-main">
               <img src={Redup} />
               <div className="history-container-main-text">
-                <p>Restaurant ABC</p>
+                <p>{data?.[16].name}</p>
                 <p className="history-container-main-text-gray">
-                  28 Oct 2023, 13:45 PM
+                  {data?.[16].date} {data?.[16].time}
                 </p>
               </div>
               <div>
-                <p className="price-history">-79.22$</p>
+                <p className="price-history">{data?.[16].amount}$ </p>
               </div>
             </div>
             <div className="history-container-main">
               <img src={Redup} />
               <div className="history-container-main-text">
-                <p>Gadget Payment</p>
+                <p>{data?.[17].name}</p>
                 <p className="history-container-main-text-gray">
-                  28 Oct 2023, 13:45 PM
+                  {data?.[17].date} {data?.[17].time}
                 </p>
               </div>
               <div>
-                <p className="price-history">-998.90$ </p>
+                <p className="price-history">{data?.[17].amount}$ </p>
               </div>
             </div>
           </div>

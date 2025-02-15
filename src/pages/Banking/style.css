@@ -68,6 +68,7 @@
 }
 .wave {
   display: flex;
+  width: 100px;
   position: absolute;
 }
 
@@ -355,6 +356,11 @@
 }
 .graph-container-price {
   margin-top: 20px;
+  display: flex;
+  height: 210px;
+  align-items: center;
+  position: relative;
+  justify-content: center;
 }
 .blue-squere {
   width: 14px;
@@ -445,4 +451,60 @@
 .price-history-green {
   color: rgba(0, 153, 126, 1);
   font-weight: 600;
+}
+.string {
+  font-size: 15px;
+  font-weight: 600;
+  background-color: rgba(113, 239, 239, 0.613);
+  color: rgba(42, 135, 206, 0.932);
+}
+
+.graph-container-price-maingraph {
+  position: absolute;
+  z-index: 1;
+}
+.graph-container-price-maingraph-arrows {
+  position: absolute;
+  margin-top: 20px;
+  z-index: 2;
+}
+.graph-container-price-installment {
+  position: absolute;
+  top: -7px;
+  right: 20px;
+  font-weight: 600;
+  color: hsla(206, 4%, 32%, 1);
+  font-size: 15.63px;
+}
+.graph-container-price-food {
+  position: absolute;
+  top: 140px;
+  left: 20px;
+  font-weight: 600;
+  color: hsla(206, 4%, 32%, 1);
+  font-size: 15.63px;
+}
+.graph-container-price-trasnporation {
+  position: absolute;
+  top: 100px;
+  right: 10px;
+  font-weight: 600;
+  color: hsla(206, 4%, 32%, 1);
+  font-size: 15.63px;
+}
+.graph-container-price-travel {
+  position: absolute;
+  top: -7px;
+  left: 20px;
+  font-weight: 600;
+  color: hsla(206, 4%, 32%, 1);
+  font-size: 15.63px;
+}
+.graph-container-price-investment {
+  position: absolute;
+  top: 170px;
+  right: 50px;
+  font-weight: 600;
+  color: hsla(206, 4%, 32%, 1);
+  font-size: 15.63px;
 }
