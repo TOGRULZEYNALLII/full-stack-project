@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./style.css";
 import Arrowsqueredownright from "./assets/header/ArrowSquareDownRight.svg";
 import Dot from "../Sidebar/assets/icons/dot.svg";
@@ -43,81 +43,124 @@ import Movedteam from "./assets/rightsideassets/movedteam.svg";
 import Startedbreak from "./assets/rightsideassets/startedbreak.svg";
 import Vectorleft from "./assets/rightsideassets/vectorleft.svg";
 import Vectorright from "./assets/rightsideassets/vectorright.svg";
+import Vector from "../Home/assets/icons/Vector.svg";
 const Hrmanagement = () => {
-  const employees = [
-    {
-      name: "Adeline Palmerston",
-      position: "UI Designer",
-      email: "adeline@email.com",
-      team: "Product Design Team",
-      attendance: 92,
-      status: "ACTIVE",
-      color: "rgba(0, 153, 126, 1)",
-    },
-    {
-      name: "Jordan Nico",
-      position: "Web Developer",
-      email: "jordan.nico@email.com",
-      team: "Developer Team",
-      attendance: 70,
-      status: "ACTIVE",
-      color: "rgba(86, 85, 215, 1)",
-    },
-    {
-      name: "Daniel Gallego",
-      position: "Project Manager",
-      email: "daniel.gale@email.com",
-      team: "Product Design Team",
-      attendance: 59,
-      status: "LEAVE",
-      color: "rgba(255, 174, 65, 1)",
-    },
-    {
-      name: "Juliana Silva",
-      position: "UX Researcher",
-      email: "juli.silva@email.com",
-      team: "Product Design Team",
-      attendance: 23,
-      status: "ACTIVE",
-      color: "rgba(255, 65, 75, 1)",
-    },
-    {
-      name: "Murad Naser",
-      position: "UI Designer",
-      email: "murad.naser@email.com",
-      team: "Product Design Team",
-      attendance: 72,
-      status: "LEAVE",
-      color: "rgba(86, 85, 215, 1)",
-    },
-    {
-      name: "Lars Peeters",
-      position: "Project Manager",
-      email: "lars.peeters@email.com",
-      team: "Product Design Team",
-      attendance: 59,
-      status: "LEAVE",
-      color: "#FFAB00",
-    },
+  const [data, setData] = useState();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const apiLinks = [
+    "http://localhost:8088/api/ManagementPage/QuickReview?companyId=1",
+    "http://localhost:8088/api/ManagementPage/AttendanceStatistics?companyId=1",
+    "http://localhost:8088/api/ManagementPage/UpcomingEvents?companyId=1",
+    "http://localhost:8088/api/ManagementPage/DailyAttendance?companyId=1",
   ];
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedPosition, setSelectedPosition] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("");
+  // Verileri çekip, faturaları ayırıyoruz
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true); // Veri yükleniyor
+      try {
+        const responses = await Promise.all(
+          apiLinks.map((link) =>
+            fetch(link).then((response) => {
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              return response.json();
+            })
+          )
+        );
 
-  const positions = [
-    ...new Set(employees.map((employee) => employee.position)),
-  ];
-  const statuses = ["ACTIVE", "LEAVE"];
+        // Tüm verileri birleştiriyoruz
+        const combinedData = responses.flat(); // Burada 's' fazlalığı vardı, kaldırıldı
+        setData(combinedData); // Veriyi state'e kaydediyoruz
+        console.log(combinedData);
+        // İlk 10 öğe farklı veriler ise, faturalar 11. öğeden (index 10) başlıyor:
+        // console.log("Combined Data:", combinedData);
+      } catch (error) {
+        setError(error.message); // Hata durumunda mesajı state'e kaydediyoruz
+      } finally {
+        setLoading(false); // Yükleme işlemi bittiğinde loading durumu false oluyor
+      }
+    };
 
-  const filteredEmployees = employees.filter((employee) => {
-    return (
-      (employee.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        employee.email.toLowerCase().includes(searchQuery.toLowerCase())) &&
-      (selectedPosition === "" || employee.position === selectedPosition) &&
-      (selectedStatus === "" || employee.status === selectedStatus)
-    );
-  });
+    fetchData();
+  }, []); // sele
+  // const employees = [
+  //   {
+  //     name: "Adeline Palmerston",
+  //     position: "UI Designer",
+  //     email: "adeline@email.com",
+  //     team: "Product Design Team",
+  //     attendance: 92,
+  //     status: "ACTIVE",
+  //     color: "rgba(0, 153, 126, 1)",
+  //   },
+  //   {
+  //     name: "Jordan Nico",
+  //     position: "Web Developer",
+  //     email: "jordan.nico@email.com",
+  //     team: "Developer Team",
+  //     attendance: 70,
+  //     status: "ACTIVE",
+  //     color: "rgba(86, 85, 215, 1)",
+  //   },
+  //   {
+  //     name: "Daniel Gallego",
+  //     position: "Project Manager",
+  //     email: "daniel.gale@email.com",
+  //     team: "Product Design Team",
+  //     attendance: 59,
+  //     status: "LEAVE",
+  //     color: "rgba(255, 174, 65, 1)",
+  //   },
+  //   {
+  //     name: "Juliana Silva",
+  //     position: "UX Researcher",
+  //     email: "juli.silva@email.com",
+  //     team: "Product Design Team",
+  //     attendance: 23,
+  //     status: "ACTIVE",
+  //     color: "rgba(255, 65, 75, 1)",
+  //   },
+  //   {
+  //     name: "Murad Naser",
+  //     position: "UI Designer",
+  //     email: "murad.naser@email.com",
+  //     team: "Product Design Team",
+  //     attendance: 72,
+  //     status: "LEAVE",
+  //     color: "rgba(86, 85, 215, 1)",
+  //   },
+  //   {
+  //     name: "Lars Peeters",
+  //     position: "Project Manager",
+  //     email: "lars.peeters@email.com",
+  //     team: "Product Design Team",
+  //     attendance: 59,
+  //     status: "LEAVE",
+  //     color: "#FFAB00",
+  //   },
+  // ];
+
+  // const [searchQuery, setSearchQuery] = useState("");
+  // const [selectedPosition, setSelectedPosition] = useState("");
+  // const [selectedStatus, setSelectedStatus] = useState("");
+
+  // const positions = [
+  //   ...new Set(employees.map((employee) => employee.position)),
+  // ];
+  // const statuses = ["ACTIVE", "LEAVE"];
+
+  // const filteredEmployees = employees.filter((employee) => {
+  //   return (
+  //     (employee.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //       employee.email.toLowerCase().includes(searchQuery.toLowerCase())) &&
+  //     (selectedPosition === "" || employee.position === selectedPosition) &&
+  //     (selectedStatus === "" || employee.status === selectedStatus)
+  //   );
+  // });
 
   return (
     <>
@@ -129,13 +172,17 @@ const Hrmanagement = () => {
                 <p className="total-employes-container-p">Total Employees</p>
               </div>
               <div className="total-employes-container-price">
-                <p className="total-employes-container-price-p">2,048</p>
+                <p className="total-employes-container-price-p">
+                  {data?.[0].totalEmployees}
+                </p>
                 <img src={Bluevector} />
               </div>
               <div className="total-employes-container-footer">
                 <div className="total-employes-container-footer-flex">
                   <img src={Arrowsquereupright} />
-                  <p style={{ fontSize: "13px" }}>+15%</p>
+                  <p style={{ fontSize: "13px" }}>
+                    {data?.[0].totalEmployeesPercentage}%
+                  </p>
                 </div>
                 <div>
                   <p style={{ fontSize: "13px" }}>vs last month</p>
@@ -148,13 +195,17 @@ const Hrmanagement = () => {
                 <p className="total-employes-container-p">Total Attendance</p>
               </div>
               <div className="total-employes-container-price">
-                <p className="total-employes-container-price-p">1,870</p>
+                <p className="total-employes-container-price-p">
+                  {data?.[0].totalAttendance}
+                </p>
                 <img src={Greenvector} />
               </div>
               <div className="total-employes-container-footer-green">
                 <div className="total-employes-container-footer-flex">
                   <img src={Arrowsqueredownright} />
-                  <p style={{ fontSize: "13px" }}>-6%</p>
+                  <p style={{ fontSize: "13px" }}>
+                    {data?.[0].totalAttendancePercentage}%
+                  </p>
                 </div>
                 <div>
                   <p style={{ fontSize: "13px" }}>vs last month</p>
@@ -167,13 +218,17 @@ const Hrmanagement = () => {
                 <p className="total-employes-container-p">Personal Leaves</p>
               </div>
               <div className="total-employes-container-price">
-                <p className="total-employes-container-price-p">294</p>
+                <p className="total-employes-container-price-p">
+                  {data?.[0].personalLeave}
+                </p>
                 <img src={Lightbluevector} />
               </div>
               <div className="total-employes-container-footer-lightblue">
                 <div className="total-employes-container-footer-flex">
                   <img src={Arrowsquereupright} />
-                  <p style={{ fontSize: "13px" }}>+2%</p>
+                  <p style={{ fontSize: "13px" }}>
+                    {data?.[0].personalLeavePercentage}%
+                  </p>
                 </div>
                 <div>
                   <p style={{ fontSize: "13px" }}>vs last month</p>
@@ -186,13 +241,17 @@ const Hrmanagement = () => {
                 <p className="total-employes-container-p">Absent</p>
               </div>
               <div className="total-employes-container-price">
-                <p className="total-employes-container-price-p">39</p>
+                <p className="total-employes-container-price-p">
+                  {data?.[0].absence}
+                </p>
                 <img src={Redvector} />
               </div>
               <div className="total-employes-container-footer-red">
                 <div className="total-employes-container-footer-flex">
                   <img src={Arrowsqueredownright} />
-                  <p style={{ fontSize: "13px" }}>-12%</p>
+                  <p style={{ fontSize: "13px" }}>
+                    {data?.[0].absencePercentage}%
+                  </p>
                 </div>
                 <div>
                   <p style={{ fontSize: "13px" }}>vs last month</p>
@@ -219,11 +278,14 @@ const Hrmanagement = () => {
                   </div>
                   <div className="attendance-text-container-up-text-price">
                     <p className="attendance-text-container-up-text-price-p">
-                      1,395
+                      {data?.[1].totalAttendance}
                     </p>
                   </div>
                   <div className="attendance-text-container-button-with-text">
-                    <img src={Darkbluebutton} />
+                    <button className="card-button-light-blue">
+                      <img src={Vector} alt="vector" />
+                      <p>{data?.[1].totalAttendancePercentage}%</p>
+                    </button>
                     <p className="from-last-month">vs last month</p>
                   </div>
                 </div>
@@ -235,11 +297,14 @@ const Hrmanagement = () => {
                   </div>
                   <div className="attendance-text-container-up-text-price">
                     <p className="attendance-text-container-up-text-price-p">
-                      1,283
+                      {data?.[1].totalPersonalLeave}
                     </p>
                   </div>
                   <div className="attendance-text-container-button-with-text">
-                    <img src={Lightbluebutton} />
+                    <button className="card-button-light-blue">
+                      <img src={Vector} alt="vector" />
+                      <p>{data?.[1].totalPersonalLeavePercentage}%</p>
+                    </button>
                     <p className="from-last-month">vs last month</p>
                   </div>
                 </div>
@@ -257,17 +322,17 @@ const Hrmanagement = () => {
               <div className="upcoming-events-container">
                 <div className="upcoming-events-container-middle">
                   <div className="upcoming-events-container-middle-month">
-                    <p>Nov 29</p>
+                    <p>{data?.[2].dayOfWeek}</p>
                   </div>
                   <div className="upcoming-events-container-employee-container">
                     <div className="upcoming-events-container-employee">
                       <div className="blue-vertical-border"></div>
                       <div className="upcoming-events-container-employee-text">
                         <p className="upcoming-events-container-employee-text-p">
-                          Employee Training
+                          {data?.[2].events?.[0].event}
                         </p>
                         <p className="upcoming-events-container-employee-text-hour">
-                          08:00 AM
+                          {data?.[2].events?.[0].time}
                         </p>
                       </div>
                     </div>
@@ -278,10 +343,10 @@ const Hrmanagement = () => {
                       <div className="light-blue-border"></div>
                       <div className="upcoming-events-container-employee-text">
                         <p className="upcoming-events-container-employee-text-p">
-                          Meeting with Team
+                          {data?.[2].events?.[1].event}
                         </p>
                         <p className="upcoming-events-container-employee-text-hour">
-                          10:00 AM
+                          {data?.[2].events?.[1].time}
                         </p>
                       </div>
                     </div>
@@ -291,10 +356,10 @@ const Hrmanagement = () => {
                       <div className="green-vertical-border"></div>
                       <div className="upcoming-events-container-employee-text">
                         <p className="upcoming-events-container-employee-text-p">
-                          Interview Candidate
+                          {data?.[2].events?.[2].event}
                         </p>
                         <p className="upcoming-events-container-employee-text-hour">
-                          11:00 PM
+                          {data?.[2].events?.[2].time}
                         </p>
                       </div>
                     </div>
@@ -303,7 +368,7 @@ const Hrmanagement = () => {
 
                 <div className="upcoming-events-container-middle">
                   <div className="upcoming-events-container-middle-month">
-                    <p>Nov 30</p>
+                    <p>{data?.[3].dayOfWeek}</p>
                   </div>
 
                   <div className="upcoming-events-container-employee-container">
@@ -311,10 +376,10 @@ const Hrmanagement = () => {
                       <div className="red-border"></div>
                       <div className="upcoming-events-container-employee-text">
                         <p className="upcoming-events-container-employee-text-p">
-                          C-level Meeting
+                          {data?.[3].events?.[0].event}
                         </p>
                         <p className="upcoming-events-container-employee-text-hour">
-                          11:00 AM
+                          {data?.[3].events?.[0].time}
                         </p>
                       </div>
                     </div>
@@ -324,10 +389,10 @@ const Hrmanagement = () => {
                       <div className="orange-vertical-border"></div>
                       <div className="upcoming-events-container-employee-text">
                         <p className="upcoming-events-container-employee-text-p">
-                          Interview Candidate
+                          {data?.[3].events?.[1].event}
                         </p>
                         <p className="upcoming-events-container-employee-text-hour">
-                          11:00 PM
+                          {data?.[3].events?.[1].time}
                         </p>
                       </div>
                     </div>
@@ -338,24 +403,10 @@ const Hrmanagement = () => {
                       <div className="blue-vertical-border"></div>
                       <div className="upcoming-events-container-employee-text">
                         <p className="upcoming-events-container-employee-text-p">
-                          Employee Workshop
+                          {data?.[3].events?.[2].event}
                         </p>
                         <p className="upcoming-events-container-employee-text-hour">
-                          08:00 AM
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="upcoming-events-container-employee-container">
-                    <div className="upcoming-events-container-employee">
-                      <div className="blue-vertical-border"></div>
-                      <div className="upcoming-events-container-employee-text">
-                        <p className="upcoming-events-container-employee-text-p">
-                          Employee Workshop
-                        </p>
-                        <p className="upcoming-events-container-employee-text-hour">
-                          08:00 AM
+                          {data?.[3].events?.[2].time}
                         </p>
                       </div>
                     </div>
@@ -364,17 +415,17 @@ const Hrmanagement = () => {
 
                 <div className="upcoming-events-container-middle">
                   <div className="upcoming-events-container-middle-month">
-                    <p>Nov 31 </p>
+                    <p>{data?.[4].dayOfWeek}</p>
                   </div>
                   <div className="upcoming-events-container-employee-container">
                     <div className="upcoming-events-container-employee">
                       <div className="blue-vertical-border"></div>
                       <div className="upcoming-events-container-employee-text">
                         <p className="upcoming-events-container-employee-text-p">
-                          Employee Training
+                          {data?.[4].events?.[0].event}
                         </p>
                         <p className="upcoming-events-container-employee-text-hour">
-                          08:00 AM
+                          {data?.[4].events?.[0].time}
                         </p>
                       </div>
                     </div>
@@ -385,10 +436,10 @@ const Hrmanagement = () => {
                       <div className="light-blue-border"></div>
                       <div className="upcoming-events-container-employee-text">
                         <p className="upcoming-events-container-employee-text-p">
-                          Meeting with Team
+                          {data?.[4].events?.[1].event}
                         </p>
                         <p className="upcoming-events-container-employee-text-hour">
-                          10:00 AM
+                          {data?.[4].events?.[1].time}
                         </p>
                       </div>
                     </div>
@@ -398,10 +449,10 @@ const Hrmanagement = () => {
                       <div className="green-vertical-border"></div>
                       <div className="upcoming-events-container-employee-text">
                         <p className="upcoming-events-container-employee-text-p">
-                          Interview Candidate
+                          {data?.[4].events?.[2].event}
                         </p>
                         <p className="upcoming-events-container-employee-text-hour">
-                          11:00 PM
+                          {data?.[4].events?.[2].time}
                         </p>
                       </div>
                     </div>
@@ -423,9 +474,12 @@ const Hrmanagement = () => {
                   </div>
                   <div className="today-attendance-middle-text">
                     <p className="today-attendance-middle-text-p">
-                      Product Design Team
+                      {data?.[7].team}
                     </p>
-                    <p className="today-attendance-middle-text-blue">40/50</p>
+                    <p className="today-attendance-middle-text-blue">
+                      {data?.[7].teamMemebersAttended}/
+                      {data?.[7].totalTeamMembers}
+                    </p>
                   </div>
                   <div>
                     <img src={Bluearrow} />
@@ -440,9 +494,12 @@ const Hrmanagement = () => {
                   </div>
                   <div className="today-attendance-middle-text">
                     <p className="today-attendance-middle-text-p">
-                      Development Team
+                      {data?.[8].team}
                     </p>
-                    <p className="today-attendance-middle-text-green">25/50</p>
+                    <p className="today-attendance-middle-text-blue">
+                      {data?.[8].teamMemebersAttended}/
+                      {data?.[8].totalTeamMembers}
+                    </p>
                   </div>
                   <div>
                     <img src={Greenarrow} />
@@ -457,9 +514,12 @@ const Hrmanagement = () => {
                   </div>
                   <div className="today-attendance-middle-text">
                     <p className="today-attendance-middle-text-p">
-                      Administrative Team
+                      {data?.[9].team}
                     </p>
-                    <p className="today-attendance-middle-text-red">15/50</p>
+                    <p className="today-attendance-middle-text-blue">
+                      {data?.[9].teamMemebersAttended}/
+                      {data?.[9].totalTeamMembers}
+                    </p>
                   </div>
                   <div>
                     <img src={Redarrow} />
@@ -474,10 +534,11 @@ const Hrmanagement = () => {
                   </div>
                   <div className="today-attendance-middle-text">
                     <p className="today-attendance-middle-text-p">
-                      Marketing Team
+                      {data?.[10].team}
                     </p>
-                    <p className="today-attendance-middle-text-light-blue">
-                      43/50
+                    <p className="today-attendance-middle-text-blue">
+                      {data?.[10].teamMemebersAttended}/
+                      {data?.[10].totalTeamMembers}
                     </p>
                   </div>
                   <div>
@@ -492,8 +553,13 @@ const Hrmanagement = () => {
                     <img src={Orangegraph} />
                   </div>
                   <div className="today-attendance-middle-text">
-                    <p className="today-attendance-middle-text-p">Sales Team</p>
-                    <p className="today-attendance-middle-text-orange">32/50</p>
+                    <p className="today-attendance-middle-text-p">
+                      {data?.[11].team}
+                    </p>
+                    <p className="today-attendance-middle-text-blue">
+                      {data?.[11].teamMemebersAttended}/
+                      {data?.[11].totalTeamMembers}
+                    </p>
                   </div>
                   <div>
                     <img src={Orangearrow} />
@@ -503,7 +569,7 @@ const Hrmanagement = () => {
             </div>
           </section>
 
-          <section className="empoyess-data-container">
+          {/* <section className="empoyess-data-container">
             <div className="empoyess-data-container-header">
               <p>Employees Data</p>
               <img src={Dot} />
@@ -621,7 +687,7 @@ const Hrmanagement = () => {
                 </div>
               </div>
             </div>
-          </section>
+          </section> */}
         </div>
 
         {/* rightside container section container start frfom here baby */}

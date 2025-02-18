@@ -1,7 +1,6 @@
 .section-main-container {
   display: flex;
   flex-direction: row;
-  align-items: center;
   justify-content: space-between;
 }
 .leftside-section-container {
@@ -49,6 +48,18 @@
   gap: 4px;
   align-items: center;
   justify-content: space-between;
+}
+.card-button-light-blue{
+  width: 58px;
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  justify-content: center;
+  height: 21px;
+  border-radius: 90px;
+  border: none;
+  background-color: hsla(240, 62%, 59%, 0.16);
+  color: hsla(240, 62%, 59%, 1);
 }
 .total-employes-container-price-p {
   font-size: 22px;
