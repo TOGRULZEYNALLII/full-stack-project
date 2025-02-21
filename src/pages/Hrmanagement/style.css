@@ -49,7 +49,7 @@
   align-items: center;
   justify-content: space-between;
 }
-.card-button-light-blue{
+.card-button-light-blue {
   width: 58px;
   display: flex;
   gap: 3px;
@@ -384,10 +384,6 @@ body {
   font-family: Arial, sans-serif;
 }
 
-.employee-table-container {
-  padding: 20px;
-}
-
 .filters {
   display: flex;
   justify-content: space-between;
@@ -397,7 +393,7 @@ body {
 }
 .filters-p {
   font-size: 13px;
-  height: 5px;
+  height: 1px;
   color: rgba(166, 168, 169, 1);
   font-weight: 400;
 }
@@ -443,7 +439,11 @@ body {
 .name {
   font-weight: bold;
 }
-
+.employee-table-container {
+  display: flex;
+  padding: 5px;
+  flex-direction: column;
+}
 .email {
   color: #777;
 }
@@ -684,4 +684,37 @@ body {
   font-size: 26px;
   font-weight: 600;
   color: hsla(0, 0%, 13%, 1);
+}
+.attendancerategraph {
+  height: 260px;
+  margin-right: 50px;
+  position: absolute;
+}
+.attendancerategraph-gray {
+  height: 260px;
+  position: absolute;
+}
+.height-imgs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 260px;
+}
+.flex-column {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+.height-bold {
+  height: 1px;
+  color: hsla(206, 4%, 32%, 1);
+  font-weight: 600;
+  font-size: 38px;
+}
+.attendance-rate-p {
+  font-weight: 400;
+  font-size: 13px;
+  color: hsla(216, 2%, 49%, 1);
+  line-height: 20px;
 }

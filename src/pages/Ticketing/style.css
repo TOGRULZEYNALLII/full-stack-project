@@ -522,3 +522,8 @@ table td:last-child {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   opacity: 0px;
 }
+.table-footer{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

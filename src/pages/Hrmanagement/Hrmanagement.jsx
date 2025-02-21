@@ -23,12 +23,7 @@ import Orangearrow from "./assets/todayattendance/orangevector.svg";
 import Lightbluearrow from "./assets/todayattendance/lightlbuevector.svg";
 import Bluearrow from "./assets/todayattendance/bluevector.svg";
 import Action from "./assets/table/Action.svg";
-import Adeliine from "./assets/table/Adeliine.svg";
-import Daniel from "./assets/table/Daniel.svg";
-import Jordan from "./assets/table/Jordan.svg";
-import Juliana from "./assets/table/Juliana.svg";
-import Lars from "./assets/table/Lars.svg";
-import Murad from "./assets/table/Murad.svg";
+import Attendancerategraph from "./assets/todayattendance/attendancerategraph.svg";
 import Attendancerate from "./assets/rightsideassets/attendancerate.svg";
 import CalendarBlank from "./assets/rightsideassets/calendarblank.svg";
 import Calendarblankblue from "./assets/rightsideassets/calendarblankblue.svg";
@@ -43,7 +38,301 @@ import Movedteam from "./assets/rightsideassets/movedteam.svg";
 import Startedbreak from "./assets/rightsideassets/startedbreak.svg";
 import Vectorleft from "./assets/rightsideassets/vectorleft.svg";
 import Vectorright from "./assets/rightsideassets/vectorright.svg";
+import Gray from "./assets/todayattendance/gray.svg";
 import Vector from "../Home/assets/icons/Vector.svg";
+const Hirings = () => {
+  return (
+    <>
+      <div className="hiring-container">
+        <div className="hiring-container-header">
+          <p>Hiring Analytics</p>
+          <img src={Dot} />
+        </div>
+        <div className="empolyee-rate-container-middle">
+          <select className="select" name="year" id="year">
+            <option value="2021">2021</option>
+            <option value="2022">2022</option>
+            <option value="2023" selected>
+              2023
+            </option>
+            <option value="2024">2024</option>
+          </select>
+        </div>
+
+        <div className="hiring-container-text">
+          <div className="hiring-container-text-price">
+            <p className="hiring-container-text-price-p">
+              {data?.[31].totalApplicants}
+            </p>
+            <p className="gray">Total Applicants</p>
+          </div>
+          <div className="hiring-container-text-button">
+            <img src={Green25} />
+            <p className="gray">from last year</p>
+          </div>
+        </div>
+        <div className="empolyee-rate-container-middle">
+          <img src={Hiringchart} />
+        </div>
+      </div>
+    </>
+  );
+};
+const Employerate = () => {
+  const [year, setYear] = useState("2023");
+  const [attendanceRate, setAttendanceRate] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchAttendanceRate = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8088/api/ManagementPage/EmployeeAttendanceRate?year=${year}&companyId=1`
+        );
+        if (!response.ok) {
+          throw new Error("HTTP error " + response.status);
+        }
+        const data = await response.text(); // Yanıtın text olarak çekilmesi
+        console.log("Fetched data:", data); // Gelen veriyi konsola yazdır
+        const rate = parseFloat(data); // Gelen veriyi sayıya çevir
+
+        if (!isNaN(rate)) {
+          setAttendanceRate(rate.toFixed(2)); // Sayıyı iki ondalık basamakla formatla
+          setError(null);
+        } else {
+          throw new Error("Geçerli bir yüzde verisi bulunamadı.");
+        }
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setError(err.message);
+        setAttendanceRate(null);
+      }
+    };
+
+    fetchAttendanceRate();
+  }, [year]);
+
+  return (
+    <div className="employee-rate-container">
+      <div className="empolyee-rate-container-header">
+        <p>Employee Attendance Rate</p>
+        <img src={Dot} alt="dot icon" />
+      </div>
+      <div className="empolyee-rate-container-middle">
+        <select
+          className="select"
+          name="year"
+          id="year"
+          value={year}
+          onChange={(e) => setYear(e.target.value)}>
+          <option value="2024">2024</option>
+          <option value="2025">2025</option>
+        </select>
+        <div className="height-imgs">
+          <div className="flex-column">
+            <p className="height-bold">
+              {error
+                ? error
+                : attendanceRate !== null
+                ? `${attendanceRate}%`
+                : "Loading..."}
+            </p>
+            <p className="attendance-rate-p">Attendance rate</p>
+          </div>
+          <img
+            className="attendancerategraph"
+            src={Attendancerategraph}
+            alt="graph"
+          />
+          <img
+            className="attendancerategraph-gray"
+            src={Gray}
+            alt="graph gray"
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Table = () => {
+  const [employees, setEmployees] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedPosition, setSelectedPosition] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const employeesPerPage = 6;
+
+  // Fetch Data from API
+  useEffect(() => {
+    fetch("http://localhost:8088/api/ManagementPage/EmployeesData?companyId=1")
+      .then((response) => response.json())
+      .then((data) => {
+        setEmployees(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching employees data:", error);
+      });
+  }, []);
+
+  // Filter employees based on search and filters
+  const filteredEmployees = employees.filter(
+    (employee) =>
+      employee.employeeName.toLowerCase().includes(searchQuery.toLowerCase()) &&
+      (selectedPosition === "" || employee.position === selectedPosition) &&
+      (selectedStatus === "" || employee.status === selectedStatus)
+  );
+
+  // Pagination logic
+  const indexOfLastEmployee = currentPage * employeesPerPage;
+  const indexOfFirstEmployee = indexOfLastEmployee - employeesPerPage;
+  const currentEmployees = filteredEmployees.slice(
+    indexOfFirstEmployee,
+    indexOfLastEmployee
+  );
+  const totalPages = Math.ceil(filteredEmployees.length / employeesPerPage);
+
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const previousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  // Unique positions and statuses for filters
+  const positions = [...new Set(employees.map((emp) => emp.position))];
+  const statuses = [...new Set(employees.map((emp) => emp.status))];
+
+  return (
+    <>
+      <section className="empoyess-data-container">
+        <div className="empoyess-data-container-header">
+          <p>Employees Data</p>
+          <img src={Dot} alt="dot icon" />
+        </div>
+        <div className="table">
+          <div className="employee-table-container">
+            <div className="filters">
+              <div className="search-input">
+                <p className="filters-p">Search User</p>
+                <input
+                  type="text"
+                  placeholder="Enter name"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <div className="filter-select">
+                <p className="filters-p">Position</p>
+                <select
+                  value={selectedPosition}
+                  onChange={(e) => setSelectedPosition(e.target.value)}>
+                  <option value="">Select Position</option>
+                  {positions.map((position, index) => (
+                    <option key={index} value={position}>
+                      {position}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="filter-select">
+                <p className="filters-p">Status</p>
+                <select
+                  value={selectedStatus}
+                  onChange={(e) => setSelectedStatus(e.target.value)}>
+                  <option value="">Select Status</option>
+                  {statuses.map((status, index) => (
+                    <option key={index} value={status}>
+                      {status}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <table className="employee-table">
+              <thead>
+                <tr>
+                  <th>Employee</th>
+                  <th>Position</th>
+                  <th>Attendance Rate</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentEmployees.map((employee, index) => (
+                  <tr key={index}>
+                    <td>
+                      <div className="employee-info">
+                        <input className="checkbox" type="checkbox" />
+
+                        <div>
+                          <div className="name">{employee.employeeName}</div>
+                          <div className="email">{employee.email}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="position">{employee.position}</div>
+                      <div className="team">{employee.team}</div>
+                    </td>
+                    <td>
+                      <div className="attendance-bar">
+                        <div
+                          className="attendance-fill"
+                          style={{
+                            width: `${employee.attendanceRate}%`,
+                            backgroundColor:
+                              employee.attendanceRate > 80
+                                ? "hsla(169, 100%, 39%, 1)"
+                                : "hsla(357, 100%, 63%, 1)",
+                          }}></div>
+                      </div>
+                      <span>{employee.attendanceRate}%</span>
+                    </td>
+                    <td>
+                      <div
+                        className={`status ${employee.status.toLowerCase()}`}>
+                        {employee.status}
+                      </div>
+                    </td>
+                    <td>
+                      <img src={Action} alt="action icon" />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <div className="nextpreviuous-button-container">
+              <button
+                className="previous"
+                onClick={previousPage}
+                disabled={currentPage === 1}>
+                Previous
+              </button>
+              <p>
+                Page {currentPage} of {totalPages}
+              </p>
+              <button
+                className="next"
+                onClick={nextPage}
+                disabled={currentPage === totalPages}>
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+};
+
 const Hrmanagement = () => {
   const [data, setData] = useState();
   const [loading, setLoading] = useState(false);
@@ -54,6 +343,8 @@ const Hrmanagement = () => {
     "http://localhost:8088/api/ManagementPage/AttendanceStatistics?companyId=1",
     "http://localhost:8088/api/ManagementPage/UpcomingEvents?companyId=1",
     "http://localhost:8088/api/ManagementPage/DailyAttendance?companyId=1",
+    "http://localhost:8088/api/ManagementPage/LatestActivity?companyId=1",
+    "http://localhost:8088/api/ManagementPage/HiringAnalytics?year=2024&companyId=1",
   ];
 
   // Verileri çekip, faturaları ayırıyoruz
@@ -376,10 +667,10 @@ const Hrmanagement = () => {
                       <div className="red-border"></div>
                       <div className="upcoming-events-container-employee-text">
                         <p className="upcoming-events-container-employee-text-p">
-                          {data?.[3].events?.[0].event}
+                          {data?.[2].events?.[0].event}
                         </p>
                         <p className="upcoming-events-container-employee-text-hour">
-                          {data?.[3].events?.[0].time}
+                          {data?.[2].events?.[0].time}
                         </p>
                       </div>
                     </div>
@@ -389,10 +680,10 @@ const Hrmanagement = () => {
                       <div className="orange-vertical-border"></div>
                       <div className="upcoming-events-container-employee-text">
                         <p className="upcoming-events-container-employee-text-p">
-                          {data?.[3].events?.[1].event}
+                          {data?.[2].events?.[1].event}
                         </p>
                         <p className="upcoming-events-container-employee-text-hour">
-                          {data?.[3].events?.[1].time}
+                          {data?.[2].events?.[1].time}
                         </p>
                       </div>
                     </div>
@@ -403,10 +694,10 @@ const Hrmanagement = () => {
                       <div className="blue-vertical-border"></div>
                       <div className="upcoming-events-container-employee-text">
                         <p className="upcoming-events-container-employee-text-p">
-                          {data?.[3].events?.[2].event}
+                          {data?.[2].events?.[2].event}
                         </p>
                         <p className="upcoming-events-container-employee-text-hour">
-                          {data?.[3].events?.[2].time}
+                          {data?.[2].events?.[2].time}
                         </p>
                       </div>
                     </div>
@@ -415,17 +706,17 @@ const Hrmanagement = () => {
 
                 <div className="upcoming-events-container-middle">
                   <div className="upcoming-events-container-middle-month">
-                    <p>{data?.[4].dayOfWeek}</p>
+                    <p>{data?.[6].dayOfWeek}</p>
                   </div>
                   <div className="upcoming-events-container-employee-container">
                     <div className="upcoming-events-container-employee">
                       <div className="blue-vertical-border"></div>
                       <div className="upcoming-events-container-employee-text">
                         <p className="upcoming-events-container-employee-text-p">
-                          {data?.[4].events?.[0].event}
+                          {data?.[6].events?.[0].event}
                         </p>
                         <p className="upcoming-events-container-employee-text-hour">
-                          {data?.[4].events?.[0].time}
+                          {data?.[6].events?.[0].time}
                         </p>
                       </div>
                     </div>
@@ -436,10 +727,10 @@ const Hrmanagement = () => {
                       <div className="light-blue-border"></div>
                       <div className="upcoming-events-container-employee-text">
                         <p className="upcoming-events-container-employee-text-p">
-                          {data?.[4].events?.[1].event}
+                          {data?.[5].events?.[1].event}
                         </p>
                         <p className="upcoming-events-container-employee-text-hour">
-                          {data?.[4].events?.[1].time}
+                          {data?.[5].events?.[1].time}
                         </p>
                       </div>
                     </div>
@@ -449,10 +740,10 @@ const Hrmanagement = () => {
                       <div className="green-vertical-border"></div>
                       <div className="upcoming-events-container-employee-text">
                         <p className="upcoming-events-container-employee-text-p">
-                          {data?.[4].events?.[2].event}
+                          {data?.[5].events?.[2].event}
                         </p>
                         <p className="upcoming-events-container-employee-text-hour">
-                          {data?.[4].events?.[2].time}
+                          {data?.[5].events?.[2].time}
                         </p>
                       </div>
                     </div>
@@ -568,7 +859,7 @@ const Hrmanagement = () => {
               </div>
             </div>
           </section>
-
+          <Table />
           {/* <section className="empoyess-data-container">
             <div className="empoyess-data-container-header">
               <p>Employees Data</p>
@@ -782,7 +1073,8 @@ const Hrmanagement = () => {
                 </div>
               </div>
             </div>
-            <div className="employee-rate-container">
+            <Employerate />
+            {/* <div className="employee-rate-container">
               <div className="empolyee-rate-container-header">
                 <p>Employee Attendance Rate</p>
                 <img src={Dot} />
@@ -796,9 +1088,20 @@ const Hrmanagement = () => {
                   </option>
                   <option value="2024">2024</option>
                 </select>
-                <img src={Attendancerate} />
+                <div className="height-imgs">
+                  <div className="flex-column">
+                    <p className="height-bold">62.5%</p>
+                    <p className="attendance-rate-p">Attendance rate</p>
+                  </div>
+
+                  <img
+                    className="attendancerategraph"
+                    src={Attendancerategraph}
+                  />
+                  <img className="attendancerategraph-gray" src={Gray} />
+                </div>
               </div>
-            </div>
+            </div> */}
             <div className="latest-activity-container">
               <div className="latest-activity-container-header">
                 <p>Latest Activity</p>
@@ -811,11 +1114,11 @@ const Hrmanagement = () => {
                   </div>
 
                   <div className="latest-activity-middle-text">
-                    <p className="height-10"> Jordan Nico</p>
-                    <p className="gray">Clocked Out</p>
+                    <p className="height-10"> {data?.[28].name}</p>
+                    <p className="gray">{data?.[28].activityDetails}</p>
                   </div>
                   <div>
-                    <p className="gray">03:00 PM</p>
+                    <p className="gray">{data?.[28].time}</p>
                   </div>
                 </div>
 
@@ -823,11 +1126,11 @@ const Hrmanagement = () => {
                   <div className="latest-activity-middle">
                     <img src={Clockin} />
                     <div className="latest-activity-middle-text">
-                      <p className="height-10"> Adeline Palmerston</p>
-                      <p className="gray">Clocked In</p>
+                      <p className="height-10"> {data?.[29].name}</p>
+                      <p className="gray">{data?.[29].activityDetails}</p>
                     </div>
                     <div>
-                      <p className="gray">03:00 PM</p>
+                      <p className="gray">{data?.[29].time}</p>
                     </div>
                   </div>
                 </div>
@@ -836,11 +1139,11 @@ const Hrmanagement = () => {
                   <div className="latest-activity-middle">
                     <img src={Joinedteam} />
                     <div className="latest-activity-middle-text">
-                      <p className="height-10"> Daniel Gallego</p>
-                      <p className="gray">Joined Team</p>
+                      <p className="height-10"> {data?.[30].name}</p>
+                      <p className="gray">{data?.[30].activityDetails}</p>
                     </div>
                     <div>
-                      <p className="gray">01:00 PM</p>
+                      <p className="gray">{data?.[30].time}</p>
                     </div>
                   </div>
                 </div>
@@ -849,11 +1152,11 @@ const Hrmanagement = () => {
                   <div className="latest-activity-middle">
                     <img src={Movedteam} />
                     <div className="latest-activity-middle-text">
-                      <p className="height-10"> Juliana Silva</p>
-                      <p className="gray">Moved Team</p>
+                      <p className="height-10"> {data?.[28].name}</p>
+                      <p className="gray">{data?.[28].activityDetails}</p>
                     </div>
                     <div>
-                      <p className="gray">01:00 PM</p>
+                      <p className="gray">{data?.[28].time}</p>
                     </div>
                   </div>
                 </div>
@@ -861,46 +1164,17 @@ const Hrmanagement = () => {
                   <div className="latest-activity-middle">
                     <img src={Startedbreak} />
                     <div className="latest-activity-middle-text">
-                      <p className="height-10"> Murad Naser</p>
-                      <p className="gray">Started a Break</p>
+                      <p className="height-10"> {data?.[29].name}</p>
+                      <p className="gray">{data?.[29].activityDetails}</p>
                     </div>
                     <div>
-                      <p className="gray">11:00 AM</p>
+                      <p className="gray">{data?.[29].time}</p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="hiring-container">
-              <div className="hiring-container-header">
-                <p>Hiring Analytics</p>
-                <img src={Dot} />
-              </div>
-              <div className="empolyee-rate-container-middle">
-                <select className="select" name="year" id="year">
-                  <option value="2021">2021</option>
-                  <option value="2022">2022</option>
-                  <option value="2023" selected>
-                    2023
-                  </option>
-                  <option value="2024">2024</option>
-                </select>
-              </div>
-
-              <div className="hiring-container-text">
-                <div className="hiring-container-text-price">
-                  <p className="hiring-container-text-price-p">45,741</p>
-                  <p className="gray">Total Applicants</p>
-                </div>
-                <div className="hiring-container-text-button">
-                  <img src={Green25} />
-                  <p className="gray">from last year</p>
-                </div>
-              </div>
-              <div className="empolyee-rate-container-middle">
-                <img src={Hiringchart} />
-              </div>
-            </div>
+            <Hirings />
           </div>
         </div>
       </section>

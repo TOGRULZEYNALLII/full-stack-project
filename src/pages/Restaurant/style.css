@@ -734,11 +734,10 @@
 }
 .filter-select {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
   width: 150px;
   cursor: pointer;
-  border: 1px solid hsla(240, 1%, 83%, 1);
+  margin-bottom: 30px;
   height: 30px;
 }
 .border {
@@ -775,11 +774,11 @@
   justify-content: space-between;
   width: 150px;
 }
-.small{
+.small {
   font-size: 13px;
   color: hsla(216, 2%, 49%, 1);
 }
-.postove-reviews-height-gap{
+.postove-reviews-height-gap {
   display: flex;
   align-items: center;
   justify-content: space-between;

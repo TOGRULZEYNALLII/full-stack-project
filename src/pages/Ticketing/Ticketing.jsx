@@ -1,6 +1,6 @@
 import React from "react";
 import "./style.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Arrowright from "./assets/header/ArrowRight.svg";
 import Growthgraph from "./assets/header/GrowthGraph.svg";
 import Salesgraphhorizontal from "./assets/header/SalesGraphHorizontal.svg";
@@ -18,79 +18,152 @@ import Footergraph from "./assets/footer/footergraph.svg";
 import Salescomprasion from "./assets/footer/salescomprasion.svg";
 import Salessummary from "./assets/footer/salessummary.svg";
 import Ticketingfooterleftimg from "./assets/footer/ticketingfooterleftimg.svg";
-
-const Ticketing = () => {
-  const transactionsData = [
-    {
-      id: "#2948592",
-      name: "Adeline Palmerston",
-      date: "30/05/2023",
-      amount: "$430.83",
-      status: "Paid",
-    },
-    {
-      id: "#283749483",
-      name: "Jordan Nico",
-      date: "29/05/2023",
-      amount: "$120.55",
-      status: "Pending",
-    },
-    {
-      id: "#783737492",
-      name: "Daniel Gallego",
-      date: "29/05/2023",
-      amount: "$1,283.87",
-      status: "Refunded",
-    },
-    {
-      id: "#293273646",
-      name: "Juliana Silva",
-      date: "28/05/2023",
-      amount: "$2,386.83",
-      status: "Paid",
-    },
-    {
-      id: "#161837368",
-      name: "Murad Naser",
-      date: "28/05/2023",
-      amount: "$75.84",
-      status: "Paid",
-    },
-  ];
-
-  const [filteredTransactions, setFilteredTransactions] =
-    useState(transactionsData);
+const LatestTransactions = () => {
+  const [transactions, setTransactions] = useState([]);
   const [filters, setFilters] = useState({ name: "", date: "", status: "" });
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  useEffect(() => {
+    fetch(
+      "http://localhost:8088/api/TicketingPage/LatestTransactions?companyId=1"
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        setTransactions(data);
+      })
+      .catch((error) => console.error("Error fetching transactions:", error));
+  }, []);
+
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [name]: value,
-    }));
+    setFilters((prev) => ({ ...prev, [name]: value }));
+    // Filtre değiştiğinde sayfa numarasını 1'e sıfırla
+    setCurrentPage(1);
   };
 
-  const applyFilters = () => {
-    const filtered = transactionsData.filter((transaction) => {
-      return (
-        (filters.name === "" ||
-          transaction.name
-            .toLowerCase()
-            .includes(filters.name.toLowerCase())) &&
-        (filters.date === "" || transaction.date === filters.date) &&
-        (filters.status === "" || transaction.status === filters.status)
-      );
-    });
+  // Filtreleme işlemi: İsim, tarih ve statü
+  const filteredTransactions = transactions.filter((transaction) => {
+    const nameMatch = filters.name
+      ? transaction.customerName
+          .toLowerCase()
+          .includes(filters.name.toLowerCase())
+      : true;
+    const dateMatch = filters.date
+      ? transaction.purchaseDate === filters.date
+      : true;
+    const statusMatch = filters.status
+      ? transaction.status.toLowerCase() === filters.status.toLowerCase()
+      : true;
+    return nameMatch && dateMatch && statusMatch;
+  });
 
-    // Eğer sonuç boşsa veya hata varsa kontrol et
-    if (filtered.length === 0) {
-      // Boş durumu ele al (örneğin kullanıcıya mesaj göster)
-      console.log("Sonuç bulunamadı.");
-      setFilteredTransactions([]); // Boş sonuç set et veya hata mesajı göster
-    } else {
-      setFilteredTransactions(filtered); // Normal durumda filtrelenmiş verileri ayarla
+  // Toplam sayfa sayısını hesaplayalım
+  const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
+  // Geçerli sayfa için gösterilecek veriyi dilimle
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentData = filteredTransactions.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
     }
   };
 
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
+
+  return (
+    <section className="transaction-section">
+      <div className="transaction-container">
+        <div className="transaction-container-header">
+          <p>Latest Transactions</p>
+          <img src={Dot} alt="dot icon" />
+        </div>
+
+        <div className="select-input-container">
+          <input
+            className="input-name"
+            type="text"
+            name="name"
+            placeholder="Enter name"
+            value={filters.name}
+            onChange={handleFilterChange}
+          />
+          <input
+            className="input-date"
+            type="date"
+            name="date"
+            value={filters.date}
+            onChange={handleFilterChange}
+          />
+          <select
+            className="select-input"
+            name="status"
+            value={filters.status}
+            onChange={handleFilterChange}>
+            <option value="">Select Status</option>
+            <option value="Paid">Paid</option>
+            <option value="Pending">Pending</option>
+            <option value="Refunded">Refunded</option>
+          </select>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer Name</th>
+              <th>Purchased Date</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentData.length > 0 ? (
+              currentData.map((transaction, index) => (
+                <tr key={startIndex + index}>
+                  <td>{transaction.id || startIndex + index}</td>
+                  <td>{transaction.customerName}</td>
+                  <td>{transaction.purchaseDate}</td>
+                  <td>{transaction.amount}</td>
+                  <td>{transaction.status}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5">No transactions found</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+
+        <div className="table-footer">
+          <p>
+            Page {currentPage} of {totalPages}
+          </p>
+          <div className="-table-footer-buttons">
+            <button onClick={handlePreviousPage} disabled={currentPage === 1}>
+              Previous
+            </button>
+            <button
+              onClick={handleNextPage}
+              disabled={currentPage >= totalPages}>
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+const Ticketing = () => {
   return (
     <>
       <section className="Ticketing-header-section">
@@ -210,7 +283,7 @@ const Ticketing = () => {
         </div>
       </section>
 
-      <section className="transaction-section">
+      {/* <section className="transaction-section">
         <div className="transaction-section-conatiner">
           <div className="customer-statistics-container">
             <div className="customer-statistics-container-header">
@@ -348,8 +421,16 @@ const Ticketing = () => {
               </tbody>
             </table>
           </div>
+          <div className="table-footer">
+            <p>Showing 5 of 293 data</p>
+            <div className="-table-footer-buttons">
+              <button>Previous</button>
+              <button>Next</button>
+            </div>
+          </div>
         </div>
-      </section>
+      </section> */}
+      <LatestTransactions />
 
       <section className="ticketing-footer-section">
         <div className="ticketing-footer-container-left">
