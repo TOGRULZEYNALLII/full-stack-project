@@ -45,6 +45,7 @@ const links = {
   Hrmanagement: "http://localhost:5173/hrmanagement",
   Ticketing: "http://localhost:5173/ticketing",
   Pointofsales: "http://localhost:5173/pointofsales",
+  Hospital: "http://localhost:5173/hospital",
 };
 
 // components buttons

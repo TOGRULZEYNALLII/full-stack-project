@@ -25,8 +25,276 @@ import Background from "./assets/header/background.svg";
 import Vectorupgreen from "./assets/totalorders/vectorupgreen.svg";
 import Mastercard from "../Banking/assets/cards/mastercard.svg";
 import WaweElements from "../Banking/assets/cards/waveElements.svg";
-const Productsales = () => {
-  return <></>;
+import Progressblue from "./assets/vistors/progressblue.svg";
+import Progressoramge from "./assets/vistors/progressorange.svg";
+import Vistorsgraph from "./assets/vistors/vistorsgraph.svg";
+import Vistors from "./assets/vistors/vistors.svg";
+import Cargobox from "./assets/vistors/cargobox.svg";
+import Truckbox from "./assets/vistors/truckbox.svg";
+import Planebox from "./assets/vistors/planebox.svg";
+const Vistorsfunction = () => {
+  const [selectedTimestamp, setSelectedTimestamp] = useState("Weekly");
+  const [visitorsData, setVisitorsData] = useState(null);
+
+  // Seçili zaman dilimi değiştikçe API'den verileri çekiyoruz.
+  useEffect(() => {
+    fetch(
+      `http://localhost:8088/api/PointOfSalesPage/Visitors?timestamp=${selectedTimestamp}&marketId=1`
+    )
+      .then((res) => res.json())
+      .then((data) => setVisitorsData(data))
+      .catch((err) => console.error("Error fetching visitors data:", err));
+  }, [selectedTimestamp]);
+
+  // totalVisitors dizisindeki değerlerin toplamını hesaplıyoruz.
+  const totalVisitors =
+    visitorsData && visitorsData.totalVisitors
+      ? visitorsData.totalVisitors.reduce(
+          (sum, item) => sum + item.totalVisitors,
+          0
+        )
+      : 0;
+
+  return (
+    <div className="vistors-container">
+      <div className="vistors-header">
+        <p>Visitors</p>
+        <div className="flex">
+          <button
+            className="vistors-buttons"
+            onClick={() => setSelectedTimestamp("Weekly")}>
+            Weekly
+          </button>
+          <button
+            className="vistors-buttons"
+            onClick={() => setSelectedTimestamp("Monthly")}>
+            Monthly
+          </button>
+          <button
+            className="vistors-buttons"
+            onClick={() => setSelectedTimestamp("Yearly")}>
+            Yearly
+          </button>
+        </div>
+      </div>
+      <div className="vistors-container-middle">
+        <div>
+          <div className="flex">
+            <div className="flex-special">
+              <p className="gray">New Visitors</p>
+              <p className="green">
+                {visitorsData
+                  ? visitorsData.newAndReturningVisitors.newVisitorsPercentage >
+                    0
+                    ? `+${visitorsData.newAndReturningVisitors.newVisitorsPercentage}%`
+                    : `${visitorsData.newAndReturningVisitors.newVisitorsPercentage}%`
+                  : ""}
+              </p>
+            </div>
+            <div>
+              <p className="gray-little-special">
+                {visitorsData
+                  ? visitorsData.newAndReturningVisitors.newVisitors
+                  : "..."}
+              </p>
+            </div>
+          </div>
+          <div>
+            <img src={Progressblue} alt="Progress Blue" />
+          </div>
+        </div>
+        <div>
+          <div className="flex">
+            <div className="flex-special">
+              <p className="gray">Returning</p>
+              <p className="red">
+                {visitorsData
+                  ? visitorsData.newAndReturningVisitors
+                      .returningVisitorsPercentage > 0
+                    ? `+${visitorsData.newAndReturningVisitors.returningVisitorsPercentage}%`
+                    : `${visitorsData.newAndReturningVisitors.returningVisitorsPercentage}%`
+                  : ""}
+              </p>
+            </div>
+            <div>
+              <p className="gray-little-special">
+                {visitorsData
+                  ? visitorsData.newAndReturningVisitors.returningVisitors
+                  : "..."}
+              </p>
+            </div>
+          </div>
+          <div>
+            <img src={Progressoramge} alt="Progress Orange" />
+          </div>
+        </div>
+      </div>
+      <div>
+        <img src={Vistorsgraph} alt="Visitors Graph" />
+        <div className="vistors-absolute-container">
+          <img src={Vistors} alt="Visitors Icon" />
+          <div>
+            <p className="bold-little-special">{totalVisitors}</p>
+            <p className="gray">visitors</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ProductSales = () => {
+  const [products, setProducts] = useState([]);
+  const [filters, setFilters] = useState({ month: "January", year: "2024" });
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  // Ay ve yıl değiştikçe API'den verileri çekiyoruz.
+  useEffect(() => {
+    if (filters.month && filters.year) {
+      fetch(
+        `http://localhost:8088/api/PointOfSalesPage/ProductSales?month=${filters.month}&year=${filters.year}&marketId=1`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          setProducts(data);
+        })
+        .catch((error) =>
+          console.error("Error fetching product sales:", error)
+        );
+    }
+  }, [filters.month, filters.year]);
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prev) => ({ ...prev, [name]: value }));
+    // Her filtre değişiminde sayfa numarasını sıfırlıyoruz.
+    setCurrentPage(1);
+  };
+
+  // Sayfalama işlemi
+  const totalPages = Math.ceil(products.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentData = products.slice(startIndex, startIndex + itemsPerPage);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
+
+  return (
+    <section className="transaction-section-special-secondary">
+      <div className="transaction-container-special">
+        <div className="transaction-container-header">
+          <div>
+            <p className="transaction-p">Product Sales</p>
+          </div>
+          {/* Ay ve yıl select'leri, dinamik olarak API isteğini tetikler */}
+          <div>
+            <select
+              name="month"
+              value={filters.month}
+              onChange={handleFilterChange}>
+              <option value="January">January</option>
+              <option value="February">February</option>
+              <option value="March">March</option>
+              <option value="April">April</option>
+              <option value="May">May</option>
+              <option value="June">June</option>
+              <option value="July">July</option>
+              <option value="August">August</option>
+              <option value="September">September</option>
+              <option value="October">October</option>
+              <option value="November">November</option>
+              <option value="December">December</option>
+            </select>
+            <select
+              name="year"
+              value={filters.year}
+              onChange={handleFilterChange}>
+              <option value="2024">2024</option>
+              <option value="2025">2025</option>
+              <option value="2026">2026</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="select-input-container-pop"></div>
+
+        <table className="transaction-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Product Name</th>
+              <th>Status</th>
+              <th>stok</th>
+              <th>price</th>
+              <th>sales</th>
+              <th>earnings</th>
+            </tr>
+          </thead>
+          <tbody className="tbdoy">
+            {currentData.length > 0 ? (
+              currentData.map((product, index) => (
+                <tr key={startIndex + index}>
+                  {/* Eğer orderId yoksa, index numarasını kullanıyoruz */}
+                  <td>{product.orderId || startIndex + index + 1}</td>
+                  <td>{product.productName}</td>
+                  <div className="table-td-flex">
+                    <button
+                      className={
+                        product.status === "Available"
+                          ? "status-green"
+                          : product.status === "On Review"
+                          ? "paid-special-secondary"
+                          : product.status === "Out of Stock"
+                          ? "refunded-special-secondary"
+                          : ""
+                      }>
+                      {product.status}
+                    </button>
+                  </div>
+                  <td className="gray">{product.stock}</td>
+                  <td className="bold-little">${product.price}</td>
+                  <td className="gray">{product.sales}</td>
+                  <td className="bold-little">{product.earnings}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="7">No product sales found</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+
+        <div className="table-footer">
+          <button
+            className="previous"
+            onClick={handlePreviousPage}
+            disabled={currentPage === 1}>
+            Previous
+          </button>
+          <p>
+            Page {currentPage} of {totalPages}
+          </p>
+          <button
+            className="next"
+            onClick={handleNextPage}
+            disabled={currentPage >= totalPages}>
+            Next
+          </button>
+        </div>
+      </div>
+    </section>
+  );
 };
 const LatestTransactions = () => {
   const [transactions, setTransactions] = useState([]);
@@ -488,9 +756,59 @@ const Pos = () => {
         </div>
       </section>
 
-      <section className="product-sales-section">
-        <div className="product-sales-left">
-          <Productsales />
+      <section className="product-sales-section-main">
+        <section className="product-sales-section">
+          <ProductSales />
+          <div className="product-sales-section-middle">
+            <Vistorsfunction />
+            <div className="sales-activity">
+              <div className="sales-acitivity-header">
+                <p>Sales Activity</p>
+                <select name="" id="">
+                  <option value="January">January</option>
+                </select>
+              </div>
+              <div className="flex-special">
+                <img src={Cargobox} />
+                <div>
+                  <p className="height">tobebacac</p>
+                  <div className="flex">
+                    <p className="bold-little">10,023</p>
+                    <img src={Greensquareup} />
+                    <p className="green">+23%</p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex-special">
+                <img src={Planebox} />
+                <div>
+                  <p className="height">tobebacac</p>
+                  <div className="flex">
+                    <p className="bold-little">10,023</p>
+                    <img src={ArrowSquareDownLeft} />
+                    <p className="red">+23%</p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex-special">
+                <img src={Truckbox} />
+                <div>
+                  <p className="height">tobebacac</p>
+                  <div className="flex">
+                    <p className="bold-little">10,023</p>
+                    <img src={Greensquareup} />
+                    <p className="green">+23%</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <div className="recent-activity">
+          <div className="recent-activity-header">
+            <p>Recent Activity</p>
+            <img src={Treedot} />
+          </div>
         </div>
       </section>
     </>
