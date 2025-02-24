@@ -19,6 +19,8 @@ import Leave from "./assets/patient/leave.svg";
 import Patientgraph from "./assets/patient/patientgraph.svg";
 import Unaviable from "./assets/patient/unaviable.svg";
 import Treedot from "../Sidebar/assets/icons/dot.svg";
+import Revenue from "./assets/revenue.svg";
+import Vectorupgreen from "../Pos/assets/totalorders/vectorupgreen.svg";
 const PatientAppointment = () => {
   const [appointments, setAppointments] = useState([]);
   const [filters, setFilters] = useState({ name: "", date: "", status: "" });
@@ -623,7 +625,106 @@ const HospitalManagement = () => {
           </div>
         </div>
         <div className="hospital-footer-section-middle">
-          
+          <div className="hospital-footer-section-middle-header">
+            <p className="bold-ittle">Revenue</p>
+            <div className="flex">
+              <div className="flex">
+                <div className="circle-light-blue-little"></div>
+                <p className="gray-big">Income</p>
+              </div>
+              <div className="flex">
+                <div className="circle-blue-little"></div>
+                <p className="gray-big">Expense</p>
+              </div>
+            </div>
+            <select className="select-little" name="" id="">
+              <option value="">2025</option>
+            </select>
+          </div>
+          <div className="hospital-footer-section-middle-text">
+            <div className="flex">
+              <p className="bold">$13,777,200</p>
+              <button className="green-button">
+                <img src={Vectorupgreen} alt="" />
+                sad
+              </button>
+            </div>
+            <div>
+              <p className="bold-little">Increase amount $6,283.00</p>
+              <p className="gray">From 01/01/2025-30/12/2025</p>
+            </div>
+          </div>
+
+          <div>
+            <img src={Revenue} />
+          </div>
+          <div className="revenue-box-container">
+            <div className="revenure-box">
+              <div className="flex-special-secondary">
+                <div className="light-blue-circle"></div>
+                <p className="gray-big">Income</p>
+              </div>
+              <div>
+                <p className="bold-little">$11,273.95</p>
+              </div>
+              <div className="flex-special-secondary">
+                <img src={Greensquareup} />
+                <p className="green">+15%</p>
+                <p className="gray">from last month</p>
+              </div>
+            </div>
+            <div className="vector"></div>
+            <div className="revenure-box">
+              <div className="flex-special-secondary">
+                <div className="orange-circle"></div>
+                <p className="gray-big">Income</p>
+              </div>
+              <div>
+                <p className="bold-little">$11,273.95</p>
+              </div>
+              <div className="flex-special-secondary">
+                <img src={ArrowSquareDownLeft} />
+                <p className="red">+15%</p>
+                <p className="gray">from last month</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="recent-activity-container">
+          <div className="header">
+            <p className="bold-little">Recent Activity</p>
+            <p className="blue">view all</p>
+          </div>
+          <div className="recent-activity-container-content-boxs">
+            <div className="recent-activity-container-content">
+              <p className="bold-little-special ">Daniel Roe</p>
+              <p className="recent-activity-containe-p">
+                registered as a new patient
+              </p>
+              <p className="gray-little">15 minutes ago</p>
+            </div>
+            <div className="recent-activity-container-content">
+              <p className="bold-little-special ">Daniel Roe</p>
+              <p className="recent-activity-containe-p">
+                registered as a new patient
+              </p>
+              <p className="gray-little">15 minutes ago</p>
+            </div>
+            <div className="recent-activity-container-content">
+              <p className="bold-little-special ">Daniel Roe</p>
+              <p className="recent-activity-containe-p">
+                registered as a new patient
+              </p>
+              <p className="gray-little">15 minutes ago</p>
+            </div>
+            <div className="recent-activity-container-content">
+              <p className="bold-little-special ">Daniel Roe</p>
+              <p className="recent-activity-containe-p">
+                registered as a new patient
+              </p>
+              <p className="gray-little">15 minutes ago</p>
+            </div>
+          </div>
         </div>
       </section>
     </>

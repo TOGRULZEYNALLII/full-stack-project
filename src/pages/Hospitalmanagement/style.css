@@ -415,3 +415,109 @@
   height: 400px;
   margin-top: 10px;
 }
+.hospital-footer-section-middle-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.hospital-footer-section-middle {
+  width: 538px;
+  display: flex;
+  flex-direction: column;
+  height: 486px;
+  border-radius: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: hsla(0, 0%, 100%, 1);
+  gap: 10px;
+  padding-left: 20px;
+  padding-top: 10px;
+  padding-right: 20px;
+}
+.circle-light-blue-little {
+  width: 10px;
+  border-radius: 10px;
+  height: 10px;
+  background-color: hsla(196, 77%, 60%, 1);
+}
+.circle-blue-little {
+  width: 10px;
+  border-radius: 10px;
+  height: 10px;
+  background-color: hsla(240, 62%, 59%, 1);
+}
+.gray-big {
+  color: hsla(206, 4%, 32%, 1);
+}
+.hospital-footer-section-middle-text {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  justify-content: space-between;
+}
+.flex-special-secondary {
+  height: 4px;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 5px;
+}
+.revenue-box-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 498px;
+  height: 91px;
+  border-radius: 10px;
+  justify-content: space-between;
+  padding: 20px;
+  border-width: 1px;
+  border: 1px solid hsla(0, 0%, 86%, 1);
+}
+.vector {
+  width: 1px;
+  height: 80px;
+  background-color: hsla(0, 0%, 86%, 1);
+}
+.orange-circle {
+  background-color: hsla(34, 100%, 63%, 1);
+  width: 10px;
+  height: 10px;
+  border-radius: 90px;
+}
+.recent-activity-container {
+  width: 256px;
+  height: 486px;
+  border-radius: 10px;
+  gap: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: hsla(0, 0%, 100%, 1);
+  padding: 20px;
+}
+.blue {
+  color: hsla(240, 62%, 59%, 1);
+  font-size: 12px;
+}
+.recent-activity-container-content {
+  display: flex;
+  flex-direction: column;
+  width: 216px;
+  border: 1px solid hsla(0, 0%, 86%, 1);
+  height: 110px;
+  padding-left: 10px;
+  border-radius: 10px;
+  padding-right: 10px;
+}
+.recent-activity-containe-p {
+  height: 1px;
+}
+.recent-activity-container-content-boxs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: scroll;
+  height: 380px;
+  overflow-x: hidden;
+}
