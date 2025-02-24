@@ -14,6 +14,178 @@ import Patientoverwiev from "./assets/patientoverwiev.svg";
 import Totalpatients from "./assets/totalpatients.svg";
 import ArrowSquareDownLeft from "../Pos/assets/totalorders/arrowsquaredownright.png";
 import Greensquareup from "../Pos/assets/totalorders/greensquareup.svg";
+import Aviable from "./assets/patient/aviable.svg";
+import Leave from "./assets/patient/leave.svg";
+import Patientgraph from "./assets/patient/patientgraph.svg";
+import Unaviable from "./assets/patient/unaviable.svg";
+import Treedot from "../Sidebar/assets/icons/dot.svg";
+const PatientAppointment = () => {
+  const [appointments, setAppointments] = useState([]);
+  const [filters, setFilters] = useState({ name: "", date: "", status: "" });
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  useEffect(() => {
+    fetch(
+      "http://localhost:8088/api/HospitalManagement/PatientAppointment?hospitalId=1"
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        setAppointments(data);
+      })
+      .catch((error) => console.error("Error fetching appointments:", error));
+  }, []);
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prev) => ({ ...prev, [name]: value }));
+    setCurrentPage(1);
+  };
+
+  // Filtreleme işlemi: Patient Name, Date ve Status
+  const filteredAppointments = appointments.filter((appointment) => {
+    const nameMatch = filters.name
+      ? appointment.patientName
+          .toLowerCase()
+          .includes(filters.name.toLowerCase())
+      : true;
+    // Tarih karşılaştırması için, API'den gelen ISO formatından sadece tarih kısmını alıyoruz
+    const dateMatch = filters.date
+      ? appointment.date.split("T")[0] === filters.date
+      : true;
+    const statusMatch = filters.status
+      ? appointment.status.toLowerCase() === filters.status.toLowerCase()
+      : true;
+    return nameMatch && dateMatch && statusMatch;
+  });
+
+  const totalPages = Math.ceil(filteredAppointments.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentData = filteredAppointments.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
+
+  return (
+    <section className="appointment-section">
+      <div className="appointment-container">
+        <div className="appointment-container-header">
+          <p>Patient Appointments</p>
+          {/* İkon eklemek istersen buraya ekleyebilirsin */}
+        </div>
+
+        <div className="select-input-container">
+          <input
+            className="input-name"
+            type="text"
+            name="name"
+            placeholder="Enter patient name"
+            value={filters.name}
+            onChange={handleFilterChange}
+          />
+          <input
+            className="input-date"
+            type="date"
+            name="date"
+            value={filters.date}
+            onChange={handleFilterChange}
+          />
+          <select
+            className="select-input"
+            name="status"
+            value={filters.status}
+            onChange={handleFilterChange}>
+            <option value="">Select Status</option>
+            <option value="Confirmed">Confirmed</option>
+            <option value="Pending">Pending</option>
+            <option value="Follow Up">Follow Up</option>
+          </select>
+        </div>
+
+        <table className="appointment-table">
+          <thead>
+            <tr>
+              <th>Patient’s Name</th>
+              <th>Age</th>
+              <th>Time</th>
+              <th>Doctor</th>
+              <th>Treatment</th>
+              <th>Status</th>
+              <th>More Info</th>
+            </tr>
+          </thead>
+          <tbody className="appointment-table-body">
+            {currentData.length > 0 ? (
+              currentData.map((appointment, index) => (
+                <tr
+                  className="appointment-table-body-tr"
+                  key={startIndex + index}>
+                  <td className="appointment-table-body-td">
+                    {appointment.patientName}
+                  </td>
+                  <td>{appointment.age}</td>
+                  <td>{appointment.time}</td>
+                  <td>{appointment.doctorName}</td>
+                  <td>{appointment.treatment}</td>
+                  <td>
+                    <button
+                      className={
+                        appointment.status === "Pending"
+                          ? "pendingred"
+                          : appointment.status === "Confirmed"
+                          ? "confirmed-green"
+                          : appointment.status === "Follow Up"
+                          ? "button-light-blue"
+                          : ""
+                      }>
+                      {appointment.status}
+                    </button>
+                  </td>
+                  <td>{appointment.moreInfo ? appointment.moreInfo : "-"}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="7">No appointments found</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+
+        <div className="table-footer">
+          <button
+            className="previous"
+            onClick={handlePreviousPage}
+            disabled={currentPage === 1}>
+            Previous
+          </button>
+          <p>
+            Page {currentPage} of {totalPages}
+          </p>
+
+          <button
+            className="next"
+            onClick={handleNextPage}
+            disabled={currentPage >= totalPages}>
+            Next
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+};
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -72,13 +244,21 @@ const Calendar = () => {
     <>
       <div className="calendar">
         <div className="header">
-          <button onClick={() => changeMonth(-1)}>{"<"}</button>
-          <h2>
+          <h2 className="bold-little">
             {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
           </h2>
-          <button onClick={() => changeMonth(1)}>{">"}</button>
+          <div className="calendar-buttons-container">
+            <button
+              className="calendar-buttons"
+              onClick={() => changeMonth(-1)}>
+              <img src={Arrowaquareleft} />{" "}
+            </button>
+            <button className="calendar-buttons" onClick={() => changeMonth(1)}>
+              <img src={ArrowSquareRight} />{" "}
+            </button>
+          </div>
         </div>
-        <div className="days-of-week">
+        <div className="days-of-week gray">
           {daysOfWeek.map((day) => (
             <div key={day} className="day-name">
               {day}
@@ -241,7 +421,209 @@ const HospitalManagement = () => {
           </div>
           <div className="calendar-container">
             <Calendar />
+            <div className="calendar-text">
+              <div className="div-orange"></div>
+              <div className="gap">
+                <div className="dentist-apointment-container">
+                  <p>Dentist Appointment</p>
+                  <img src={Treedot} />
+                </div>
+                <div className="flex">
+                  <img src={Clock} />
+                  <p>10:00 AM - 11:00 AM</p>
+                </div>
+              </div>
+            </div>
+            <div className="calendar-text">
+              <div className="div-light-blue"></div>
+              <div className="gap">
+                <div className="dentist-apointment-container">
+                  <p>Dentist Appointment</p>
+                  <img src={Treedot} />
+                </div>
+                <div className="flex">
+                  <img src={Clock} />
+                  <p>10:00 AM - 11:00 AM</p>
+                </div>
+              </div>
+            </div>
           </div>
+        </div>
+      </section>
+      <section className="hospital-patient-overview-seciton">
+        <div className="hospital-patient-overview-left">
+          <div className="hospital-patient-overview-left-header">
+            <p className="hospital-patient-overview-left-header-p">
+              Patient Overview by Departments
+            </p>
+            <img src={Treedot} />
+          </div>
+          <div className="hospital-patient-overview-left-inputs">
+            <select className="select-little" name="" id="">
+              <option value="Week 1">Week 1</option>
+              <option value="Week 1">Week 1</option>
+              <option value="Week 1">Week 1</option>
+              <option value="Week 1">Week 1</option>
+              <option value="Week 1">Week 1</option>
+            </select>
+            <select className="select-little" name="" id="">
+              <option value="">January</option>
+              <option value="">January</option>
+              <option value="">January</option>
+              <option value="">January</option>
+              <option value="">January</option>
+            </select>
+            <select className="select-little" name="" id="">
+              <option value="">2028</option>
+              <option value="">2028</option>
+              <option value="">2028</option>
+              <option value="">2028</option>
+              <option value="">2028</option>
+            </select>
+          </div>
+          <div className="hospital-patient-overview-left-middle">
+            <img src={Patientgraph} />
+          </div>
+          <div className="hospital-patient-overview-left-footer">
+            <div className="flex">
+              <div className="blue-circle"></div>
+              <p>Cardiology </p>
+            </div>
+            <div className="flex">
+              <div className="light-blue-circle"></div>
+              <p>Therapy</p>
+            </div>
+            <div className="flex">
+              <div className="green-circle-right"></div>
+              <p>Endocrinology</p>
+            </div>
+          </div>
+        </div>
+        <div className="hospital-patient-overview-right ">
+          <div className="hospital-patient-overview-left-header">
+            <p className="hospital-patient-overview-left-header-p">
+              Doctors’ Schedule
+            </p>
+            <img src={Treedot} />
+          </div>
+          <div className="border-vertical-special"></div>
+          <div className="hospital-patient-overview-right-middle">
+            <div className="hospital-patient-overview-right-middle-boxs">
+              <div className="hospital-patient-overview-right-middle-box ">
+                <div className="flex-row">
+                  <p className="bold-little">77</p>
+                  <p className="gray">Available</p>
+                </div>
+                <div>
+                  <img src={Aviable} />
+                </div>
+              </div>
+              <div className="hospital-patient-overview-right-middle-box">
+                <div>
+                  <p className="bold-little">77</p>
+                  <p className="gray">Unavaible</p>
+                </div>
+                <div>
+                  <img src={Unaviable} />
+                </div>
+              </div>
+              <div className="hospital-patient-overview-right-middle-box">
+                <div>
+                  <p className="bold-little">77</p>
+                  <p className="gray">Leave</p>
+                </div>
+                <div>
+                  <img src={Leave} />
+                </div>
+              </div>
+            </div>
+            <div className="hospital-patient-overview-right-middle-contents">
+              <div className="hospital-patient-overview-right-middle-contents-header">
+                <p>List of Doctor</p>
+              </div>
+              <div className="listofdoctors">
+                <div className="listofdoctors-content">
+                  <div>
+                    <p className="bold-little">Adeline Palmerston</p>
+                    <p className="gray">Cardiology</p>
+                  </div>
+                  <div>
+                    <button className="button-light-blue">sss</button>
+                  </div>
+                </div>
+                <div className="listofdoctors-content">
+                  <div>
+                    <p className="bold-little">Adeline Palmerston</p>
+                    <p className="gray">Cardiology</p>
+                  </div>
+                  <div>
+                    <button className="button-light-blue">sss</button>
+                  </div>
+                </div>
+                <div className="listofdoctors-content">
+                  <div>
+                    <p className="bold-little">Adeline Palmerston</p>
+                    <p className="gray">Cardiology</p>
+                  </div>
+                  <div>
+                    <button className="button-light-blue">sss</button>
+                  </div>
+                </div>
+                <div className="listofdoctors-content">
+                  <div>
+                    <p className="bold-little">Adeline Palmerston</p>
+                    <p className="gray">Cardiology</p>
+                  </div>
+                  <div>
+                    <button className="button-light-blue">sss</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <PatientAppointment />
+      <section className="hospital-footer-section">
+        <div className="hospital-footer-section-left">
+          <div className="hospital-footer-section-left-header">
+            <p>Reports</p>
+            <img src={Treedot} />
+          </div>
+          <div className="border-vertical-special"></div>
+          <div className="hospital-footer-section-left-content">
+            <div className="hospital-footer-section-left-content-box">
+              <p>Broken Air Conditioning on 2nd Floor</p>
+              <div className="hospital-footer-section-left-content-box-button">
+                <p className="gray">10 minutes ago</p>
+                <button className="button-right">{">"}</button>
+              </div>
+            </div>
+            <div className="hospital-footer-section-left-content-box">
+              <p>Broken Air Conditioning on 2nd Floor</p>
+              <div className="hospital-footer-section-left-content-box-button">
+                <p className="gray">10 minutes ago</p>
+                <button className="button-right">{">"}</button>
+              </div>
+            </div>
+            <div className="hospital-footer-section-left-content-box">
+              <p>Broken Air Conditioning on 2nd Floor</p>
+              <div className="hospital-footer-section-left-content-box-button">
+                <p className="gray">10 minutes ago</p>
+                <button className="button-right">{">"}</button>
+              </div>
+            </div>
+            <div className="hospital-footer-section-left-content-box">
+              <p>Broken Air Conditioning on 2nd Floor</p>
+              <div className="hospital-footer-section-left-content-box-button">
+                <p className="gray">10 minutes ago</p>
+                <button className="button-right">{">"}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="hospital-footer-section-middle">
+          
         </div>
       </section>
     </>
