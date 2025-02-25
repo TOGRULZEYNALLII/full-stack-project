@@ -9,7 +9,7 @@ import mail from "../Header/assets/mail.svg";
 import avatar from "../Header/assets/avatar.svg";
 import settings from "../Header/assets/Settings.svg";
 import ellipse from "../Header/assets/Ellipse.svg";
-import "./style/style.css"
+import "./style/style.css";
 // LogoutFromPage Component
 const LogoutFromPage = ({ setIsAuthenticated }) => {
   const navigate = useNavigate();
@@ -39,7 +39,11 @@ const LogoutFromPage = ({ setIsAuthenticated }) => {
     }
   };
 
-  return <button onClick={handleLogout}>Logout</button>;
+  return (
+    <button className="logout-button" onClick={handleLogout}>
+      Logout
+    </button>
+  );
 };
 
 function Header({ setIsAuthenticated }) {
@@ -68,7 +72,7 @@ function Header({ setIsAuthenticated }) {
       <div className="container-input">
         <img src={VectorIcon} alt="search" />
         <input
-          className="input"
+          className="input-h"
           type="text"
           placeholder="Search here..."
           name="searchinput"
@@ -110,14 +114,14 @@ function Header({ setIsAuthenticated }) {
       </div>
 
       {/* Notifications and Messages */}
-      <div className="container-messages">
+      {/* <div className="container-messages">
         <button className="border-mail">
           <img src={bell} alt="bell" />
         </button>
         <button className="border-mail">
           <img src={mail} alt="mail" />
         </button>
-      </div>
+      </div> */}
 
       {/* User Info and Logout */}
       <div className="container-personal">

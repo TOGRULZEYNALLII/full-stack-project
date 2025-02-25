@@ -1,0 +1,36 @@
+.log-in-container-inputs-email-little {
+  display: flex;
+  flex-direction: column;
+  height: 32px;
+  gap: 0px;
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
+.log-in-container-inputs-form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.register-container-bold-big {
+  font-size: 15px;
+  margin-left: 22px;
+  font-weight: 400;
+  height: 4px;
+}
+.register-in-container {
+  width: 539px;
+  height: 640px;
+  padding-left: 20px;
+  padding-right: 20px;
+  position: absolute;
+  right: 20px;
+
+  top: 20px;
+  background-color: hsla(0, 0%, 100%, 1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+}
