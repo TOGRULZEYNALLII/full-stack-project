@@ -505,19 +505,49 @@
   flex-direction: column;
   width: 216px;
   border: 1px solid hsla(0, 0%, 86%, 1);
-  height: 110px;
+  height: 200px;
   padding-left: 10px;
   border-radius: 10px;
+  padding: 10px;
+  gap: 0px;
   padding-right: 10px;
 }
 .recent-activity-containe-p {
-  height: 1px;
+  height: 15px;
 }
 .recent-activity-container-content-boxs {
   display: flex;
   flex-direction: column;
   gap: 10px;
   overflow-y: scroll;
+  width: 233px;
   height: 380px;
   overflow-x: hidden;
+}
+.Available {
+  background-color: hsla(196, 77%, 60%, 0.16);
+  color: hsla(196, 77%, 60%, 1);
+  width: 72px;
+  height: 21px;
+  border-radius: 90px;
+  gap: 6px;
+  border: none;
+}
+.Unavailable {
+  background-color: hsla(357, 100%, 63%, 0.16);
+  color: hsla(357, 100%, 63%, 1);
+  width: 85px;
+  height: 21px;
+  border-radius: 90px;
+  border: none;
+  gap: 6px;
+}
+.Leave {
+  background-color: hsla(34, 100%, 63%, 0.16);
+  color: hsla(34, 100%, 63%, 1);
+  width: 57px;
+  height: 21px;
+  border-radius: 90px;
+  gap: 6px;
+  border: none;
 }

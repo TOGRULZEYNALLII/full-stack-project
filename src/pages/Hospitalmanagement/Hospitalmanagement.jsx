@@ -21,6 +21,510 @@ import Unaviable from "./assets/patient/unaviable.svg";
 import Treedot from "../Sidebar/assets/icons/dot.svg";
 import Revenue from "./assets/revenue.svg";
 import Vectorupgreen from "../Pos/assets/totalorders/vectorupgreen.svg";
+const RecentActivity = () => {
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const fetchActivities = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        "http://localhost:8088/api/HospitalManagement/RecentActivity?hospitalId=1"
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      setActivities(data);
+    } catch (err) {
+      setError(err.message || "Something went wrong");
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchActivities();
+  }, []);
+
+  return (
+    <div className="recent-activity-container">
+      <div className="header">
+        <p className="bold-little">Recent Activity</p>
+        <p className="blue">view all</p>
+      </div>
+      <div className="recent-activity-container-content-boxs">
+        {loading ? (
+          <p>Loading...</p>
+        ) : error ? (
+          <p>Error: {error}</p>
+        ) : activities.length > 0 ? (
+          activities.map((activity, index) => (
+            <div key={index} className="recent-activity-container-content">
+              <p className="bold-little-special height">{activity.name}</p>
+              <p className="recent-activity-containe-p">{activity.activity}</p>
+              <p className="gray-little">{activity.date}</p>
+            </div>
+          ))
+        ) : (
+          <p>No recent activity</p>
+        )}
+      </div>
+    </div>
+  );
+};
+const RevenueSection = () => {
+  const [selectedYear, setSelectedYear] = useState("2025");
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const fetchRevenue = async (year) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `http://localhost:8088/api/HospitalManagement/Revenue?year=${year}&hospitalId=1`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const jsonData = await response.json();
+      setData(jsonData);
+    } catch (err) {
+      setError(err.message || "Something went wrong");
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchRevenue(selectedYear);
+  }, [selectedYear]);
+
+  const handleYearChange = (e) => {
+    setSelectedYear(e.target.value);
+  };
+
+  // Basit bir currency formatlama fonksiyonu
+  const formatCurrency = (number) => {
+    if (number == null) return "";
+    return "$" + Number(number).toLocaleString();
+  };
+
+  return (
+    <div className="hospital-footer-section-middle">
+      <div className="hospital-footer-section-middle-header">
+        <p className="bold-ittle">Revenue</p>
+        <div className="flex">
+          <div className="flex">
+            <div className="circle-light-blue-little"></div>
+            <p className="gray-big">Income</p>
+          </div>
+          <div className="flex">
+            <div className="circle-blue-little"></div>
+            <p className="gray-big">Expense</p>
+          </div>
+        </div>
+        <select
+          className="select-little"
+          value={selectedYear}
+          onChange={handleYearChange}>
+          {/* İhtiyacınıza göre daha fazla yıl ekleyebilirsiniz */}
+          <option value="2025">2025</option>
+          <option value="2024">2024</option>
+          <option value="2023">2023</option>
+        </select>
+      </div>
+
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>Error: {error}</p>
+      ) : data ? (
+        <>
+          <div className="hospital-footer-section-middle-text">
+            <div className="flex">
+              {/* Büyük ana rakam; örneğin total income */}
+              <p className="bold">{formatCurrency(data.income)}</p>
+              <button className="green-button">
+                <img src={Vectorupgreen} alt="" />
+                {data.revenuePercentage > 0
+                  ? `+${data.revenuePercentage}%`
+                  : `${data.revenuePercentage}%`}
+              </button>
+            </div>
+            <div>
+              <p className="bold-little">
+                Increase amount {formatCurrency(data.revenueTthisMonth)}
+              </p>
+              <p className="gray">
+                From 01/01/{selectedYear}-30/12/{selectedYear}
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <img src={Revenue} alt="Revenue" />
+          </div>
+
+          <div className="revenue-box-container">
+            <div className="revenure-box">
+              <div className="flex-special-secondary">
+                <div className="light-blue-circle"></div>
+                <p className="gray-big">Income</p>
+              </div>
+              <div>
+                <p className="bold-little">{formatCurrency(data.income)}</p>
+              </div>
+              <div className="flex-special-secondary">
+                <img src={Greensquareup} alt="" />
+                <p className="green">
+                  {data.incomePercentage > 0
+                    ? `+${data.incomePercentage}%`
+                    : `${data.incomePercentage}%`}
+                </p>
+                <p className="gray">from last month</p>
+              </div>
+            </div>
+            <div className="vector"></div>
+            <div className="revenure-box">
+              <div className="flex-special-secondary">
+                <div className="orange-circle"></div>
+                <p className="gray-big">Expense</p>
+              </div>
+              <div>
+                <p className="bold-little">{formatCurrency(data.expense)}</p>
+              </div>
+              <div className="flex-special-secondary">
+                <img src={ArrowSquareDownLeft} alt="" />
+                <p className="red">
+                  {data.expensePercentage > 0
+                    ? `+${data.expensePercentage}%`
+                    : `${data.expensePercentage}%`}
+                </p>
+                <p className="gray">from last month</p>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : null}
+    </div>
+  );
+};
+const Reports = () => {
+  const [reports, setReports] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const fetchReports = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        "http://localhost:8088/api/HospitalManagement/Reports?hospitalId=1"
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      setReports(data);
+    } catch (err) {
+      setError(err.message || "Something went wrong");
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchReports();
+  }, []);
+
+  return (
+    <div className="hospital-footer-section-left">
+      <div className="hospital-footer-section-left-header">
+        <p>Reports</p>
+        <img src={Treedot} alt="Treedot" />
+      </div>
+      <div className="border-vertical-special"></div>
+      <div className="hospital-footer-section-left-content">
+        {loading ? (
+          <p>Loading...</p>
+        ) : error ? (
+          <p>Error: {error}</p>
+        ) : reports.length > 0 ? (
+          reports.map((report, index) => (
+            <div
+              key={index}
+              className="hospital-footer-section-left-content-box">
+              <p>{report.name}</p>
+              <div className="hospital-footer-section-left-content-box-button">
+                <p className="gray">{report.date}</p>
+                <button className="button-right">{">"}</button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p>No reports available</p>
+        )}
+      </div>
+    </div>
+  );
+};
+const DoctorsSchedule = () => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const fetchSchedule = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        "http://localhost:8088/api/HospitalManagement/DoctorsSchedule?hospitalId=1"
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const jsonData = await response.json();
+      setData(jsonData);
+    } catch (err) {
+      setError(err.message || "Something went wrong");
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchSchedule();
+  }, []);
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+  if (error) {
+    return <p>Error: {error}</p>;
+  }
+
+  // API örneğinde quickView ve schedule bilgileri bulunuyor
+  const quickView = data?.quickView;
+  const schedule = data?.schedule || [];
+
+  return (
+    <div className="hospital-patient-overview-right">
+      <div className="hospital-patient-overview-left-header">
+        <p className="hospital-patient-overview-left-header-p">
+          Doctors’ Schedule
+        </p>
+        <img src={Treedot} alt="Treedot" />
+      </div>
+      <div className="border-vertical-special"></div>
+      <div className="hospital-patient-overview-right-middle">
+        {/* Quick View Bölümü */}
+        <div className="hospital-patient-overview-right-middle-boxs">
+          <div className="hospital-patient-overview-right-middle-box">
+            <div className="flex-row">
+              <p className="bold-little">
+                {quickView?.available !== undefined ? quickView.available : ""}
+              </p>
+              <p className="gray">Available</p>
+            </div>
+            <div>
+              <img src={Aviable} alt="Available" />
+            </div>
+          </div>
+          <div className="hospital-patient-overview-right-middle-box">
+            <div>
+              <p className="bold-little">
+                {quickView?.notAvailable !== undefined
+                  ? quickView.notAvailable
+                  : ""}
+              </p>
+              <p className="gray">Unavailable</p>
+            </div>
+            <div>
+              <img src={Unaviable} alt="Unavailable" />
+            </div>
+          </div>
+          <div className="hospital-patient-overview-right-middle-box">
+            <div>
+              <p className="bold-little">
+                {quickView?.leave !== undefined ? quickView.leave : ""}
+              </p>
+              <p className="gray">Leave</p>
+            </div>
+            <div>
+              <img src={Leave} alt="Leave" />
+            </div>
+          </div>
+        </div>
+
+        {/* Doktor Listesi */}
+        <div className="hospital-patient-overview-right-middle-contents">
+          <div className="hospital-patient-overview-right-middle-contents-header">
+            <p>List of Doctor</p>
+          </div>
+          <div className="listofdoctors">
+            {schedule.length > 0 ? (
+              schedule.map((doctor, index) => (
+                <div key={index} className="listofdoctors-content">
+                  <div>
+                    <p className="bold-little">
+                      {doctor.name ? doctor.name : ""}
+                    </p>
+                    <p className="gray">{doctor.fild ? doctor.fild : ""}</p>
+                  </div>
+                  <div>
+                    {/* Doktorun durumunu hem metin olarak hem de className olarak ekliyoruz */}
+                    <button className={doctor.status || ""}>
+                      {doctor.status ? doctor.status : ""}
+                    </button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p>No doctor data available</p>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Patientoverviewcontainer = () => {
+  const [filter, setFilter] = useState("Today");
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Belirli filtre için API'den veriyi çekiyoruz
+  const fetchData = async (timestamp) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `http://localhost:8088/api/HospitalManagement/PatientOverview?timestamp=${timestamp}&hospitalId=1`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const jsonData = await response.json();
+      setData(jsonData);
+    } catch (err) {
+      setError(err.message || "Something went wrong");
+    }
+    setLoading(false);
+  };
+
+  // filter state değiştiğinde yeni veriyi getiriyoruz
+  useEffect(() => {
+    fetchData(filter);
+  }, [filter]);
+
+  // Buton tıklaması ile filtre değiştiriliyor
+  const handleFilterChange = (newFilter) => {
+    setFilter(newFilter);
+  };
+
+  return (
+    <div className="patient-overview-container">
+      <div className="patient-overview">
+        <p>Patient Overview</p>
+        <div>
+          <button
+            className="Previous-Transactions-container-header-right-button-first"
+            onClick={() => handleFilterChange("Today")}>
+            Today
+          </button>
+          <button
+            className="Previous-Transactions-container-header-right-button"
+            onClick={() => handleFilterChange("Weekly")}>
+            Weekly
+          </button>
+          <button
+            className="Previous-Transactions-container-header-right-button"
+            onClick={() => handleFilterChange("Monthly")}>
+            Monthly
+          </button>
+          <button
+            className="Previous-Transactions-container-header-right-button-last"
+            onClick={() => handleFilterChange("Yearly")}>
+            Yearly
+          </button>
+        </div>
+      </div>
+      <div>
+        <img src={Patientoverwiev} alt="Patient Overview" />
+      </div>
+
+      {loading && <p>Loading...</p>}
+      {error && <p>Error: {error}</p>}
+
+      {data && data.patientsByAge && (
+        <div className="child-container">
+          <div className="child-container-content">
+            <div className="child-container-content-container">
+              {/* Child */}
+              <div>
+                <div className="child-container-content-flex">
+                  <div className="light-blue-circle"></div>
+                  <p className="gray">Child</p>
+                </div>
+                <p className="bold-little-special-middle">
+                  {data.patientsByAge.children}
+                </p>
+                <div className="flex">
+                  <button className="light-blue-button">
+                    <img src={Lightbluevector} alt="icon" />
+                    {data.patientsByAge.childrenPercentage}%
+                  </button>
+                  <p className="gray">vs last month</p>
+                </div>
+              </div>
+              <div className="horizontal-border"></div>
+
+              {/* Adult */}
+              <div>
+                <div className="child-container-content-flex">
+                  <div className="blue-circle"></div>
+                  <p className="gray">Adult</p>
+                </div>
+                <p className="bold-little-special-middle">
+                  {data.patientsByAge.adults}
+                </p>
+                <div className="flex">
+                  <button className="blue-button">
+                    <img src={Bluevector} alt="icon" />
+                    {data.patientsByAge.adultsPercentage}%
+                  </button>
+                  <p className="gray">vs last month</p>
+                </div>
+              </div>
+              <div className="horizontal-border"></div>
+
+              {/* Elderly */}
+              <div>
+                <div className="child-container-content-flex">
+                  <div className="green-circle"></div>
+                  <p className="gray">Elderly</p>
+                </div>
+                <p className="bold-little-special-middle">
+                  {data.patientsByAge.elderly}
+                </p>
+                <div className="flex">
+                  <button className="green-button">
+                    <img src={Greenvector} alt="icon" />
+                    {data.patientsByAge.elderlyPercentage}%
+                  </button>
+                  <p className="gray">vs last month</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const PatientAppointment = () => {
   const [appointments, setAppointments] = useState([]);
   const [filters, setFilters] = useState({ name: "", date: "", status: "" });
@@ -190,6 +694,8 @@ const PatientAppointment = () => {
 };
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [calendarData, setCalendarData] = useState([]);
+  const [selectedDay, setSelectedDay] = useState(null);
 
   const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const monthNames = [
@@ -207,11 +713,28 @@ const Calendar = () => {
     "December",
   ];
 
-  // Get details for the current month
+  // API'den randevu verilerini çekiyoruz
+  const fetchAppointments = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:8088/api/HospitalManagement/Calendar?patientId=1&hospitalId=1"
+      );
+      const data = await response.json();
+      setCalendarData(data);
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAppointments();
+  }, []);
+
+  // Geçerli ayın ilk gününün hangi gün olduğunu ve toplam gün sayısını hesapla
   const getMonthDetails = (year, month) => {
-    const firstDay = new Date(year, month, 1).getDay(); // Day of week (0-6)
-    const daysInMonth = new Date(year, month + 1, 0).getDate(); // Total days
-    return { firstDay: (firstDay + 6) % 7, daysInMonth }; // Adjust for Monday start
+    const firstDay = new Date(year, month, 1).getDay(); // 0 (Pazar) - 6 (Cumartesi)
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    return { firstDay: (firstDay + 6) % 7, daysInMonth }; // Haftanın Pazartesi'den başlaması için ayarlama
   };
 
   const { firstDay, daysInMonth } = getMonthDetails(
@@ -219,22 +742,36 @@ const Calendar = () => {
     currentDate.getMonth()
   );
 
-  // Generate array of days for the calendar grid
+  // Takvim gridinde kullanılacak günleri oluştur
   const generateCalendar = () => {
     const days = [];
-    // Add empty slots for days before the 1st
     for (let i = 0; i < firstDay; i++) {
       days.push(null);
     }
-    // Add actual days
     for (let i = 1; i <= daysInMonth; i++) {
       days.push(i);
     }
     return days;
   };
 
-  // Navigate months
+  // Seçilen güne ait randevuları döndürür
+  const getAppointmentsForDay = (day) => {
+    if (!day) return [];
+    const dayString = `${currentDate.getFullYear()}-${String(
+      currentDate.getMonth() + 1
+    ).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    const currentMonthName = monthNames[currentDate.getMonth()];
+    const monthData = calendarData.find(
+      (item) => item.month === currentMonthName
+    );
+    if (!monthData) return [];
+    const dayData = monthData.days.find((d) => d.day === dayString);
+    return dayData ? dayData.appointments : [];
+  };
+
+  // Ay değiştirilince seçili günü sıfırla
   const changeMonth = (direction) => {
+    setSelectedDay(null);
     const newDate = new Date(
       currentDate.getFullYear(),
       currentDate.getMonth() + direction,
@@ -242,8 +779,10 @@ const Calendar = () => {
     );
     setCurrentDate(newDate);
   };
+
   return (
-    <>
+    <div className="calendar-container">
+      {/* Takvim */}
       <div className="calendar">
         <div className="header">
           <h2 className="bold-little">
@@ -253,10 +792,10 @@ const Calendar = () => {
             <button
               className="calendar-buttons"
               onClick={() => changeMonth(-1)}>
-              <img src={Arrowaquareleft} />{" "}
+              <img src={Arrowaquareleft} alt="Previous Month" />
             </button>
             <button className="calendar-buttons" onClick={() => changeMonth(1)}>
-              <img src={ArrowSquareRight} />{" "}
+              <img src={ArrowSquareRight} alt="Next Month" />
             </button>
           </div>
         </div>
@@ -271,22 +810,92 @@ const Calendar = () => {
           {generateCalendar().map((day, index) => (
             <div
               key={index}
-              className={`day ${day ? "active" : "empty"}`}
-              style={{
-                backgroundColor:
-                  day === 25 ? "#6200ea" : day ? "transparent" : undefined,
-                color: day === 25 ? "#fff" : "inherit",
-              }}>
-              {day}
+              className={`day ${day ? "active" : "empty"} ${
+                selectedDay === day ? "selected" : ""
+              }`}
+              onClick={() => day && setSelectedDay(day)}>
+              {day && <span>{day}</span>}
             </div>
           ))}
         </div>
       </div>
-    </>
+
+      {/* Seçilen güne ait randevu detayları */}
+      {selectedDay && (
+        <div className="appointments-container">
+          {getAppointmentsForDay(selectedDay).length > 0 ? (
+            getAppointmentsForDay(selectedDay).map((appointment, idx) => (
+              <div key={idx} className="calendar-text">
+                <div
+                  className={
+                    idx % 2 === 0 ? "div-orange" : "div-light-blue"
+                  }></div>
+                <div className="gap">
+                  <div className="dentist-apointment-container">
+                    <p>{appointment.appointment}</p>
+                    <img src={Treedot} alt="Treedot" />
+                  </div>
+                  <div className="flex">
+                    <img src={Clock} alt="Clock" />
+                    <p>
+                      {appointment.startTime} - {appointment.endTime}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="calendar-text">
+              <p>No appointments for this day.</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 };
 
 const HospitalManagement = () => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const apiLinks = [
+    "http://localhost:8088/api/HospitalManagement/QuickView?hospitalId=1",
+  ];
+
+  // Verileri çekip, faturaları ayırıyoruz
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true); // Veri yükleniyor
+      try {
+        const responses = await Promise.all(
+          apiLinks.map((link) =>
+            fetch(link).then((response) => {
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              return response.json();
+            })
+          )
+        );
+        // Tüm verileri birleştiriyoruz
+        const combinedData = responses.flat();
+        setData(combinedData);
+        // Faturaları ayırıyoruz (11. öğeden itibaren)
+        const invoiceData = combinedData.slice(7, 12).map((invoice, index) => ({
+          ...invoice,
+          id: invoice.id || index, // Eğer id yoksa, index kullanılabilir
+        }));
+        console.log("Combined Data:", combinedData);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
   return (
     <>
       <section className="hospital-header-section">
@@ -295,12 +904,12 @@ const HospitalManagement = () => {
             <img src={Overallvistors} />
             <div className="flex-row">
               <div>
-                <p className="bold-height">566,273</p>
+                <p className="bold-height">{data?.[0]?.visitors}</p>
               </div>
               <div className="flex">
                 <p className="gray">Overall Visitors</p>
                 <img src={Greensquareup} />
-                <p className="green">+15%</p>
+                <p className="green">{data?.[0]?.visitorsPercentage}%</p>
               </div>
             </div>
           </div>
@@ -308,12 +917,12 @@ const HospitalManagement = () => {
             <img src={Totalpatients} />
             <div className="flex-row">
               <div>
-                <p className="bold-height">566,273</p>
+                <p className="bold-height">{data?.[0]?.patients}</p>
               </div>
               <div className="flex">
                 <p className="gray">Total Patients</p>
                 <img src={Greensquareup} />
-                <p className="green">+15%</p>
+                <p className="green">{data?.[0]?.patientsPercentage}%</p>
               </div>
             </div>
           </div>
@@ -321,12 +930,12 @@ const HospitalManagement = () => {
             <img src={Appointments} />
             <div className="flex-row">
               <div>
-                <p className="bold-height">566,273</p>
+                <p className="bold-height">{data?.[0]?.appointments}</p>
               </div>
               <div className="flex">
                 <p className="gray">Appointments</p>
                 <img src={ArrowSquareDownLeft} />
-                <p className="red">+15%</p>
+                <p className="green">{data?.[0]?.appointmentsPercentage}%</p>
               </div>
             </div>
           </div>
@@ -334,122 +943,20 @@ const HospitalManagement = () => {
             <img src={Bedroom} />
             <div className="flex-row">
               <div>
-                <p className="bold-height">566,273</p>
+                <p className="bold-height">{data?.[0]?.bedroom}</p>
               </div>
               <div className="flex">
                 <p className="gray">Bedroom</p>
                 <img src={ArrowSquareDownLeft} />
-                <p className="red">+15%</p>
+                <p className="green">{data?.[0]?.bedroomPercentage}%</p>
               </div>
             </div>
           </div>
         </div>
         {/* middle  */}
         <div className="hospital-header-middle">
-          <div className="patient-overview-container">
-            <div className="patient-overview">
-              <p>Patient Overview</p>
-              <div>
-                <button className="Previous-Transactions-container-header-right-button-first">
-                  Today
-                </button>
-                <button className="Previous-Transactions-container-header-right-button">
-                  Weekly
-                </button>
-                <button className="Previous-Transactions-container-header-right-button">
-                  Monthly
-                </button>
-                <button className="Previous-Transactions-container-header-right-button-last">
-                  Yearly
-                </button>
-              </div>
-            </div>
-            <div>
-              <img src={Patientoverwiev} />
-            </div>
-            <div className="child-container">
-              <div className="child-container-content">
-                <div className="child-container-content-container">
-                  <div>
-                    {" "}
-                    <div className="child-container-content-flex">
-                      <div className="light-blue-circle"></div>
-                      <p className="gray">Child</p>
-                    </div>
-                    <p className="bold-little-special-middle ">213</p>
-                    <div className="flex">
-                      <button className="light-blue-button">
-                        <img src={Lightbluevector} />
-                        3%
-                      </button>
-                      <p className="gray">vs last month</p>
-                    </div>
-                  </div>
-                  <div className="horizontal-border"></div>
-                  <div>
-                    {" "}
-                    <div className="child-container-content-flex">
-                      <div className="blue-circle"></div>
-                      <p className="gray">Adult</p>
-                    </div>
-                    <p className="bold-little-special-middle ">213</p>
-                    <div className="flex">
-                      <button className="blue-button">
-                        <img src={Bluevector} />
-                        3%
-                      </button>
-                      <p className="gray">vs last month</p>
-                    </div>
-                  </div>
-                  <div className="horizontal-border"></div>
-                  <div>
-                    {" "}
-                    <div className="child-container-content-flex">
-                      <div className="green-circle"></div>
-                      <p className="gray">Elderly</p>
-                    </div>
-                    <p className="bold-little-special-middle ">213</p>
-                    <div className="flex">
-                      <button className="green-button">
-                        <img src={Greenvector} />
-                        3%
-                      </button>
-                      <p className="gray">vs last month</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="calendar-container">
-            <Calendar />
-            <div className="calendar-text">
-              <div className="div-orange"></div>
-              <div className="gap">
-                <div className="dentist-apointment-container">
-                  <p>Dentist Appointment</p>
-                  <img src={Treedot} />
-                </div>
-                <div className="flex">
-                  <img src={Clock} />
-                  <p>10:00 AM - 11:00 AM</p>
-                </div>
-              </div>
-            </div>
-            <div className="calendar-text">
-              <div className="div-light-blue"></div>
-              <div className="gap">
-                <div className="dentist-apointment-container">
-                  <p>Dentist Appointment</p>
-                  <img src={Treedot} />
-                </div>
-                <div className="flex">
-                  <img src={Clock} />
-                  <p>10:00 AM - 11:00 AM</p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <Patientoverviewcontainer />
+          <Calendar />
         </div>
       </section>
       <section className="hospital-patient-overview-seciton">
@@ -501,231 +1008,13 @@ const HospitalManagement = () => {
             </div>
           </div>
         </div>
-        <div className="hospital-patient-overview-right ">
-          <div className="hospital-patient-overview-left-header">
-            <p className="hospital-patient-overview-left-header-p">
-              Doctors’ Schedule
-            </p>
-            <img src={Treedot} />
-          </div>
-          <div className="border-vertical-special"></div>
-          <div className="hospital-patient-overview-right-middle">
-            <div className="hospital-patient-overview-right-middle-boxs">
-              <div className="hospital-patient-overview-right-middle-box ">
-                <div className="flex-row">
-                  <p className="bold-little">77</p>
-                  <p className="gray">Available</p>
-                </div>
-                <div>
-                  <img src={Aviable} />
-                </div>
-              </div>
-              <div className="hospital-patient-overview-right-middle-box">
-                <div>
-                  <p className="bold-little">77</p>
-                  <p className="gray">Unavaible</p>
-                </div>
-                <div>
-                  <img src={Unaviable} />
-                </div>
-              </div>
-              <div className="hospital-patient-overview-right-middle-box">
-                <div>
-                  <p className="bold-little">77</p>
-                  <p className="gray">Leave</p>
-                </div>
-                <div>
-                  <img src={Leave} />
-                </div>
-              </div>
-            </div>
-            <div className="hospital-patient-overview-right-middle-contents">
-              <div className="hospital-patient-overview-right-middle-contents-header">
-                <p>List of Doctor</p>
-              </div>
-              <div className="listofdoctors">
-                <div className="listofdoctors-content">
-                  <div>
-                    <p className="bold-little">Adeline Palmerston</p>
-                    <p className="gray">Cardiology</p>
-                  </div>
-                  <div>
-                    <button className="button-light-blue">sss</button>
-                  </div>
-                </div>
-                <div className="listofdoctors-content">
-                  <div>
-                    <p className="bold-little">Adeline Palmerston</p>
-                    <p className="gray">Cardiology</p>
-                  </div>
-                  <div>
-                    <button className="button-light-blue">sss</button>
-                  </div>
-                </div>
-                <div className="listofdoctors-content">
-                  <div>
-                    <p className="bold-little">Adeline Palmerston</p>
-                    <p className="gray">Cardiology</p>
-                  </div>
-                  <div>
-                    <button className="button-light-blue">sss</button>
-                  </div>
-                </div>
-                <div className="listofdoctors-content">
-                  <div>
-                    <p className="bold-little">Adeline Palmerston</p>
-                    <p className="gray">Cardiology</p>
-                  </div>
-                  <div>
-                    <button className="button-light-blue">sss</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <DoctorsSchedule />
       </section>
       <PatientAppointment />
       <section className="hospital-footer-section">
-        <div className="hospital-footer-section-left">
-          <div className="hospital-footer-section-left-header">
-            <p>Reports</p>
-            <img src={Treedot} />
-          </div>
-          <div className="border-vertical-special"></div>
-          <div className="hospital-footer-section-left-content">
-            <div className="hospital-footer-section-left-content-box">
-              <p>Broken Air Conditioning on 2nd Floor</p>
-              <div className="hospital-footer-section-left-content-box-button">
-                <p className="gray">10 minutes ago</p>
-                <button className="button-right">{">"}</button>
-              </div>
-            </div>
-            <div className="hospital-footer-section-left-content-box">
-              <p>Broken Air Conditioning on 2nd Floor</p>
-              <div className="hospital-footer-section-left-content-box-button">
-                <p className="gray">10 minutes ago</p>
-                <button className="button-right">{">"}</button>
-              </div>
-            </div>
-            <div className="hospital-footer-section-left-content-box">
-              <p>Broken Air Conditioning on 2nd Floor</p>
-              <div className="hospital-footer-section-left-content-box-button">
-                <p className="gray">10 minutes ago</p>
-                <button className="button-right">{">"}</button>
-              </div>
-            </div>
-            <div className="hospital-footer-section-left-content-box">
-              <p>Broken Air Conditioning on 2nd Floor</p>
-              <div className="hospital-footer-section-left-content-box-button">
-                <p className="gray">10 minutes ago</p>
-                <button className="button-right">{">"}</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="hospital-footer-section-middle">
-          <div className="hospital-footer-section-middle-header">
-            <p className="bold-ittle">Revenue</p>
-            <div className="flex">
-              <div className="flex">
-                <div className="circle-light-blue-little"></div>
-                <p className="gray-big">Income</p>
-              </div>
-              <div className="flex">
-                <div className="circle-blue-little"></div>
-                <p className="gray-big">Expense</p>
-              </div>
-            </div>
-            <select className="select-little" name="" id="">
-              <option value="">2025</option>
-            </select>
-          </div>
-          <div className="hospital-footer-section-middle-text">
-            <div className="flex">
-              <p className="bold">$13,777,200</p>
-              <button className="green-button">
-                <img src={Vectorupgreen} alt="" />
-                sad
-              </button>
-            </div>
-            <div>
-              <p className="bold-little">Increase amount $6,283.00</p>
-              <p className="gray">From 01/01/2025-30/12/2025</p>
-            </div>
-          </div>
-
-          <div>
-            <img src={Revenue} />
-          </div>
-          <div className="revenue-box-container">
-            <div className="revenure-box">
-              <div className="flex-special-secondary">
-                <div className="light-blue-circle"></div>
-                <p className="gray-big">Income</p>
-              </div>
-              <div>
-                <p className="bold-little">$11,273.95</p>
-              </div>
-              <div className="flex-special-secondary">
-                <img src={Greensquareup} />
-                <p className="green">+15%</p>
-                <p className="gray">from last month</p>
-              </div>
-            </div>
-            <div className="vector"></div>
-            <div className="revenure-box">
-              <div className="flex-special-secondary">
-                <div className="orange-circle"></div>
-                <p className="gray-big">Income</p>
-              </div>
-              <div>
-                <p className="bold-little">$11,273.95</p>
-              </div>
-              <div className="flex-special-secondary">
-                <img src={ArrowSquareDownLeft} />
-                <p className="red">+15%</p>
-                <p className="gray">from last month</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="recent-activity-container">
-          <div className="header">
-            <p className="bold-little">Recent Activity</p>
-            <p className="blue">view all</p>
-          </div>
-          <div className="recent-activity-container-content-boxs">
-            <div className="recent-activity-container-content">
-              <p className="bold-little-special ">Daniel Roe</p>
-              <p className="recent-activity-containe-p">
-                registered as a new patient
-              </p>
-              <p className="gray-little">15 minutes ago</p>
-            </div>
-            <div className="recent-activity-container-content">
-              <p className="bold-little-special ">Daniel Roe</p>
-              <p className="recent-activity-containe-p">
-                registered as a new patient
-              </p>
-              <p className="gray-little">15 minutes ago</p>
-            </div>
-            <div className="recent-activity-container-content">
-              <p className="bold-little-special ">Daniel Roe</p>
-              <p className="recent-activity-containe-p">
-                registered as a new patient
-              </p>
-              <p className="gray-little">15 minutes ago</p>
-            </div>
-            <div className="recent-activity-container-content">
-              <p className="bold-little-special ">Daniel Roe</p>
-              <p className="recent-activity-containe-p">
-                registered as a new patient
-              </p>
-              <p className="gray-little">15 minutes ago</p>
-            </div>
-          </div>
-        </div>
+        <Reports />
+        <RevenueSection />
+        <RecentActivity/>
       </section>
     </>
   );
