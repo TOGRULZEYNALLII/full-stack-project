@@ -62,7 +62,7 @@ const Hirings = () => {
         <div className="hiring-container-text">
           <div className="hiring-container-text-price">
             <p className="hiring-container-text-price-p">
-              {data?.[31].totalApplicants}
+              {/* {data?.[0]?.totalApplicants} */}
             </p>
             <p className="gray">Total Applicants</p>
           </div>

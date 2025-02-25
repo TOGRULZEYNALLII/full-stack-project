@@ -1,4 +1,5 @@
-import React from "react"; // Add this import
+// App.jsx
+import React, { useState } from "react";
 import "./App.css";
 import { BrowserRouter, useRoutes } from "react-router-dom";
 import { Helmet } from "react-helmet";
@@ -12,62 +13,44 @@ import Banking from "./pages/Banking/Banking";
 import Hrmanagement from "./pages/Hrmanagement/Hrmanagement";
 import HospitalManagement from "./pages/Hospitalmanagement/Hospitalmanagement";
 import Pos from "./pages/Pos/Pos";
-
 import Ticketing from "./pages/Ticketing/Ticketing";
-const routes = [
+import LoginPage from "./pages/LoginPage/LoginPage";
+import RegisterPage from "./pages/RegisterPage/RegisterPage";
+
+const routes = (setIsAuthenticated) => [
   {
     path: "/",
-    element: <Layout />,
+    element: <Layout setIsAuthenticated={setIsAuthenticated} />, // setIsAuthenticated Layout'a geçiliyor
     children: [
-      {
-        path: "/Home",
-        element: <LogistcsPage />,
-      },
-      {
-        path: "/education",
-        element: <Eductaion />,
-      },
-      {
-        path: "/cryptocurrency",
-        element: <Cryptocurrency />,
-      },
-      {
-        path: "/invoicing",
-        element: <Invoicing />,
-      },
-      {
-        path: "/restaurant",
-        element: <Restaurant />,
-      },
-      {
-        path: "/banking",
-        element: <Banking />,
-      },
-      {
-        path: "/hrmanagement",
-        element: <Hrmanagement />,
-      },
-      {
-        path: "/hospital",
-        element: <HospitalManagement />,
-      },
-      {
-        path: "/ticketing",
-        element: <Ticketing />,
-      },
-      {
-        path: "/pointofsales",
-        element: <Pos />,
-      },
+      { path: "/Home", element: <LogistcsPage /> },
+      { path: "/education", element: <Eductaion /> },
+      { path: "/cryptocurrency", element: <Cryptocurrency /> },
+      { path: "/invoicing", element: <Invoicing /> },
+      { path: "/restaurant", element: <Restaurant /> },
+      { path: "/banking", element: <Banking /> },
+      { path: "/hrmanagement", element: <Hrmanagement /> },
+      { path: "/hospital", element: <HospitalManagement /> },
+      { path: "/ticketing", element: <Ticketing /> },
+      { path: "/pointofsales", element: <Pos /> },
     ],
+  },
+  {
+    path: "/login",
+    element: <LoginPage setIsAuthenticated={setIsAuthenticated} />, // setIsAuthenticated LoginPage'e geçiliyor
+  },
+  {
+    path: "/register",
+    element: <RegisterPage />,
   },
 ];
 
-const Elements = () => {
-  return useRoutes(routes);
+const Elements = ({ setIsAuthenticated }) => {
+  return useRoutes(routes(setIsAuthenticated));
 };
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   return (
     <>
       <Helmet>
@@ -80,7 +63,7 @@ function App() {
       </Helmet>
 
       <BrowserRouter>
-        <Elements />
+        <Elements setIsAuthenticated={setIsAuthenticated} />
       </BrowserRouter>
     </>
   );
