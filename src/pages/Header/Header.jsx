@@ -10,6 +10,7 @@ import avatar from "../Header/assets/avatar.svg";
 import settings from "../Header/assets/Settings.svg";
 import ellipse from "../Header/assets/Ellipse.svg";
 import "./style/style.css";
+
 // LogoutFromPage Component
 const LogoutFromPage = ({ setIsAuthenticated }) => {
   const navigate = useNavigate();
@@ -49,21 +50,80 @@ const LogoutFromPage = ({ setIsAuthenticated }) => {
 function Header({ setIsAuthenticated }) {
   const [isChecked, setIsChecked] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  // Başlangıçta dil butonu görünür, tıklandığında gizlenecek.
   const [isTranslateVisible, setIsTranslateVisible] = useState(false);
-
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
+
+    // Temayı değiştirme işlemi
+    const headerElement = document.querySelector(".container-header");
+    const sidebarElement = document.querySelector(".container-sidebar");
+    const logisticsRevenueCards = document.querySelectorAll(".card");
+    const yearlyorder = document.querySelector(".left-container-costs-year");
+    const carriyngcost = document.querySelector(
+      ".right-container-caryingcosts "
+    );
+    const deliverystatus = document.querySelector(
+      ".delivery-status-left-container"
+    );
+    const salesbylocation = document.querySelector(
+      ".right-container-store-location "
+    );
+    const warhousing = document.querySelector(".warehousing-container-left ");
+    const deliverybycountries = document.querySelector(".delivers-country ");
+    const cancelledcontainer = document.querySelectorAll(
+      ".Cancelled-container "
+    );
+    const invoicestable = document.querySelector(".invoices-right-container");
     if (isDarkMode) {
-      document.querySelector(".container-header").classList.remove("dark");
+      headerElement.classList.remove("dark");
       document.body.classList.remove("darklight");
+      sidebarElement.classList.remove("dark");
+
+      yearlyorder.classList.remove("darknoimg");
+      deliverystatus.classList.remove("darknoimg");
+      carriyngcost.classList.remove("darknoimg");
+      salesbylocation.classList.remove("darknoimg");
+      warhousing.classList.remove("darknoimg");
+      invoicestable.classList.remove("darknoimg");
+      deliverybycountries.classList.remove("darknoimg");
+      // Tüm .card öğelerinden "darknoimg" sınıfını kaldır
+      logisticsRevenueCards.forEach((card) => {
+        card.classList.remove("darknoimg");
+      });
+      cancelledcontainer.forEach((card) => {
+        card.classList.remove("darknoimg");
+      }
+      );
     } else {
-      document.querySelector(".container-header").classList.add("dark");
+      headerElement.classList.add("dark");
+      deliverystatus.classList.add("darknoimg");
       document.body.classList.add("darklight");
+      carriyngcost.classList.add("darknoimg");
+      sidebarElement.classList.add("dark");
+      salesbylocation.classList.add("darknoimg");
+      yearlyorder.classList.add("darknoimg");
+      warhousing.classList.add("darknoimg");
+      invoicestable.classList.add("darknoimg");
+      deliverybycountries.classList.add("darknoimg");
+
+      // Tüm .card öğelerine "darknoimg" sınıfını ekle
+      logisticsRevenueCards.forEach((card) => {
+        card.classList.add("darknoimg");
+      });
+      cancelledcontainer.forEach((card) => {
+        card.classList.add("darknoimg");
+      });
     }
   };
 
   const handleToggle = () => {
     setIsChecked(!isChecked);
+  };
+
+  // Dil simgesine tıklanıldığında bu fonksiyon çağrılır ve buton gizlenir.
+  const handleLanguageClick = () => {
+    setIsTranslateVisible(true);
   };
 
   return (
@@ -102,15 +162,9 @@ function Header({ setIsAuthenticated }) {
         <button
           className="border-mail"
           style={{ display: isTranslateVisible ? "none" : "block" }}>
-          <img
-            onClick={() => {
-              handleTranslate();
-              closeTranslate();
-            }}
-            src={language}
-            alt="language"
-          />
+          <img onClick={handleLanguageClick} src={language} alt="language" />
         </button>
+        <div id="google_translate_element"></div>
       </div>
 
       {/* Notifications and Messages */}

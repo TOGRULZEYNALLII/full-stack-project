@@ -16,3 +16,10 @@ body {
 * {
   box-sizing: border-box;
 }
+.dark {
+  background-color: rgba(23, 36, 55, 1);
+  color: white;
+}
+.dark img {
+  filter: brightness(0) invert(1); /* Resmi beyaz yapar */
+}

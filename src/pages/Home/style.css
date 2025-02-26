@@ -771,7 +771,7 @@
 } */
 .table-invoices-header {
   border-bottom: "2px solid #ddd";
-  background-color: "rgba(247, 248, 250, 1)";
+  background-color: rgba(247, 248, 250, 1);
   width: "1000px";
   display: "flex";
 }
@@ -860,4 +860,8 @@
     transform: translateY(0);
     opacity: 1;
   }
+}
+.darknoimg {
+  background-color: rgba(23, 36, 55, 1);
+  color: white;
 }
