@@ -136,7 +136,7 @@ function Sidebar() {
         <div className="border-bottom"></div>
 
         <div className="dashboard">
-          <div className="dashboard-container">
+          <div className="dashboard-container-s">
             <img src={Dashboard} alt="dashboard-icon" />
             <p>Dashboard</p>
           </div>

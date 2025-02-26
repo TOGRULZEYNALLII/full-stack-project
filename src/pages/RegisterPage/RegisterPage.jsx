@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./style.css";
-import Saly from "../LoginPage/assets/Saly-1.svg";
+import Saly from "../LoginPage/assets/Saly-1.svg";import Icon from "../Sidebar/assets/icons/Icon.svg";
 import Sally2 from "../LoginPage/assets/Saly-3.svg";
 function RegisterPage() {
   const [firstName, setFirstName] = useState("");
@@ -17,7 +17,7 @@ function RegisterPage() {
 
     // Şifrelerin eşleşip eşleşmediğini kontrol ediyoruz
     if (password !== confirmPassword) {
-      setErrorMessage("Passwords do not match");  
+      setErrorMessage("Passwords do not match");
       return;
     }
 
@@ -56,7 +56,9 @@ function RegisterPage() {
       <div className="blue-container">
         <div className="sign-in-container">
           <div className="sign-in-container-text">
-            <p className="sign-in-container-text-p">Register </p>
+            <p className="sign-in-container-text-p">
+              Register <img className="blue-container-icon" src={Icon} />
+            </p>
             <p className="welcome-back">Welcome Back!</p>
             <p className="sign-in-container-text-p-long">
               The login page provides access to sections like logistics,
@@ -66,7 +68,7 @@ function RegisterPage() {
               authentication, offering a smooth and secure login experience.
             </p>
           </div>
-          <div>
+          <div className="sally1-container">
             <img src={Saly} />
           </div>
         </div>

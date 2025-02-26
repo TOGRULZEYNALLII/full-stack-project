@@ -11,6 +11,7 @@ body {
   margin: 0;
   padding: 0;
 }
+
 .sign-in-container {
   display: flex;
   flex-direction: row;
@@ -20,40 +21,39 @@ body {
   width: 900px;
   height: 350px;
 }
+
 .welcome-back {
   font-size: 20px;
   font-weight: 500;
-   animation: colorCyclew 5s infinite ease-in-out;
 }
-@keyframes colorCyclew {
+
+@keyframes pulse {
   0% {
-    color: #800080; /* Purple */
-  }
-  25% {
-    color: #ff4500; /* Orange */
+    transform: scale(1);
   }
   50% {
-    color: #e3e3e3; /* Blue */
-  }
-  75% {
-    color: #00ff00; /* Green */
+    transform: scale(1.1);
   }
   100% {
-    color: #800080; /* Back to Purple */
+    transform: scale(1);
   }
 }
+
 .sign-in-container-text-p {
   font-size: 30px;
 }
+
 .sign-in-container-text-p-long {
   font-size: 14px;
   color: aliceblue;
 }
+
 .sign-in-container-text {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
+
 .log-in-container {
   width: 539px;
   height: 600px;
@@ -64,10 +64,39 @@ body {
   background-color: hsla(0, 0%, 100%, 1);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   border-radius: 20px;
+  opacity: 0;
+  animation: fadeIn 1s forwards;
 }
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .header-orbitnest {
   width: 300px;
+  opacity: 0;
+  transform: translateX(-50px);
+  animation: slideIn 1s forwards;
 }
+
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 .log-in-container-bold-big {
   font-size: 37px;
   font-weight: 500;
@@ -101,6 +130,7 @@ body {
   margin-top: 100px;
   align-items: center;
 }
+
 .input-email {
   width: 450px;
   box-shadow: none;
@@ -109,14 +139,17 @@ body {
   border-radius: 5px;
   border: 2px solid rgb(215, 215, 215);
 }
+
 .log-in-container-inputs-email {
   display: flex;
   flex-direction: column;
   gap: 5px;
 }
+
 .Enter-your-email-address {
   font-size: 14px;
 }
+
 .sign-in-button {
   width: 450px;
   box-shadow: none;
@@ -129,13 +162,18 @@ body {
   cursor: pointer;
   font-weight: 500;
   border: none;
+  transition: transform 0.3s ease, background-color 0.3s ease;
 }
+
 .sign-in-button:hover {
   background-color: #0078d4;
+  transform: scale(1.05);
 }
+
 .header-orbitnest-blue {
   color: #0089ed;
 }
+
 .register-button-inloginpage {
   background-color: #0089ed;
   color: white;
@@ -145,14 +183,17 @@ body {
   cursor: pointer;
   padding: 2px;
 }
+
+.register-button-inloginpage:hover {
+  background-color: #0078d4;
+}
+
 .noaccount-container {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
-.register-button-inloginpage:hover {
-  background-color: #0078d4;
-}
+
 .header-orbitnest-container {
   display: flex;
   flex-direction: row;
@@ -160,10 +201,53 @@ body {
   justify-content: space-between;
   margin-left: 22px;
 }
+
 .sally2-container {
   display: flex;
-  width: 800px;
+  width: 700px;
   align-items: center;
   margin-top: 67px;
   justify-content: center;
+  opacity: 1;
+  position: relative; /* Hareket için relative pozisyon */
+  animation: slideToRight 45s linear infinite; /* Linear ile sabit hızda hareket */
+}
+
+@keyframes slideToRight {
+  0% {
+    transform: translateX(100%); /* Sol dışına başlar */
+  }
+  100% {
+    transform: translateX(-100%); /* Sağ dışına çıkar */
+  }
+}
+.sally1-container {
+  width: 600px;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  animation: rocketMove 12s infinite ease-in-out; /* Yukarı ve aşağı hareket animasyonu */
+}
+
+@keyframes rocketMove {
+  0% {
+    transform: translateY(0); /* Başlangıç pozisyonu */
+  }
+  25% {
+    transform: translateY(-10px); /* Yukarı hareket */
+  }
+  50% {
+    transform: translateY(10px); /* Aşağı hareket */
+  }
+  75% {
+    transform: translateY(-10px); /* Yukarı hareket */
+  }
+  100% {
+    transform: translateY(0); /* Başlangıç pozisyonuna geri dönme */
+  }
+}
+.blue-container-icon{
+  height: 25px;
 }

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./logincss.css";
 import Saly from "./assets/Saly-1.svg";
+import Icon from "../Sidebar/assets/icons/Icon.svg";
 import Sally2 from "./assets/Saly-3.svg";
 function LoginPage({ setIsAuthenticated }) {
   const [email, setEmail] = useState("");
@@ -45,7 +46,10 @@ function LoginPage({ setIsAuthenticated }) {
       <div className="blue-container">
         <div className="sign-in-container">
           <div className="sign-in-container-text">
-            <p className="sign-in-container-text-p">Sign in </p>
+            <p className="sign-in-container-text-p">
+              Sign in <img className="blue-container-icon" src={Icon} />
+            </p>
+
             <p className="welcome-back">Welcome Back!</p>
             <p className="sign-in-container-text-p-long">
               The login page provides access to sections like logistics,
@@ -55,7 +59,7 @@ function LoginPage({ setIsAuthenticated }) {
               authentication, offering a smooth and secure login experience.
             </p>
           </div>
-          <div>
+          <div className="sally1-container">
             <img src={Saly} />
           </div>
         </div>

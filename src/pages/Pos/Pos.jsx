@@ -32,6 +32,8 @@ import Vistors from "./assets/vistors/vistors.svg";
 import Cargobox from "./assets/vistors/cargobox.svg";
 import Truckbox from "./assets/vistors/truckbox.svg";
 import Planebox from "./assets/vistors/planebox.svg";
+import Lines from "./assets/header/Lines.svg";
+import Labels from "./assets/header/y-labels.svg";
 const Vistorsfunction = () => {
   const [selectedTimestamp, setSelectedTimestamp] = useState("Weekly");
   const [visitorsData, setVisitorsData] = useState(null);
@@ -457,8 +459,52 @@ const Pos = () => {
                 <p>Sales Overview by Formula</p>
                 <img src={Treedot} />
               </div>
-              <div>
-                <img src={Salesoverviewgraph} />
+              <div className="sales-animation-graph">
+                {/* <img src={Salesoverviewgraph} /> */}
+                <img src={Labels} />
+                <div className="sales-animation-graph-container">
+                  <img className="lines" src={Lines} />
+                  <div className="third-columns-container">
+                    <img className="lines" src={Lines} />
+
+                    <div className="columns-container">
+                      <div className="blue-column"></div>
+                      <div className="light-blue-column"></div>
+                      <div className="orange-column"></div>
+                    </div>
+
+                    <div className="columns-container">
+                      <div className="blue-column-secondary"></div>
+                      <div className="light-blue-column-secondary"></div>
+                      <div className="orange-column-secondary"></div>
+                    </div>
+
+                    <div className="columns-container">
+                      <div className="blue-column-third"></div>
+                      <div className="light-blue-column-third"></div>
+                      <div className="orange-column-third"></div>
+                    </div>
+
+                    <div className="columns-container">
+                      <div className="blue-column-fourth"></div>
+                      <div className="light-blue-column-fourth"></div>
+                      <div className="orange-column-fourth"></div>
+                    </div>
+                    <div className="columns-container">
+                      <div className="blue-column-fives"></div>
+                      <div className="light-blue-column-fives"></div>
+                      <div className="orange-column-fives"></div>
+                    </div>
+                  </div>
+                  <div className="rows-container">
+                    <p>Jan</p>
+                    <p>Feb</p>
+                    <p>Mar</p>
+                    <p>Apr</p>
+                    <p>May</p>
+                    <p>Jun</p>
+                  </div>
+                </div>
               </div>
               <div className="flex-space-between">
                 <div className="flex">

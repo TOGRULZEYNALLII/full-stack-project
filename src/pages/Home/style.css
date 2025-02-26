@@ -81,6 +81,7 @@
 .section-card {
   display: flex;
   gap: 10px;
+  animation: slideInFromRight 1.5s ease-out forwards;
 }
 /* .card-button-red {
   display: flex;
@@ -106,6 +107,7 @@
   display: flex;
   flex-direction: row;
   gap: 20px;
+  animation: slideInFromRight 1.5s ease-out forwards;
 }
 .Costs-year {
   width: 820px;
@@ -818,4 +820,44 @@
 .table-buttons {
   cursor: pointer;
   height: 30px;
+}
+@keyframes slideInFromLeft {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes slideInFromRight {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes slideInFromTop {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes slideInFromBottom {
+  0% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }

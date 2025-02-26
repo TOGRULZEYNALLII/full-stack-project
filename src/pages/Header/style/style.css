@@ -21,6 +21,7 @@
   border-radius: 10px;
   background-color: hsla(0, 0%, 100%, 1);
   padding: 10px, 20px, 10px, 20px;
+  animation: slideInFromTop 2s forwards;
 }
 
 .container-button {
@@ -216,11 +217,21 @@ input:checked + .slider:before {
   margin-top: 14px;
   background-color: hsla(357, 100%, 63%, 1);
   border: none;
-  
+
   color: white;
   border-radius: 4px;
   cursor: pointer;
 }
-.logout-button:hover{
+.logout-button:hover {
   background-color: hsla(357, 100%, 53%, 1);
+}
+@keyframes slideInFromTop {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
