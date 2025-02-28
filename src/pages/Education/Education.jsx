@@ -108,7 +108,6 @@ const Education = () => {
           id: invoice.id || index, // Eğer id yoksa, index kullanılabilir
         }));
         setInvoices(invoiceData);
-        console.log("Combined Data:", combinedData);
       } catch (error) {
         setError(error.message);
       } finally {
@@ -250,71 +249,72 @@ const Education = () => {
         </div>
       </section>
       {/* sectionnnnnnnnnn */}
-      <section className="section-weekly-userlist">
-        <div>
+      <section className="section-weekly-userlist center">
+        <div className="weekly-container-main">
           <div className="weekly-container">
-            <div>
-              <div className="weekly-target-container-header">
-                <p>Weekly Target</p>
-                <img src={Treedot} alt="tree dot svg" />
-              </div>
-              <div className="Border-vertical"></div>
-            </div>
-            <div className="border-vertical"></div>
-
-            <div className="container-medium">
-              <div className="left-container-text">
-                <h7 style={{ fontSize: "60px", margin: "0px" }}>
-                  {data?.[1]?.totalTasks}
-                </h7>
-                <div className="button-text-container">
-                  <button className="green-up-button-bg">
-                    <img src={Greenupvector} alt="" />
-                    {data?.[1]?.totalTasksPercentage}%
-                  </button>
-                  <p>from last month</p>
-                </div>
-              </div>
-              <div className="horziontal-vector"></div>
+            <div className="education-container">
               <div>
-                <div className="button-blue-container">
-                  <p className="text-item">{data?.[1]?.completedTasks}</p>
-                  <button className="button-blue">
-                    {data?.[1]?.completedTasksPercentage}%
-                  </button>
+                <div className="weekly-target-container-header">
+                  <p>Weekly Target</p>
+                  <img src={Treedot} alt="tree dot svg" />
                 </div>
-                <div className="complated-container">
-                  <img src={Ellipseblue} alt="blue ellipse" />
-                  <p>Completed</p>
+                <div className="Border-vertical"></div>
+              </div>
+              <div className="border-vertical"></div>
+              <div className="container-medium">
+                <div className="left-container-text">
+                  <h7 style={{ fontSize: "60px", margin: "0px" }}>
+                    {data?.[1]?.totalTasks}
+                  </h7>
+                  <div className="button-text-container">
+                    <button className="green-up-button-bg">
+                      <img src={Greenupvector} alt="" />
+                      {data?.[1]?.totalTasksPercentage}%
+                    </button>
+                    <p>from last month</p>
+                  </div>
+                </div>
+                <div className="horziontal-vector"></div>
+                <div>
+                  <div className="button-blue-container">
+                    <p className="text-item">{data?.[1]?.completedTasks}</p>
+                    <button className="button-blue">
+                      {data?.[1]?.completedTasksPercentage}%
+                    </button>
+                  </div>
+                  <div className="complated-container">
+                    <img src={Ellipseblue} alt="blue ellipse" />
+                    <p>Completed</p>
+                  </div>
+                </div>
+                <div>
+                  <div className="button-blue-container">
+                    <p className="text-item">{data?.[1]?.inProgressTasks}</p>
+                    <button className="button-light-blue">
+                      {data?.[1]?.inProgressTasksPercentage}%
+                    </button>
+                  </div>
+                  <div className="complated-container">
+                    <img src={Ellipselightblue} alt="light blue ellipse " />
+                    <p>In progress</p>
+                  </div>
+                </div>
+                <div>
+                  <div className="button-blue-container">
+                    <p className="text-item">{data?.[1]?.pendingTasks}</p>
+                    <button className="button-orange">
+                      {data?.[1]?.pendingTasksPercentage}%
+                    </button>
+                  </div>
+                  <div className="complated-container">
+                    <img src={Ellipseorange} alt="orange ellipse" />
+                    <p>Pending</p>
+                  </div>
                 </div>
               </div>
-              <div>
-                <div className="button-blue-container">
-                  <p className="text-item">{data?.[1]?.inProgressTasks}</p>
-                  <button className="button-light-blue">
-                    {data?.[1]?.inProgressTasksPercentage}%
-                  </button>
-                </div>
-                <div className="complated-container">
-                  <img src={Ellipselightblue} alt="light blue ellipse " />
-                  <p>In progress</p>
-                </div>
+              <div className="container-medium-footer">
+                <img src={Progresbar} alt="progress bar static for now" />
               </div>
-              <div>
-                <div className="button-blue-container">
-                  <p className="text-item">{data?.[1]?.pendingTasks}</p>
-                  <button className="button-orange">
-                    {data?.[1]?.pendingTasksPercentage}%
-                  </button>
-                </div>
-                <div className="complated-container">
-                  <img src={Ellipseorange} alt="orange ellipse" />
-                  <p>Pending</p>
-                </div>
-              </div>
-            </div>
-            <div className="container-medium-footer">
-              <img src={Progresbar} alt="progress bar static for now" />
             </div>
             <div className="progress-circle-containers">
               <div className="progress-circle-container">
@@ -600,14 +600,14 @@ const Education = () => {
             <div className="persentage-container-sepiceal">
               <button className="blue-persantge">
                 <img src={Vectorwhiteup} alt="vectro" />
-                {data?.[18]?.schoolLunch}%
+                {data?.[41]?.schoolLunch}%
               </button>
               <p className="persentage-container-sepiceal-text">School Lunch</p>
             </div>
             <div className="persentage-container-sepiceal">
               <button className="light-blue-persantge">
                 <img src={Vectorwhiteup} alt="vectro" />
-                {data?.[18]?.lunchFromHome}%
+                {data?.[41]?.lunchFromHome}%
               </button>
               <p className="persentage-container-sepiceal-text">
                 Lunch from Home
@@ -616,7 +616,7 @@ const Education = () => {
             <div className="persentage-container-sepiceal">
               <button className="orange-persantage">
                 <img src={Vectorwhiteup} alt="vectro" />
-                {data?.[18]?.skippingLunch}%
+                {data?.[41]?.skippingLunch}%
               </button>
               <p className="persentage-container-sepiceal-text">
                 Skipping Lunch
@@ -638,7 +638,7 @@ const Education = () => {
                 </div>
                 <div>
                   <button className="bar-button">
-                    {data?.[19]?.attendanceRate}%
+                    {data?.[42]?.attendanceRate}%
                   </button>
                 </div>
               </div>
@@ -651,11 +651,11 @@ const Education = () => {
               <div className="bar-container-flex">
                 <div className="bar-container">
                   <img src={Hour} alt="person icon" />
-                  <p>Attendance Rate</p>
+                  <p>lateArrivals</p>
                 </div>
                 <div>
                   <button className="bar-ligjt-blue-button">
-                    {data?.[19]?.onTimeArriva}%
+                    {data?.[42]?.onTimeArrival}%
                   </button>
                 </div>
               </div>
@@ -668,11 +668,11 @@ const Education = () => {
               <div className="bar-container-flex">
                 <div className="bar-container">
                   <img src={Yellowhour} alt="person icon" />
-                  <p>Attendance Rate</p>
+                  <p>onTimeArrival</p>
                 </div>
                 <div>
                   <button className="bar-orange-button">
-                    {data?.[19]?.lateArrivals}%
+                    {data?.[42]?.lateArrivals}%
                   </button>
                 </div>
               </div>
@@ -685,11 +685,11 @@ const Education = () => {
               <div className="bar-container-flex">
                 <div className="bar-container">
                   <img src={Xcalendar} alt="person icon" />
-                  <p>Attendance Rate</p>
+                  <p>studentsSick</p>
                 </div>
                 <div>
                   <button className="bar-red-button ">
-                    {data?.[19]?.unexcusedAbsences}%
+                    {data?.[42]?.unexcusedAbsences}%
                   </button>
                 </div>
               </div>
@@ -702,11 +702,11 @@ const Education = () => {
               <div className="bar-container-flex">
                 <div className="bar-container">
                   <img src={Heart} alt="person icon" />
-                  <p>Attendance Rate</p>
+                  <p>unexcusedAbsences</p>
                 </div>
                 <div>
                   <button className="bar-black-button">
-                    {data?.[19]?.studentsSick}%
+                    {data?.[42]?.studentsSick}%
                   </button>
                 </div>
               </div>
@@ -730,10 +730,8 @@ const Education = () => {
                 </div>
 
                 <div>
-                  <p className="text-item-lastcontainer">Literary Analysis</p>
-                  <p className="text-item-lastcontainersmall">
-                    {data?.[7]?.subject}
-                  </p>
+                  <p className="datatitle">{data?.[7]?.title}</p>
+                  <p className="gray">{data?.[7]?.subject}</p>
                 </div>
               </div>
               <div>
@@ -750,10 +748,8 @@ const Education = () => {
                   </div>
 
                   <div>
-                    <p className="text-item-lastcontainer">Literary Analysis</p>
-                    <p className="text-item-lastcontainersmall">
-                      {data?.[8]?.subject}
-                    </p>
+                    <p className="datatitle">{data?.[10]?.title}</p>
+                    <p className="gray">{data?.[8]?.subject}</p>
                   </div>
                 </div>
                 <div>
@@ -771,10 +767,8 @@ const Education = () => {
                   </div>
 
                   <div>
-                    <p className="text-item-lastcontainer">Literary Analysis</p>
-                    <p className="text-item-lastcontainersmall">
-                      {data?.[9]?.subject}
-                    </p>
+                    <p className="datatitle">{data?.[11]?.title}</p>
+                    <p className="gray">{data?.[9]?.subject}</p>
                   </div>
                 </div>
                 <div>
@@ -792,10 +786,8 @@ const Education = () => {
                   </div>
 
                   <div>
-                    <p className="text-item-lastcontainer">Literary Analysis</p>
-                    <p className="text-item-lastcontainersmall">
-                      {data?.[10]?.subject}
-                    </p>
+                    <p className="datatitle">{data?.[12]?.title}</p>
+                    <p className="gray">{data?.[10]?.subject}</p>
                   </div>
                 </div>
                 <div>
@@ -813,10 +805,8 @@ const Education = () => {
                   </div>
 
                   <div>
-                    <p className="text-item-lastcontainer">Literary Analysis</p>
-                    <p className="text-item-lastcontainersmall">
-                      {data?.[11]?.subject}
-                    </p>
+                    <p className="datatitle">{data?.[13]?.title}</p>
+                    <p className="gray">{data?.[11]?.subject}</p>
                   </div>
                 </div>
                 <div>
@@ -834,10 +824,8 @@ const Education = () => {
                   </div>
 
                   <div>
-                    <p className="text-item-lastcontainer">Literary Analysis</p>
-                    <p className="text-item-lastcontainersmall">
-                      {data?.[12]?.subject}
-                    </p>
+                    <p className="datatitle">{data?.[14]?.title}</p>
+                    <p className="gray">{data?.[12]?.subject}</p>
                   </div>
                 </div>
                 <div>

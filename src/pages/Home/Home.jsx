@@ -91,7 +91,6 @@ function LogistcsPage() {
         // İlk 10 öğe farklı veriler ise, faturalar 11. öğeden (index 10) başlıyor:
         const invoiceData = combinedData.slice(10);
         setInvoices(invoiceData);
-        console.log("Combined Data:", combinedData);
       } catch (error) {
         setError(error.message);
       } finally {
@@ -291,35 +290,21 @@ function LogistcsPage() {
               <select name="dob-year" className="datefield-year">
                 <option value="">Year</option>
                 <option value="2024">2024</option>
-                <option value="2023">2023</option>
-                <option value="2022">2022</option>
-                <option value="2021">2021</option>
-                <option value="2020">2020</option>
-                <option value="2019">2019</option>
-                <option value="2018">2018</option>
-                <option value="2017">2017</option>
-                <option value="2016">2016</option>
-                <option value="2015">2015</option>
-                <option value="2014">2014</option>
               </select>
             </div>
           </div>
           <div className="long-lines">
             <div className="numbers-left-container-lines">
               <div>
-                {" "}
                 <p>75</p>
               </div>
               <div>
-                {" "}
                 <p>50</p>
               </div>
               <div>
-                {" "}
                 <p>25</p>
               </div>
               <div>
-                {" "}
                 <p>0</p>
               </div>
             </div>

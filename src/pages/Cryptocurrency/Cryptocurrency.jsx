@@ -23,6 +23,30 @@ import Greenx from "../Cryptocurrency/assets/lastsection/greenx.svg";
 import Redx from "../Cryptocurrency/assets/lastsection/redx.svg";
 import Pendingyellow from "../Cryptocurrency/assets/lastsection/pendingyellow.svg";
 import Reddown from "../Home/assets/icons/reddown.svg";
+import { Line } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  BarElement, // Burada BarElement ekleniyor
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  BarElement, // Burada BarElement ekleniyor
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
 const Sellbuyorder = () => {
   const [selectedCurrency, setSelectedCurrency] = useState("Litecoin");
   const [amount, setAmount] = useState(18.56879);
@@ -339,12 +363,33 @@ const OverviewBalance = () => {
     }
   };
 
+  // Bar chart için ayrı veri yapılandırması (API'den gelen verilerle)
+  const barChartData = {
+    labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
+    datasets: [
+      {
+        label: "Weekly Balance",
+        data: data
+          ? [
+              data.lastWeekBalance || 0,
+              data.secondWeekBalance || 0,
+              data.thirdWeekBalance || 0,
+              data.fourthWeekBalance || 0,
+            ]
+          : [0, 0, 0, 0],
+        backgroundColor: "rgba(75, 192, 192, 0.6)",
+        borderColor: "rgba(75, 192, 192, 1)",
+        borderWidth: 1,
+      },
+    ],
+  };
+
   return (
     <div>
       <div className="left-side-container">
         <div className="balance-header-container">
           <div>
-            <p> Overview Balance</p>
+            <p>Overview Balance</p>
           </div>
           <div className="select-container">
             <select
@@ -396,24 +441,30 @@ const OverviewBalance = () => {
               ${data?.lastWeekBalance || 0}
             </p>
             {data?.percentageDifference && (
-              <>
-                {/* {data.percentageDifference}% */}
-                <button className="card-button">
-                  <img src={Vector} alt="vector" />
-                  <p>{data.percentageDifference}%</p>
-                </button>
-              </>
+              <button className="card-button">
+                <img src={Vector} alt="vector" />
+                <p>{data.percentageDifference}%</p>
+              </button>
             )}
           </div>
         </div>
 
         <div>
-          <img src={Balancegraph} alt="Balance graph" />
+          {/* Burada daha önceki <img> yerine Bar chart kullanılıyor */}
+          <Bar
+            data={barChartData}
+            options={{
+              responsive: true,
+              maintainAspectRatio: false,
+            }}
+          style={{ width: "500px", height: "300px" }}
+          />
         </div>
       </div>
     </div>
   );
 };
+
 const Statisticspanel = () => {
   // State tanımlamaları
   const [selectedValue, setSelectedValue] = useState("Bitcoin");
@@ -427,42 +478,82 @@ const Statisticspanel = () => {
     setSelectedValue(value);
   };
 
-  // API URL'sini dinamik olarak oluşturuyoruz
-  const apiLinks = [
-    `http://localhost:8088/api/CryptocurrencyPage/Statistics?currencyName=${selectedValue}&userId=1`,
-  ];
+  // Her kripto para için dummy veri tanımlamaları
+  const dummyData = {
+    Bitcoin: [
+      {
+        incomePercentage: 20,
+        income: 1000,
+        spendsPercentage: 10,
+        spends: 500,
+        installmentsPercentage: 5,
+        installments: 300,
+        investsPercentage: 15,
+        invests: 200,
+      },
+      { invoiceId: 1, amount: 250 },
+      { invoiceId: 2, amount: 150 },
+    ],
+    Ripple: [
+      {
+        incomePercentage: 25,
+        income: 1200,
+        spendsPercentage: 12,
+        spends: 600,
+        installmentsPercentage: 7,
+        installments: 350,
+        investsPercentage: 18,
+        invests: 220,
+      },
+      { invoiceId: 1, amount: 300 },
+      { invoiceId: 2, amount: 180 },
+    ],
+    Litecoin: [
+      {
+        incomePercentage: 18,
+        income: 900,
+        spendsPercentage: 8,
+        spends: 400,
+        installmentsPercentage: 6,
+        installments: 280,
+        investsPercentage: 12,
+        invests: 170,
+      },
+      { invoiceId: 1, amount: 200 },
+      { invoiceId: 2, amount: 130 },
+    ],
+    Ethereum: [
+      {
+        incomePercentage: 22,
+        income: 1100,
+        spendsPercentage: 9,
+        spends: 450,
+        installmentsPercentage: 4,
+        installments: 310,
+        investsPercentage: 20,
+        invests: 240,
+      },
+      { invoiceId: 1, amount: 270 },
+      { invoiceId: 2, amount: 160 },
+    ],
+  };
 
-  // Verileri çekme işlemi
+  // Dummy veriyi seçilen kripto para göre yükleme
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true); // Veri yükleniyor
-      try {
-        const responses = await Promise.all(
-          apiLinks.map((link) =>
-            fetch(link).then((response) => {
-              if (!response.ok) {
-                throw new Error("Network response was not ok");
-              }
-              return response.json();
-            })
-          )
-        );
-        // API'den gelen verileri birleştiriyoruz
-        const combinedData = responses.flat();
-        setData(combinedData);
-        // Örnek: İlk 10 öğe farklı veriler ise, faturaları 11. öğeden (index 10) başlatıyoruz
-        const invoiceData = combinedData.slice(10);
-        setInvoices(invoiceData);
-        console.log("Combined Data:", combinedData);
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [selectedValue]); // selectedValue değiştiğinde API çağrısı tekrar çalışsın
+    setLoading(true);
+    try {
+      const localData = dummyData[selectedValue] || [];
+      setData(localData);
+      // Faturaları 2. elemandan itibaren alıyoruz (index 1)
+      const invoiceData = localData.slice(1);
+      setInvoices(invoiceData);
+      console.log("Local Data for", selectedValue, ":", localData);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedValue]);
 
   return (
     <div className="Statistics">
@@ -513,11 +604,10 @@ const Statisticspanel = () => {
           <div className="statistics-last-text-item-container">
             <div className="circleflex">
               <div className="lightbluecircle"></div>
-
-              <p>Spends (${data?.[0]?.spendsPercentage})</p>
+              <p>Spends ({data?.[0]?.spendsPercentage}%)</p>
             </div>
             <div>
-              <p> {data?.[0]?.spends}% </p>
+              <p>${data?.[0]?.spends}</p>
             </div>
           </div>
 
@@ -545,7 +635,149 @@ const Statisticspanel = () => {
     </div>
   );
 };
+const PortfolioPanel = () => {
+  const [selectedCoin, setSelectedCoin] = useState("Bitcoin");
 
+  // Her coin için farklı dummy veri tanımlamaları
+  const coinData = {
+    Bitcoin: {
+      currency: "BTC/IDR",
+      price: "USD 34.147,80",
+      rate: "-0.0662%/hr",
+      volume: "IDR 280.55T",
+      chartData: {
+        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
+        datasets: [
+          {
+            label: "Bitcoin Price",
+            data: [30000, 32000, 31000, 29000, 34000, 36000, 38000],
+            borderColor: "rgba(75,192,192,1)",
+            backgroundColor: "rgba(75,192,192,0.2)",
+          },
+        ],
+      },
+    },
+    Ripple: {
+      currency: "XRP/IDR",
+      price: "USD 1,20",
+      rate: "0.5%/hr",
+      volume: "IDR 150.30T",
+      chartData: {
+        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
+        datasets: [
+          {
+            label: "Ripple Price",
+            data: [0.5, 0.6, 0.55, 0.52, 0.58, 0.62, 0.65],
+            borderColor: "rgba(255,99,132,1)",
+            backgroundColor: "rgba(255,99,132,0.2)",
+          },
+        ],
+      },
+    },
+    Litecoin: {
+      currency: "LTC/IDR",
+      price: "USD 200,00",
+      rate: "1.2%/hr",
+      volume: "IDR 80.20T",
+      chartData: {
+        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
+        datasets: [
+          {
+            label: "Litecoin Price",
+            data: [100, 120, 115, 110, 130, 140, 150],
+            borderColor: "rgba(54,162,235,1)",
+            backgroundColor: "rgba(54,162,235,0.2)",
+          },
+        ],
+      },
+    },
+    Ethereum: {
+      currency: "ETH/IDR",
+      price: "USD 2100,00",
+      rate: "-0.5%/hr",
+      volume: "IDR 320.00T",
+      chartData: {
+        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
+        datasets: [
+          {
+            label: "Ethereum Price",
+            data: [1000, 1100, 1050, 1020, 1080, 1150, 1200],
+            borderColor: "rgba(153,102,255,1)",
+            backgroundColor: "rgba(153,102,255,0.2)",
+          },
+        ],
+      },
+    },
+  };
+
+  const handleCoinChange = (e) => {
+    setSelectedCoin(e.target.value);
+  };
+
+  const currentData = coinData[selectedCoin];
+
+  return (
+    <div className="container-left">
+      <div className="portfolio-header-container">
+        <div>
+          <p>My Portfolio</p>
+        </div>
+        <div className="select-container">
+          {/* Coin seçimi için basit bir select */}
+          <select onChange={handleCoinChange} value={selectedCoin}>
+            <option value="Bitcoin">Bitcoin</option>
+            <option value="Ripple">Ripple</option>
+            <option value="Litecoin">Litecoin</option>
+            <option value="Ethereum">Ethereum</option>
+          </select>
+          <img src={Treedot} alt="menu" />
+        </div>
+      </div>
+      <div className="vertical-line-div"></div>
+      <div className="Portfolio-middle-container">
+        <div className="Portfolio-middle-container-text-secondary">
+          <div>
+            <p>Currency</p>
+            <h3>{currentData.currency}</h3>
+          </div>
+          <div className="horizontal-line"></div>
+
+          <div className="Portfolio-middle-container-text-item">
+            <div>
+              <p>Price</p>
+              <h3>{currentData.price}</h3>
+            </div>
+            <div>
+              <img src={Greenup3} alt="up button" />
+            </div>
+          </div>
+          <div className="horizontal-line"></div>
+          <div>
+            <p>Rate</p>
+            <h3>{currentData.rate}</h3>
+          </div>
+          <div className="horizontal-line"></div>
+          <div className="volume">
+            <div>
+              <p>Volume (24h)</p>
+              <h3>{currentData.volume}</h3>
+            </div>
+            <div>
+              <img src={Reddown5} alt="down" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="line">
+        {/* Sadece burası değişti: <img> yerine <Line> bileşeni kullanılarak grafik gösteriliyor */}
+        <Line
+          style={{ width: "500px", height: "400px" }}
+          data={currentData.chartData}
+        />
+      </div>
+    </div>
+  );
+};
 const WalletActivity = () => {
   const [data, setData] = useState([]); // Tüm veriyi saklamak için state
   const [displayData, setDisplayData] = useState([]); // Görüntülenen veriyi saklamak için state
@@ -799,53 +1031,7 @@ const Cryptocurrency = () => {
       </section>
 
       <section className="Portfolio-container slide">
-        <div className="container-left">
-          <div className="portfolio-header-container">
-            <div>
-              <p>My Portfolio</p>
-            </div>
-            <div className="select-container">
-              <Bitcoinoption />
-              <img src={Treedot} alt="menu" />
-            </div>
-          </div>
-          <div className="vertical-line-div"></div>
-          <div className="Portfolio-middle-container">
-            <div>
-              <p>Currency</p>
-              <h3>BTC/IDR</h3>
-            </div>
-            <div className="horizontal-line"></div>
-            <div className="Portfolio-middle-container-text-item">
-              <div>
-                <p>Price</p>
-                <h3>USD 34.147,80</h3>
-              </div>
-
-              <div>
-                <img src={Greenup3} alt="up button foto static now" />
-              </div>
-            </div>
-            <div className="horizontal-line"></div>
-            <div>
-              <p>Rate</p>
-              <h3>-0.0662%/hr</h3>
-            </div>
-            <div className="horizontal-line"></div>
-            <div className="volume">
-              <div>
-                <p>Volume (24h)</p>
-                <h3>IDR 280.55T</h3>
-              </div>
-              <div>
-                <img src={Reddown5} alt="down" />
-              </div>
-            </div>
-          </div>
-          <div>
-            <img src={Bitcoinbarhuge} alt="bitcoin graphs" />
-          </div>
-        </div>
+        <PortfolioPanel />
         <Statisticspanel />
       </section>
 
@@ -888,171 +1074,8 @@ const Cryptocurrency = () => {
       </section>
 
       <section className="balance">
-        {/* <div className="left-side-container">
-          <div className="balance-header-container">
-            <div>
-              <p> Overview Balance</p>
-            </div>
-            <div className="select-container">
-              <select className="selectfrom" htmlFor="november">
-                <option value="">--Select Month--</option>
-                <option selected value="1">
-                  January
-                </option>
-                <option value="2">February</option>
-                <option value="3">March</option>
-                <option value="4">April</option>
-                <option value="5">May</option>
-                <option value="6">June</option>
-                <option value="7">July</option>
-                <option value="8">August</option>
-                <option value="9">September</option>
-                <option value="10">October</option>
-                <option value="11">November</option>
-                <option value="12">December</option>
-              </select>
-
-              <select
-                className="selectfromx"
-                name="dob-year"
-                class="datefield year">
-                <option value="">Year</option>
-                <option value="2012">2012</option>
-                <option value="2011">2011</option>
-                <option value="2010">2010</option>
-                <option value="2009">2009</option>
-                <option value="2008">2008</option>
-                <option value="2007">2007</option>
-                <option value="2006">2006</option>
-                <option value="2005">2005</option>
-                <option value="2004">2004</option>
-                <option value="2003">2003</option>
-                <option value="2002">2002</option>
-              </select>
-            </div>
-          </div>
-          <div className="balance-middle-container-left">
-            <div>
-              <p className="balance-middle-container-left-text">
-                Last week balance
-              </p>
-            </div>
-            <div className="price-container">
-              <p className="balance-middle-container-left-price">
-                $452,847.930
-              </p>
-
-              <img src={Greenup3} />
-            </div>
-          </div>
-          <div>
-            <img src={Balancegraph} />
-          </div>
-        </div> */}
         <OverviewBalance />
 
-        {/* <div className="wallet-activity-container">
-          <div className="wallet-activity-container-header">
-            <p className="wallet-activity-container-header-text">
-              Wallet Activity
-            </p>
-            <img src={Treedot} />
-          </div>
-          <div className="wallet-activity-container-middle-container">
-            <button className="wallet-activity-container-middle-container-bluebutton">
-              Today
-            </button>
-            <button className="wallet-activity-container-middle-container-bluebutton-none">
-              Weekly
-            </button>
-            <button className="wallet-activity-container-middle-container-bluebutton-none">
-              Monthly
-            </button>
-            <button className="wallet-activity-container-middle-container-bluebutton-none">
-              Yearly
-            </button>
-          </div>
-          <div className="wallet-activity-container-last">
-            <div className="wallet-activity-container-last-text-container">
-              <div className="wallet-activity-container-last-text-container-itemandicon">
-                <img src={Redx} />
-                <p>Withdrawal</p>
-              </div>
-              <div className="wallet-activity-container-last-text-container-prices">
-                <p>-$542.88</p>
-                <p style={{ color: "rgba(166, 168, 169, 1)" }}>06:24:45 AM</p>
-              </div>
-              <div>
-                <img src={Pendingyellow} />
-              </div>
-            </div>
-            <div className="wallet-activity-container-last-text-container">
-              <div className="wallet-activity-container-last-text-container-itemandicon">
-                <img src={Redx} />
-                <p>Top Up</p>
-              </div>
-              <div className="wallet-activity-container-last-text-container-prices">
-                <p>+$5,539.99</p>
-                <p style={{ color: "rgba(166, 168, 169, 1)" }}>02:33:13 AM</p>
-              </div>
-              <div>
-                <img src={Completedgreen} />
-              </div>
-            </div>
-            <div className="wallet-activity-container-last-text-container">
-              <div className="wallet-activity-container-last-text-container-itemandicon">
-                <img src={Redx} />
-                <p>Withdrawal</p>
-              </div>
-              <div className="wallet-activity-container-last-text-container-prices">
-                <p>-$1,258.16</p>
-                <p style={{ color: "rgba(166, 168, 169, 1)" }}>02:24:45 AM</p>
-              </div>
-              <div>
-                <img src={Completedgreen} />
-              </div>
-            </div>
-            <div className="wallet-activity-container-last-text-container">
-              <div className="wallet-activity-container-last-text-container-itemandicon">
-                <img src={Redx} />
-                <p>Withdrawal</p>
-              </div>
-              <div className="wallet-activity-container-last-text-container-prices">
-                <p>-$938.76</p>
-                <p style={{ color: "rgba(166, 168, 169, 1)" }}>01:24:45 AM</p>
-              </div>
-              <div>
-                <img src={Completedgreen} />
-              </div>
-            </div>
-            <div className="wallet-activity-container-last-text-container">
-              <div className="wallet-activity-container-last-text-container-itemandicon">
-                <img src={Greenx} />
-                <p>Top Up</p>
-              </div>
-              <div className="wallet-activity-container-last-text-container-prices">
-                <p>+$5,539.99</p>
-                <p style={{ color: "rgba(166, 168, 169, 1)" }}>02:33:13 AM</p>
-              </div>
-              <div>
-                <img src={Completedgreen} />
-              </div>
-            </div>
-            <div className="wallet-activity-container-last-text-container">
-              <div className="wallet-activity-container-last-text-container-itemandicon">
-                <img src={Redx} />
-                <p>Withdrawal</p>
-              </div>
-              <div className="wallet-activity-container-last-text-container-prices">
-                <p>-$65.76</p>
-                <p style={{ color: "rgba(166, 168, 169, 1)" }}>01:13:45 AM</p>
-              </div>
-              <div>
-                <img src={Cancelledred} />
-              </div>
-            </div>
-          </div>
-        </div> */}
         <WalletActivity />
       </section>
     </>

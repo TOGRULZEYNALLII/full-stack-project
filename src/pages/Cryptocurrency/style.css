@@ -20,7 +20,7 @@
   justify-content: center;
   gap: 26px;
 }
-.slide{
+.slide {
   animation: slideInFromRight 2s ease-in-out;
 }
 /* section portfoilio */
@@ -106,12 +106,20 @@
   height: 40px;
   align-items: center;
 }
+.Portfolio-middle-container-text-secondary {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  width: 800px;
+  justify-content: space-between;
+}
 .Portfolio-middle-container-text-item {
   display: flex;
   flex-direction: row;
   align-items: last baseline;
   gap: 20px;
-  margin-bottom: 20px;
+  margin-bottom: -20px;
 }
 .horizontal-line {
   width: 1px;
@@ -342,7 +350,7 @@
   background-color: hsla(0, 0%, 100%, 1);
   border-radius: 10px;
   width: 538px;
-  height: 536px;
+  height: 480px;
   padding: 20px;
 }
 .balance-middle-container-left {
@@ -520,3 +528,4 @@
     opacity: 1;
   }
 }
+/* charts  */
