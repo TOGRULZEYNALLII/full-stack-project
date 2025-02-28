@@ -386,7 +386,7 @@ const OverviewBalance = () => {
   };
 
   return (
-    <div className="left-side-container">
+    <div className="left-side-container-st">
       <div className="flex-header">
         <p> Weekly Wallet Transactions</p>
         <img src={Treedotmenu} />
@@ -454,19 +454,19 @@ const Invoicing = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    const urls = [`http://localhost:8088/api/BankingPage/GetCards?userId=1`];
+    const urls = [
+      `http://localhost:8088/api/InvoicingPage/QuickReview?userId=1`,
+      "http://localhost:8088/api/InvoicingPage/SpendingAndSpendingLists?userId=1",
+    ];
 
     const fetchData = async () => {
       try {
-        // Her URL'den gelen yanıtı fetch ederek array'e alıyoruz
         const results = await Promise.all(
           urls.map((url) => fetch(url).then((res) => res.json()))
         );
 
-        // Gelen verileri tek bir array içinde birleştiriyoruz
         setData(results); // results array'ini data state'ine kaydediyoruz
 
-        // Veriyi konsola yazdır (burada data'yı set ettikten sonra değil)
         console.log(results);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -477,48 +477,6 @@ const Invoicing = () => {
   }, []);
   const [amount, setAmount] = useState(875);
   const balance = 456345.62;
-  // const [transactions, setTransactions] = useState([
-  //   {
-  //     name: "XYZ Store ID",
-  //     date: "November 28, 2023",
-  //     time: "05:34 AM",
-  //     type: "Cashback",
-  //     amount: "+ $53.98",
-  //     status: "PENDING",
-  //   },
-  //   {
-  //     name: "Restaurant ABC",
-  //     date: "November 28, 2023",
-  //     time: "07:56 AM",
-  //     type: "Transfer Out",
-  //     amount: "- $148.63",
-  //     status: "COMPLETED",
-  //   },
-  //   {
-  //     name: "Cindy Alexandro",
-  //     date: "November 28, 2023",
-  //     time: "10:13 AM",
-  //     type: "Transfer Out",
-  //     amount: "- $33.47",
-  //     status: "COMPLETED",
-  //   },
-  //   {
-  //     name: "Payment CME",
-  //     date: "November 28, 2023",
-  //     time: "12:34 PM",
-  //     type: "Transfer In",
-  //     amount: "+ $550.33",
-  //     status: "PENDING",
-  //   },
-  //   {
-  //     name: "Hawkins Jr.",
-  //     date: "November 28, 2023",
-  //     time: "04:34 PM",
-  //     type: "Transfer In",
-  //     amount: "+ $63.75",
-  //     status: "CANCELED",
-  //   },
-  // ]);
 
   const [editIndex, setEditIndex] = useState(null);
   const [editTransaction, setEditTransaction] = useState({});

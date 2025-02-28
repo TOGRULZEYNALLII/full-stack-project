@@ -158,6 +158,7 @@
 .popular-serch-header {
   display: flex;
   width: 310px;
+  margin-left: 20px;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
@@ -225,6 +226,7 @@
 .dots-container-left {
   display: flex;
   flex-direction: column;
+  margin-left: 20px;
   margin-top: 50px;
   flex-direction: row;
   justify-content: space-between;
@@ -240,10 +242,14 @@
 .footer-header-tags-container {
   display: flex;
   flex-direction: column;
-  width: 300px;
+  width: 290px;
+  margin-left: 20px ;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+}
+.left20px{
+  margin-left: 30px;
 }
 .gray-button-tags {
   width: 88px;

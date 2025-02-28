@@ -1,7 +1,8 @@
 import React from "react";
 import "../Pos/style.css";
 import Treedot from "../Sidebar/assets/icons/dot.svg";
-import { useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
+import { Chart } from "chart.js/auto";
 import Popularsearch from "./assets/header/popularsearch.svg";
 import Popularsearcharrows from "./assets/header/popularsearcharrows.svg";
 import Salesbycategory from "./assets/header/salesbycategory.svg";
@@ -34,6 +35,209 @@ import Truckbox from "./assets/vistors/truckbox.svg";
 import Planebox from "./assets/vistors/planebox.svg";
 import Lines from "./assets/header/Lines.svg";
 import Labels from "./assets/header/y-labels.svg";
+
+const TotalOrdersByPlatform = () => {
+  const chartRef = useRef(null); // Grafik için referans
+  const chartInstance = useRef(null); // Chart örneğini saklamak için
+
+  // Grafik oluşturma efekti
+  useEffect(() => {
+    if (chartInstance.current) {
+      chartInstance.current.destroy(); // Eski grafiği temizle
+    }
+
+    const ctx = chartRef.current.getContext("2d");
+
+    // Platform verileri
+    const data = {
+      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"], // Zaman dilimleri
+      datasets: [
+        {
+          label: "Instagram",
+          data: [45, 50, 60, 70, 65, 75, 80], // Instagram verileri
+          borderColor: "#36A2EB", // Mavi
+          backgroundColor: "rgba(54, 162, 235, 0.2)",
+          borderWidth: 2,
+          tension: 0.4,
+        },
+        {
+          label: "TikTok",
+          data: [25, 30, 35, 40, 45, 50, 55], // TikTok verileri
+          borderColor: "#FF6384", // Kırmızı
+          backgroundColor: "rgba(255, 99, 132, 0.2)",
+          borderWidth: 2,
+          tension: 0.4,
+        },
+        {
+          label: "Facebook",
+          data: [15, 20, 25, 30, 35, 40, 45], // Facebook verileri
+          borderColor: "#FF9F40", // Turuncu
+          backgroundColor: "rgba(255, 159, 64, 0.2)",
+          borderWidth: 2,
+          tension: 0.4,
+        },
+        {
+          label: "Amazon",
+          data: [10, 15, 20, 25, 30, 35, 40], // Amazon verileri
+          borderColor: "#4BC0C0", // Yeşil
+          backgroundColor: "rgba(75, 192, 192, 0.2)",
+          borderWidth: 2,
+          tension: 0.4,
+        },
+      ],
+    };
+
+    // Yeni grafik oluştur
+    chartInstance.current = new Chart(ctx, {
+      type: "line", // Çizgi grafik
+      data: data,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: "top", // Legend'ı üstte göster
+          },
+          title: { display: false },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: "Orders (in K)",
+            },
+          },
+          x: {
+            title: {
+              display: true,
+              text: "Months",
+            },
+          },
+        },
+      },
+    });
+
+    // Temizleme
+    return () => {
+      if (chartInstance.current) {
+        chartInstance.current.destroy();
+      }
+    };
+  }, []); // Sadece ilk render'da çalışır
+
+  return (
+    <div className="total-oreders-right-container">
+      <div className="total-oreders-right-container-header">
+        <p>Total Orders by Platform</p>
+        <button className="total-oreders-right-container-header-button">
+          <p>Platforms</p>
+        </button>
+      </div>
+      <div className="total-oreders-right-container-middle">
+        <div className="total-oreders-right-container-middle-content">
+          <img src={Instagram} alt="Instagram" />
+          <div>
+            <div>
+              <p className="height">Instagram</p>
+            </div>
+            <div className="flex">
+              <p className="bold-middle">500,26K</p>
+              <img src={Greensquareup} alt="Increase" />
+              <p className="green">+35</p>
+            </div>
+          </div>
+        </div>
+        <div className="total-oreders-right-container-middle-content">
+          <img src={Tiktopk} alt="TikTok" />
+          <div>
+            <div>
+              <p className="height">TikTok</p>
+            </div>
+            <div className="flex">
+              <p className="bold-middle">130,35K</p>
+              <img src={ArrowSquareDownLeft} alt="Decrease" />
+              <p className="red">+5</p>
+            </div>
+          </div>
+        </div>
+        <div className="total-oreders-right-container-middle-content">
+          <img src={Facebook} alt="Facebook" />
+          <div>
+            <div>
+              <p className="height">Facebook</p>
+            </div>
+            <div className="flex">
+              <p className="bold-middle">280,96K</p>
+              <img src={Greensquareup} alt="Increase" />
+              <p className="green">+10</p>
+            </div>
+          </div>
+        </div>
+        <div className="total-oreders-right-container-middle-content">
+          <img src={Amazon} alt="Amazon" />
+          <div>
+            <div>
+              <p className="height">Amazon</p>
+            </div>
+            <div className="flex">
+              <p className="bold-middle">400,6K</p>
+              <img src={Greensquareup} alt="Increase" />
+              <p className="green">+40</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        {/* <img> yerine <canvas> ekledik */}
+        <canvas 
+          ref={chartRef}
+          style={{ width: "100%", height: "400px" ,marginTop:"-20px"}}></canvas>
+        {/* <div className="big-graph-content">
+          <div>
+            <p className="bold-little-special">Platform view distribution</p>
+            <p className="gray-little">April, 30 2026</p>
+          </div>
+          <div className="big-graph-content-text-container">
+            <div className="big-graph-content-text">
+              <div className="flex">
+                <div className="div-light-blue"></div>
+                <div>
+                  <p className="gray">Instagram</p>
+                  <p>45%</p>
+                </div>
+              </div>
+              <div className="flex">
+                <div className="div-red"></div>
+                <div>
+                  <p className="gray">TikTok</p>
+                  <p>25%</p>
+                </div>
+              </div>
+            </div>
+            <div className="big-graph-content-text">
+              <div className="flex">
+                <div className="div-orange"></div>
+                <div>
+                  <p className="gray">Facebook</p>
+                  <p>15%</p>
+                </div>
+              </div>
+              <div className="flex">
+                <div className="div-green"></div>
+                <div>
+                  <p className="gray">Amazon</p>
+                  <p>15%</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div> */}
+      </div>
+    </div>
+  );
+};
 const RecentActivity = () => {
   const [activities, setActivities] = useState([]);
 
@@ -350,26 +554,91 @@ const SalesByCatagory = () => {
 
 const Vistorsfunction = () => {
   const [selectedTimestamp, setSelectedTimestamp] = useState("Weekly");
-  const [visitorsData, setVisitorsData] = useState(null);
+  const chartRef = useRef(null); // Grafik için referans
+  const chartInstance = useRef(null); // Chart örneğini saklamak için
 
-  // Seçili zaman dilimi değiştikçe API'den verileri çekiyoruz.
+  // Rastgele veri üretme fonksiyonu
+  const generateRandomData = (count) => {
+    return Array.from({ length: count }, () => Math.floor(Math.random() * 100));
+  };
+
+  // Grafik oluşturma efekti
   useEffect(() => {
-    fetch(
-      `http://localhost:8088/api/PointOfSalesPage/Visitors?timestamp=${selectedTimestamp}&marketId=1`
-    )
-      .then((res) => res.json())
-      .then((data) => setVisitorsData(data))
-      .catch((err) => console.error("Error fetching visitors data:", err));
-  }, [selectedTimestamp]);
+    if (chartInstance.current) {
+      chartInstance.current.destroy(); // Eski grafiği temizle
+    }
 
-  // totalVisitors dizisindeki değerlerin toplamını hesaplıyoruz.
-  const totalVisitors =
-    visitorsData && visitorsData.totalVisitors
-      ? visitorsData.totalVisitors.reduce(
-          (sum, item) => sum + item.totalVisitors,
-          0
-        )
-      : 0;
+    const ctx = chartRef.current.getContext("2d");
+
+    // Zaman dilimine göre etiketler ve verileri belirle
+    let labels, data;
+    switch (selectedTimestamp) {
+      case "Weekly":
+        labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+        data = generateRandomData(7); // 7 gün için rastgele veri
+        break;
+      case "Monthly":
+        labels = Array.from({ length: 30 }, (_, i) => `Day ${i + 1}`);
+        data = generateRandomData(30); // 30 gün için rastgele veri
+        break;
+      case "Yearly":
+        labels = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ];
+        data = generateRandomData(12); // 12 ay için rastgele veri
+        break;
+      default:
+        labels = [];
+        data = [];
+    }
+
+    // Yeni grafik oluştur
+    chartInstance.current = new Chart(ctx, {
+      type: "line", // Çizgi grafik
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Visitors",
+            data: data,
+            borderColor: "#36A2EB",
+            backgroundColor: "rgba(54, 162, 235, 0.2)",
+            borderWidth: 2,
+            tension: 0.4,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          title: { display: false },
+        },
+        scales: {
+          y: { beginAtZero: true },
+        },
+      },
+    });
+
+    // Temizleme
+    return () => {
+      if (chartInstance.current) {
+        chartInstance.current.destroy();
+      }
+    };
+  }, [selectedTimestamp]); // Zaman dilimi değiştiğinde grafik yeniden oluşturulur
 
   return (
     <div className="vistors-container">
@@ -398,21 +667,11 @@ const Vistorsfunction = () => {
           <div className="flex">
             <div className="flex-special">
               <p className="gray">New Visitors</p>
-              <p className="green">
-                {visitorsData
-                  ? visitorsData.newAndReturningVisitors.newVisitorsPercentage >
-                    0
-                    ? `+${visitorsData.newAndReturningVisitors.newVisitorsPercentage}%`
-                    : `${visitorsData.newAndReturningVisitors.newVisitorsPercentage}%`
-                  : ""}
-              </p>
+              <p className="green">+25%</p> {/* Rastgele değer */}
             </div>
             <div>
-              <p className="gray-little-special">
-                {visitorsData
-                  ? visitorsData.newAndReturningVisitors.newVisitors
-                  : "..."}
-              </p>
+              <p className="gray-little-special">1,234</p>{" "}
+              {/* Rastgele değer */}
             </div>
           </div>
           <div>
@@ -423,21 +682,10 @@ const Vistorsfunction = () => {
           <div className="flex">
             <div className="flex-special">
               <p className="gray">Returning</p>
-              <p className="red">
-                {visitorsData
-                  ? visitorsData.newAndReturningVisitors
-                      .returningVisitorsPercentage > 0
-                    ? `+${visitorsData.newAndReturningVisitors.returningVisitorsPercentage}%`
-                    : `${visitorsData.newAndReturningVisitors.returningVisitorsPercentage}%`
-                  : ""}
-              </p>
+              <p className="red">-10%</p> {/* Rastgele değer */}
             </div>
             <div>
-              <p className="gray-little-special">
-                {visitorsData
-                  ? visitorsData.newAndReturningVisitors.returningVisitors
-                  : "..."}
-              </p>
+              <p className="gray-little-special">567</p> {/* Rastgele değer */}
             </div>
           </div>
           <div>
@@ -446,14 +694,10 @@ const Vistorsfunction = () => {
         </div>
       </div>
       <div>
-        <img src={Vistorsgraph} alt="Visitors Graph" />
-        <div className="vistors-absolute-container">
-          <img src={Vistors} alt="Visitors Icon" />
-          <div>
-            <p className="bold-little-special">{totalVisitors}</p>
-            <p className="gray">visitors</p>
-          </div>
-        </div>
+        {/* <img> yerine <canvas> ekledik */}
+        <canvas
+          ref={chartRef}
+          style={{ width: "100%", height: "200px" }}></canvas>
       </div>
     </div>
   );
@@ -916,26 +1160,26 @@ const Pos = () => {
             </div>
             <div className="dots-container-left">
               <div>
-                <div className="dots-container-left-color">
+                <div className="dots-container-left-colorw">
                   <div className="blue-squere"></div>
                   <p>{data?.[0]?.categories?.[0]?.categoryName}</p>
                 </div>
-                <div className="dots-container-left-color">
+                <div className="dots-container-left-colorw">
                   <div className="green-squere"></div>
                   <p>{data?.[0]?.categories?.[1]?.categoryName}</p>
                 </div>
-                <div className="dots-container-left-color">
+                <div className="dots-container-left-colorw">
                   <div className="red-squere"></div>
                   <p>{data?.[0]?.categories?.[2]?.categoryName}</p>
                 </div>
               </div>
               <div>
-                <div className="dots-container-left-color">
+                <div className="dots-container-left-colorw">
                   <div className="orange-squere"></div>
                   <p>{data?.[0]?.categories?.[3]?.categoryName}</p>
                 </div>
                 <div>
-                  <div className="dots-container-left-color">
+                  <div className="dots-container-left-colorw">
                     <div className="light-squere"></div>
                     <p>{data?.[0]?.categories?.[4]?.categoryName}</p>
                   </div>
@@ -948,7 +1192,7 @@ const Pos = () => {
                 <img src={Treedot} />
               </div>
             </div>
-            <div className="flex">
+            <div className="flex left20px">
               <button className="gray-button-tags">
                 # <p>{data?.[0]?.categories?.[0]?.categoryName}</p>
               </button>{" "}
@@ -1027,113 +1271,7 @@ const Pos = () => {
             </div>
           </div>
         </div>
-        <div className="total-oreders-right-container">
-          <div className="total-oreders-right-container-header">
-            <p>Total Orders by Platform</p>
-            <button className="total-oreders-right-container-header-button">
-              <p> Platforms</p>
-            </button>
-          </div>
-          <div className="total-oreders-right-container-middle">
-            <div className="total-oreders-right-container-middle-content">
-              <img src={Instagram} />
-              <div>
-                <div>
-                  <p className="height">Instagram</p>
-                </div>
-                <div className="flex">
-                  <p className="bold-middle"> 500,26K</p>
-                  <img src={Greensquareup} />
-                  <p className="green">+35</p>
-                </div>
-              </div>
-            </div>
-            <div className="total-oreders-right-container-middle-content">
-              <img src={Tiktopk} />
-              <div>
-                <div>
-                  <p className="height">Instagram</p>
-                </div>
-                <div className="flex">
-                  <p className="bold-middle"> 130,35K</p>
-                  <img src={ArrowSquareDownLeft} />
-                  <p className="red">+5</p>
-                </div>
-              </div>
-            </div>
-            <div className="total-oreders-right-container-middle-content">
-              <img src={Facebook} />
-              <div>
-                <div>
-                  <p className="height">Instagram</p>
-                </div>
-                <div className="flex">
-                  <p className="bold-middle"> 280,96K</p>
-                  <img src={Greensquareup} />
-                  <p className="green">+10</p>
-                </div>
-              </div>
-            </div>
-            <div className="total-oreders-right-container-middle-content">
-              <img src={Amazon} />
-              <div>
-                <div>
-                  <p className="height">Instagram</p>
-                </div>
-                <div className="flex">
-                  <p className="bold-middle"> 400,6K</p>
-                  <img src={Greensquareup} />
-                  <p className="green">+40</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div>
-            <img src={Totalordersbiggraph} />
-            <div className="big-graph-content">
-              <div>
-                <p className="bold-little-special">
-                  Platform view distribution
-                </p>
-                <p className="gray-little">April, 30 2026</p>
-              </div>
-              <div className="big-graph-content-text-container">
-                <div className="big-graph-content-text">
-                  <div className="flex">
-                    <div className="div-light-blue"></div>
-                    <div>
-                      <p className="gray">Instagram</p>
-                      <p>45%</p>
-                    </div>
-                  </div>
-                  <div className="flex">
-                    <div className="div-red"></div>
-                    <div>
-                      <p className="gray">Tiktok</p>
-                      <p>45%</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="big-graph-content-text">
-                  <div className="flex">
-                    <div className="div-orange"></div>
-                    <div>
-                      <p className="gray">Facebook</p>
-                      <p>45%</p>
-                    </div>
-                  </div>
-                  <div className="flex">
-                    <div className="div-green"></div>
-                    <div>
-                      <p className="gray">Amozon</p>
-                      <p>45%</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <TotalOrdersByPlatform />
       </section>
 
       <section className="product-sales-section-main">

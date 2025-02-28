@@ -1,6 +1,6 @@
 import React from "react";
 import "../Restaurant/style.css";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useEffect } from "react";
 import Cancelled from "./assets/header/cancelled.svg";
 import Dosap from "./assets/header/dosap.svg";
@@ -43,10 +43,85 @@ import Days from "../Restaurant/assets/trendingitems/Days.svg";
 import Customreviewsgraph from "../Restaurant/assets/trendingitems/Custom-reviews-graph.svg";
 import Blueellipse from "../Restaurant/assets/trendingitems/Blueellipse.svg";
 import Ellipseorange from "../Restaurant/assets/trendingitems/Ellipseorange.svg";
+import { Chart } from "chart.js/auto";
+const TopSellingProducts = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          "http://localhost:8088/api/RestaurantPage/TopSellingProducts?restaurantId=1"
+        );
+        if (!response.ok) {
+          throw new Error("API call failed");
+        }
+        const result = await response.json();
+        setProducts(result.slice(0, 4)); // Sadece ilk 4 ürünü al
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  return (
+    <div className="topsellingproducs-container">
+      <div className="topsellingproducs-container-header">
+        <p>Top Selling Products</p>
+        <img src={Treedotmenu} alt="menu" />
+      </div>
+
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>Error: {error}</p>
+      ) : (
+        <div className="topsellingproducs-container-middle">
+          {products.map((product, index) => (
+            <div
+              key={index}
+              className="topsellingproducs-container-middle-content">
+              <img
+                className="topsellingproducs-container-middle-content-img"
+                src={`http://localhost:8088${product.image}`} // Resim URL'sini düzelttim
+                alt={product.name}
+              />
+              <div className="topsellingproducs-container-middle-content-text-container">
+                <p className="topsellingproducs-container-middle-content-text">
+                  {product.name}
+                </p>
+                <div className="stars-container">
+                  <img src={Stars} alt="stars" />
+                  <p>4/5</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="selling-products--button-container">
+        <button className="selling-products--button">View All Products</button>
+      </div>
+    </div>
+  );
+};
+
 const CustomReviews = () => {
   const [year, setYear] = useState("2025");
   const [reviewData, setReviewData] = useState(null);
   const [Download, setDownload] = useState();
+  const chartRef = useRef(null); // Grafik için referans
+  const chartInstance = useRef(null); // Chart örneğini saklamak için
+
   // Seçilen yıla göre API çağrısı yapılıyor.
   useEffect(() => {
     fetch(
@@ -58,6 +133,73 @@ const CustomReviews = () => {
       })
       .catch((error) => console.error("API isteğinde hata:", error));
   }, [year]);
+
+  // Grafik oluşturma efekti
+  useEffect(() => {
+    if (chartInstance.current) {
+      chartInstance.current.destroy(); // Eski grafiği temizle
+    }
+
+    const ctx = chartRef.current.getContext("2d");
+
+    // Rastgele veri üret (12 ay için)
+    const randomData = Array.from({ length: 12 }, () =>
+      Math.floor(Math.random() * 100)
+    );
+
+    chartInstance.current = new Chart(ctx, {
+      type: "line", // Çizgi grafik
+      data: {
+        labels: [
+          "Oca",
+          "Şub",
+          "Mar",
+          "Nis",
+          "May",
+          "Haz",
+          "Tem",
+          "Ağu",
+          "Eyl",
+          "Eki",
+          "Kas",
+          "Ara",
+        ],
+        datasets: [
+          {
+            label: "Aylık Değerlendirmeler",
+            data: randomData,
+            borderColor: "#36A2EB",
+            backgroundColor: "rgba(54, 162, 235, 0.2)",
+            borderWidth: 2,
+            tension: 0.4,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          title: { display: false },
+        },
+        scales: {
+          y: { beginAtZero: true },
+        },
+      },
+    });
+
+    // Temizleme
+    return () => {
+      if (chartInstance.current) {
+        chartInstance.current.destroy();
+      }
+    };
+  }, [year]); // Yıl değiştiğinde grafik yeniden oluşturulur
+
+  // Yıl seçimi değiştiğinde state güncelleniyor.
+  const handleYearChange = (e) => {
+    setYear(e.target.value);
+  };
 
   // download
   const handledownload = () => {
@@ -84,10 +226,6 @@ const CustomReviews = () => {
       })
       .catch((error) => console.error("Download API isteğinde hata:", error));
   };
-  // Yıl seçimi değiştiğinde state güncelleniyor.
-  const handleYearChange = (e) => {
-    setYear(e.target.value);
-  };
 
   // API'den dönen monthOfYear dizisindeki boş verileri filtreleyelim.
   const filteredMonths =
@@ -110,7 +248,8 @@ const CustomReviews = () => {
           <select
             className="filter-select"
             value={year}
-            onChange={handleYearChange}>
+            onChange={handleYearChange} // Burada handleYearChange kullanılıyor
+          >
             <option value="2025">2025</option>
             <option value="2024">2024</option>
             <option value="2023">2023</option>
@@ -160,19 +299,10 @@ const CustomReviews = () => {
           </div>
         </div>
         <div className="reviews-graph">
-          <img src={Customreviewsgraph} alt="Custom Reviews Graph" />
-          {/* İsteğe bağlı: Ay bazlı verileri listeleyebilirsiniz
-          {filteredMonths.length > 0 && (
-            <div className="months-data">
-              {filteredMonths.map((monthData, index) => (
-                <div key={index} className="month-data">
-                  <p>{monthData.date}</p>
-                  <p>Positive: {monthData.positive}</p>
-                  <p>Negative: {monthData.negative}</p>
-                </div>
-              ))}
-            </div>
-          )} */}
+          {/* <img> yerine <canvas> ekledik */}
+          <canvas
+            ref={chartRef}
+            style={{ width: "100%", height: "240px" }}></canvas>
         </div>
       </div>
     </div>
@@ -695,15 +825,15 @@ const Restaurant = () => {
               <div className="crossbar-container-content">
                 <div className="crossbar-container-content-text">
                   <p className="crossbar-container-content-text-order">
-                    {data?.[4].name}
+                    {data?.[6].name}
                   </p>
                   <p className="crossbar-container-content-text-hour">
-                    {data?.[4].date}
+                    <p>02:30 PM</p>
                   </p>
                 </div>
                 <div className="crossbar-container-content-text-price-container">
                   <p className="crossbar-container-content-text-price-container-p">
-                    ${data?.[4].amount}
+                    $14$
                   </p>
                   <img className="Arrowdefault" src={Arrowdefault} />
                 </div>
@@ -714,15 +844,15 @@ const Restaurant = () => {
               <div className="crossbar-container-content">
                 <div className="crossbar-container-content-text">
                   <p className="crossbar-container-content-text-order">
-                    {data?.[4].name}
+                    {data?.[7].name}
                   </p>
                   <p className="crossbar-container-content-text-hour">
-                    {data?.[4].date}
+                    <p>03:46 PM</p>
                   </p>
                 </div>
                 <div className="crossbar-container-content-text-price-container">
                   <p className="crossbar-container-content-text-price-container-p">
-                    ${data?.[4].amount}
+                    $12
                   </p>
                   <img className="Arrowdefault" src={Arrowdefault} />
                 </div>
@@ -730,84 +860,7 @@ const Restaurant = () => {
             </div>
           </div>
         </div>
-
-        <div className="topsellingproducs-container">
-          <div className="topsellingproducs-container-header">
-            <p>Top Selling Products</p>
-            <img src={Treedotmenu} />
-          </div>
-          <div className="topsellingproducs-container-middle">
-            <div className="topsellingproducs-container-middle-content">
-              <img
-                className="topsellingproducs-container-middle-content-img"
-                src={data?.[5].image}
-              />
-              <div className="topsellingproducs-container-middle-content-text-container">
-                <p className="topsellingproducs-container-middle-content-text">
-                  {data?.[5].name}
-                </p>
-                <div className="stars-container">
-                  <img src={Stars} />
-                  <p>{data?.[5].stars}/5</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="topsellingproducs-container-middle-content">
-              <img
-                className="topsellingproducs-container-middle-content-img"
-                src={data?.[6].image}
-              />
-              <div className="topsellingproducs-container-middle-content-text-container">
-                <p className="topsellingproducs-container-middle-content-text">
-                  {data?.[6].name}
-                </p>
-                <div className="stars-container">
-                  <img src={Stars} />
-                  <p>{data?.[6].stars}/5</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="topsellingproducs-container-middle-content">
-              <img
-                className="topsellingproducs-container-middle-content-img"
-                src={data?.[7].image}
-              />
-              <div className="topsellingproducs-container-middle-content-text-container">
-                <p className="topsellingproducs-container-middle-content-text">
-                  {data?.[7].name}
-                </p>
-                <div className="stars-container">
-                  <img src={Stars} />
-                  <p>{data?.[7].stars}/5</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="topsellingproducs-container-middle-content">
-              <img
-                className="topsellingproducs-container-middle-content-img"
-                src={data?.[8].image}
-              />
-              <div className="topsellingproducs-container-middle-content-text-container">
-                <p className="topsellingproducs-container-middle-content-text">
-                  {data?.[8].name}
-                </p>
-                <div className="stars-container">
-                  <img src={Stars} />
-                  <p>{data?.[7].stars}/5</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="selling-products--button-container">
-            <button className="selling-products--button">
-              View All Products
-            </button>
-          </div>
-        </div>
+        <TopSellingProducts />
       </section>
 
       <section className="trending-items-section-container">

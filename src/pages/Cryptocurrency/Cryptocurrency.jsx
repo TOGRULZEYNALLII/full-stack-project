@@ -36,7 +36,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-ChartJS.register(
+ChartJS.register( 
   CategoryScale,
   LinearScale,
   PointElement,
@@ -52,6 +52,8 @@ const Sellbuyorder = () => {
   const [amount, setAmount] = useState(18.56879);
   const [price, setPrice] = useState(192.04994);
   const [fees, setFees] = useState(2.349);
+  const [message, setMessage] = useState(""); // Mesaj state
+  const [isSuccess, setIsSuccess] = useState(false); // Başarı durumunu kontrol etme
 
   const calculateTotal = () => {
     const total = amount * price * (1 - fees / 100);
@@ -60,6 +62,26 @@ const Sellbuyorder = () => {
 
   const handleCurrencyChange = (e) => {
     setSelectedCurrency(e.target.value);
+  };
+
+  const handleBuyClick = () => {
+    setMessage("Buy request is being processed..."); // Buy işlemi başladı mesajı
+    setIsSuccess(true);
+    // Simulate a fetch request (or any other async action)
+    setTimeout(() => {
+      setMessage("Buy request successful!"); // Başarı mesajı
+      setIsSuccess(true);
+    }, 2000); // 2 saniye sonra başarılı mesajı
+  };
+
+  const handleSellClick = () => {
+    setMessage("Sell request is being processed..."); // Sell işlemi başladı mesajı
+    setIsSuccess(false);
+    // Simulate a fetch request (or any other async action)
+    setTimeout(() => {
+      setMessage("Sell request successful!"); // Başarı mesajı
+      setIsSuccess(false);
+    }, 2000); // 2 saniye sonra başarılı mesajı
   };
 
   return (
@@ -132,9 +154,27 @@ const Sellbuyorder = () => {
       </div>
 
       <div className="order-buttons">
-        <button className="buy-button">Buy</button>
-        <button className="sell-button">Sell</button>
+        <button className="buy-button" onClick={handleBuyClick}>
+          Buy
+        </button>
+        <button className="sell-button" onClick={handleSellClick}>
+          Sell
+        </button>
       </div>
+
+      {message && (
+        <div
+          style={{
+            backgroundColor: isSuccess ? "green" : "orange",
+            color: "white",
+            padding: "10px",
+            marginTop: "20px",
+            borderRadius: "5px",
+          }}>
+          {message}
+        </div>
+      )}
+
       <div className="checkxbox">
         <input type="checkbox" />
         <p style={{ fontSize: "14px", fontWeight: "300" }}>
@@ -145,6 +185,7 @@ const Sellbuyorder = () => {
     </div>
   );
 };
+
 const Buyorder = () => {
   const [currency, setCurrency] = useState("Bitcoin");
   const [orders, setOrders] = useState([]);
@@ -457,7 +498,7 @@ const OverviewBalance = () => {
               responsive: true,
               maintainAspectRatio: false,
             }}
-          style={{ width: "500px", height: "300px" }}
+            style={{ width: "500px", height: "300px" }}
           />
         </div>
       </div>
@@ -917,7 +958,6 @@ const Cryptocurrency = () => {
         // İlk 10 öğe farklı veriler ise, faturalar 11. öğeden (index 10) başlıyor:
         const invoiceData = combinedData.slice(10);
         setInvoices(invoiceData);
-        console.log("Combined Data:", combinedData);
       } catch (error) {
         setError(error.message);
       } finally {

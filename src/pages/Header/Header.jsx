@@ -54,7 +54,7 @@ function Header({ setIsAuthenticated }) {
   const [isTranslateVisible, setIsTranslateVisible] = useState(false);
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
-
+    const invisible = document.querySelector(".invisibleimg");
     // Temayı değiştirme işlemi
     const headerElement = document.querySelector(".container-header");
     const sidebarElement = document.querySelector(".container-sidebar");
@@ -77,6 +77,7 @@ function Header({ setIsAuthenticated }) {
     const invoicestable = document.querySelector(".invoices-right-container");
     if (isDarkMode) {
       headerElement.classList.remove("dark");
+
       document.body.classList.remove("darklight");
       sidebarElement.classList.remove("dark");
 
@@ -85,6 +86,7 @@ function Header({ setIsAuthenticated }) {
       carriyngcost.classList.remove("darknoimg");
       salesbylocation.classList.remove("darknoimg");
       warhousing.classList.remove("darknoimg");
+      invisible.classList.remove("invisible");
       invoicestable.classList.remove("darknoimg");
       deliverybycountries.classList.remove("darknoimg");
       // Tüm .card öğelerinden "darknoimg" sınıfını kaldır
@@ -93,14 +95,14 @@ function Header({ setIsAuthenticated }) {
       });
       cancelledcontainer.forEach((card) => {
         card.classList.remove("darknoimg");
-      }
-      );
+      });
     } else {
       headerElement.classList.add("dark");
       deliverystatus.classList.add("darknoimg");
       document.body.classList.add("darklight");
       carriyngcost.classList.add("darknoimg");
       sidebarElement.classList.add("dark");
+      invisible.classList.add("invisible");
       salesbylocation.classList.add("darknoimg");
       yearlyorder.classList.add("darknoimg");
       warhousing.classList.add("darknoimg");
@@ -190,10 +192,8 @@ function Header({ setIsAuthenticated }) {
           </div>
         </div>
         <div className="avatar">
-          <img src={avatar} alt="avatar" />
-          <button className="button-settings">
-            <img className="settings" src={settings} alt="settings" />
-          </button>
+          <img className="invisibleimg" src={settings} alt="avatar" />
+          <img src={avatar} alt="settings" />
         </div>
       </div>
     </div>

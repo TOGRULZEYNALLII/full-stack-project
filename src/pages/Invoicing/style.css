@@ -175,8 +175,19 @@
 .displayabsoluteorange2 {
   position: absolute;
   top: 537px;
-  left: 773px;
+  left: 767px;
   font-size: 18px;
+}
+
+.left-side-container-st {
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: hsla(0, 0%, 100%, 1);
+  border-radius: 10px;
+  width: 538px;
+  height: 535px;
+  padding: 20px;
 }
 .spending-box-green {
   width: 149px;

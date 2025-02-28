@@ -615,8 +615,9 @@
 .stars-container {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  flex-direction: row;
   width: 160px;
+  gap: 5px;
   height: 20px;
 }
 
@@ -729,12 +730,14 @@
 .filter-container {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  text-align: center;
   width: 498px;
 }
 .filter-select {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   width: 150px;
   cursor: pointer;
   margin-bottom: 30px;

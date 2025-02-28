@@ -694,26 +694,26 @@ const Banking = () => {
             </p>
           </div>
           <div className="dots-container">
-            <div className="dots-container-left">
-              <div className="dots-container-left-color">
+            <div className="dots-container-leftw">
+              <div className="dots-container-left-colorw">
                 <div className="blue-squere"></div>
                 <p>{data?.[8].category}</p>
               </div>
-              <div className="dots-container-left-color">
+              <div className="dots-container-left-colorw">
                 <div className="green-squere"></div>
                 <p>{data?.[9].category}</p>
               </div>
-              <div className="dots-container-left-color">
+              <div className="dots-container-left-colorw">
                 <div className="red-squere"></div>
                 <p>{data?.[10].category}</p>
               </div>
             </div>
             <div className="dots-container-right">
-              <div className="dots-container-left-color">
+              <div className="dots-container-left-colorw">
                 <div className="light-blue-squere"></div>
                 <p>{data?.[11].category}</p>
               </div>
-              <div className="dots-container-left-color">
+              <div className="dots-container-left-colorw">
                 <div className="yellow-squere"></div>
                 <p>{data?.[12].category}</p>
               </div>

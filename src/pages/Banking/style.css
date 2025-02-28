@@ -233,6 +233,7 @@
   flex-direction: row;
   align-items: center;
   width: 310px;
+  margin-top: 10px;
   height: 40px;
   padding: 8px;
   gap: 10px;
@@ -378,6 +379,7 @@
   display: flex;
   align-items: center;
   gap: 5px;
+  flex-direction: column;
 }
 .green-squere {
   width: 14px;
@@ -386,6 +388,12 @@
   background-color: rgba(0, 153, 126, 1);
   border-radius: 4px;
   opacity: 0px;
+}
+.dots-container-left-colorw {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 170px;
 }
 .red-squere {
   width: 14px;
