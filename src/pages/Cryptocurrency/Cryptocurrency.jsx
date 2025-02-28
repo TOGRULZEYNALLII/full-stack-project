@@ -698,7 +698,7 @@ const Cryptocurrency = () => {
 
   return (
     <>
-      <section className="top-container">
+      <section className="top-container slide">
         <div className="Bitcoin-container">
           <div>
             <div className="bitcoin-prices-container">
@@ -724,7 +724,7 @@ const Cryptocurrency = () => {
           </div>
         </div>
 
-        <div className="Bitcoin-container">
+        <div className="Bitcoin-container ">
           <div>
             <div className="bitcoin-prices-container">
               <img
@@ -798,7 +798,7 @@ const Cryptocurrency = () => {
         </div>
       </section>
 
-      <section className="Portfolio-container">
+      <section className="Portfolio-container slide">
         <div className="container-left">
           <div className="portfolio-header-container">
             <div>

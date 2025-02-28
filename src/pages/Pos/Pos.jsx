@@ -34,6 +34,320 @@ import Truckbox from "./assets/vistors/truckbox.svg";
 import Planebox from "./assets/vistors/planebox.svg";
 import Lines from "./assets/header/Lines.svg";
 import Labels from "./assets/header/y-labels.svg";
+const RecentActivity = () => {
+  const [activities, setActivities] = useState([]);
+
+  // API'den veriyi çekme
+  const fetchRecentActivity = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:8088/api/PointOfSalesPage/RecentActivity?marketId=1"
+      );
+      if (!response.ok) {
+        throw new Error("Veri çekme hatası");
+      }
+      const data = await response.json();
+      setActivities(data);
+    } catch (error) {
+      console.error("Recent activity verisi çekilirken hata oluştu:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchRecentActivity();
+  }, []);
+
+  // Verileri tarih bazında gruplandırma (YYYY-MM-DD formatında)
+  const groupedActivities = activities.reduce((groups, activity) => {
+    const dateKey = new Date(activity.date).toISOString().split("T")[0];
+    if (!groups[dateKey]) {
+      groups[dateKey] = [];
+    }
+    groups[dateKey].push(activity);
+    return groups;
+  }, {});
+
+  // Tarihleri ters sırada (son gün önce) listeleme
+  const sortedDates = Object.keys(groupedActivities).sort(
+    (a, b) => new Date(b) - new Date(a)
+  );
+
+  return (
+    <div className="recent-activity">
+      <div className="recent-activity-header">
+        <p>Recent Activity</p>
+        <img src={Treedot} alt="Menu" />
+      </div>
+      <div className="scroll">
+        {sortedDates.map((dateKey) => (
+          <div className="recent-activity-container-contents" key={dateKey}>
+            {/* Tarih başlığı, gün yerine data'dan gelen tarih */}
+            <p>{dateKey}</p>
+            {groupedActivities[dateKey].map((activity) => (
+              <div key={activity.id} className="recent-activiy-container-box">
+                <p>{activity.description}</p>
+                {/* Saat bilgisini HH:MM:SS formatında gösterme */}
+                <p className="gray">
+                  {new Date(activity.date).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                  })}
+                </p>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+const SalesActivity = () => {
+  const [salesActivity, setSalesActivity] = useState([]);
+  const [month, setMonth] = useState("January"); // Varsayılan ay
+  const marketId = 1;
+
+  // API'den verileri çekme fonksiyonu
+  const fetchSalesActivity = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8088/api/PointOfSalesPage/SalesActivity?month=${encodeURIComponent(
+          month
+        )}&marketId=${marketId}`
+      );
+      if (!response.ok) {
+        throw new Error("Veri çekme hatası");
+      }
+      const data = await response.json();
+      setSalesActivity(data);
+    } catch (error) {
+      console.error("Sales activity verisi çekilirken hata oluştu:", error);
+    }
+  };
+
+  // Ay değeri değiştiğinde veriyi yeniden çek
+  useEffect(() => {
+    fetchSalesActivity();
+  }, [month]);
+
+  // Ay seçimi değiştiğinde state güncellemesi
+  const handleMonthChange = (e) => {
+    setMonth(e.target.value);
+  };
+
+  return (
+    <div className="sales-activity">
+      <div className="sales-acitivity-header">
+        <p>Sales Activity</p>
+        <select value={month} onChange={handleMonthChange}>
+          <option value="January">January</option>
+          <option value="February">February</option>
+          <option value="March">March</option>
+          <option value="April">April</option>
+          <option value="May">May</option>
+          <option value="June">June</option>
+          <option value="July">July</option>
+          <option value="August">August</option>
+          <option value="September">September</option>
+          <option value="October">October</option>
+          <option value="November">November</option>
+          <option value="December">December</option>
+        </select>
+      </div>
+
+      {/* 1. Blok - To be Packed */}
+      <div className="flex-special">
+        <img src={Cargobox} alt="Cargobox" />
+        <div>
+          <p className="height">
+            {salesActivity[0] ? salesActivity[0].status : "Loading..."}
+          </p>
+          <div className="flex">
+            <p className="bold-little">
+              {salesActivity[0]
+                ? salesActivity[0].amount.toLocaleString()
+                : "0"}
+            </p>
+            <img src={Greensquareup} alt="Arrow Up" />
+            <p className="green">
+              {salesActivity[0]
+                ? salesActivity[0].percentage >= 0
+                  ? `+${salesActivity[0].percentage}%`
+                  : `${salesActivity[0].percentage}%`
+                : ""}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Blok - To be Shipped */}
+      <div className="flex-special">
+        <img src={Planebox} alt="Planebox" />
+        <div>
+          <p className="height">
+            {salesActivity[1] ? salesActivity[1].status : "Loading..."}
+          </p>
+          <div className="flex">
+            <p className="bold-little">
+              {salesActivity[1]
+                ? salesActivity[1].amount.toLocaleString()
+                : "0"}
+            </p>
+            <img src={ArrowSquareDownLeft} alt="Arrow Down" />
+            <p className="red">
+              {salesActivity[1]
+                ? salesActivity[1].percentage >= 0
+                  ? `+${salesActivity[1].percentage}%`
+                  : `${salesActivity[1].percentage}%`
+                : ""}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Blok - To be Delivered */}
+      <div className="flex-special">
+        <img src={Truckbox} alt="Truckbox" />
+        <div>
+          <p className="height">
+            {salesActivity[2] ? salesActivity[2].status : "Loading..."}
+          </p>
+          <div className="flex">
+            <p className="bold-little">
+              {salesActivity[2]
+                ? salesActivity[2].amount.toLocaleString()
+                : "0"}
+            </p>
+            <img src={Greensquareup} alt="Arrow Up" />
+            <p className="green">
+              {salesActivity[2]
+                ? salesActivity[2].percentage >= 0
+                  ? `+${salesActivity[2].percentage}%`
+                  : `${salesActivity[2].percentage}%`
+                : ""}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+const SalesByCatagory = () => {
+  const [salesData, setSalesData] = useState([]);
+  const [timestamp, setTimestamp] = useState("Last Week"); // Varsayılan seçim
+  const marketId = 1;
+
+  const fetchSalesData = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8088/api/PointOfSalesPage/SalesByCategory?timestamp=${encodeURIComponent(
+          timestamp
+        )}&marketId=${marketId}`
+      );
+      if (!response.ok) {
+        throw new Error("Veri çekme hatası");
+      }
+      const data = await response.json();
+      setSalesData(data);
+    } catch (error) {
+      console.error("Veri çekilirken hata oluştu:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSalesData();
+  }, [timestamp]);
+
+  const handleTimestampChange = (event) => {
+    setTimestamp(event.target.value);
+  };
+
+  return (
+    <div className="sales-by-category">
+      <div className="sales-by-catagory-header">
+        <p>Sales by Category</p>
+        <select
+          className="input-select"
+          value={timestamp}
+          onChange={handleTimestampChange}>
+          <option value="Last Week">Last Week</option>
+          <option value="Last Month">Last Month</option>
+          <option value="Last Year">Last Year</option>
+        </select>
+      </div>
+      <div className="border-vertical"></div>
+      <div className="sales-by-catagory-body">
+        <div className="sales-by-catagory-text">
+          <div className="sales-by-catagory-text-container">
+            <div className="div-blue"></div>
+            <div>
+              <p>
+                {salesData[0]
+                  ? `${salesData[0].categoryName} (${salesData[0].salePercentage}%)`
+                  : "Loading..."}
+              </p>
+              <p className="gray-text">
+                {salesData[0]
+                  ? `${salesData[0].categoryProducts} Category Products`
+                  : ""}
+              </p>
+            </div>
+          </div>
+          <div className="sales-by-catagory-text-container">
+            <div className="div-light-blue"></div>
+            <div>
+              <p>
+                {salesData[3]
+                  ? `${salesData[3].categoryName} (${salesData[3].salePercentage}%)`
+                  : "Loading..."}
+              </p>
+              <p className="gray-text">
+                {salesData[3]
+                  ? `${salesData[3].categoryProducts} Category Products`
+                  : ""}
+              </p>
+            </div>
+          </div>
+          <div className="sales-by-catagory-text-container">
+            <div className="div-orange"></div>
+            <div>
+              <p>
+                {salesData[2]
+                  ? `${salesData[2].categoryName} (${salesData[2].salePercentage}%)`
+                  : "Loading..."}
+              </p>
+              <p className="gray-text">
+                {salesData[2]
+                  ? `${salesData[2].categoryProducts} Category Products`
+                  : ""}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="border-horizontal"></div>
+        <div className="sales-by-catagory-container">
+          <img className="background" src={Background} alt="Background" />
+          <div className="background-text">
+            <p className="catagoryname">
+              {salesData[2] ? `${salesData[2].categoryName} ` : "Loading..."}
+            </p>
+            <p className="catagoryname">
+              {salesData[2]
+                ? `(${salesData[2].salePercentage}%) `
+                : "Loading..."}
+            </p>
+          </div>
+          <img
+            className="salesbycatagoryimg"
+            src={Salesbycategory}
+            alt="Sales by Category"
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Vistorsfunction = () => {
   const [selectedTimestamp, setSelectedTimestamp] = useState("Weekly");
   const [visitorsData, setVisitorsData] = useState(null);
@@ -449,6 +763,43 @@ const LatestTransactions = () => {
   );
 };
 const Pos = () => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const apiLinks = [
+    "http://localhost:8088/api/PointOfSalesPage/PopularSearch?marketId=1",
+    "http://localhost:8088/api/PointOfSalesPage/QuickView?marketId=1",
+  ];
+
+  // Verileri çekip, faturaları ayırıyoruz
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true); // Veri yükleniyor
+      try {
+        const responses = await Promise.all(
+          apiLinks.map((link) =>
+            fetch(link).then((response) => {
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              return response.json();
+            })
+          )
+        );
+        const combinedData = responses.flat();
+        setData(combinedData);
+        console.log(combinedData);
+        // İlk 10 öğe farklı veriler ise, faturalar 11. öğeden (index 10) başlıyor:
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []); // selectedValue değiştiğinde API çağrısını tekrar yap
+
   return (
     <>
       <section className="header-section-pos">
@@ -522,59 +873,20 @@ const Pos = () => {
               </div>
             </div>
           </div>
-          <div className="sales-by-category">
-            <div className="sales-by-catagory-header">
-              <p>Sales by Category</p>
-              <select className="input-select">
-                <option value="Week">Last Week</option>
-              </select>
-            </div>
-            <div className="border-vertical"></div>
-            <div className="sales-by-catagory-body">
-              <div className="sales-by-catagory-text">
-                <div className="sales-by-catagory-text-container">
-                  <div className="div-blue"></div>
-                  <div>
-                    <p>Clothing (45%)</p>
-                    <p className="gray-text">1,230 Category Products</p>
-                  </div>
-                </div>
-                <div className="sales-by-catagory-text-container">
-                  <div className="div-light-blue"></div>
-                  <div>
-                    <p>Clothing (45%)</p>
-                    <p className="gray-text">1,230 Category Products</p>
-                  </div>
-                </div>
-                <div className="sales-by-catagory-text-container">
-                  <div className="div-orange"></div>
-                  <div>
-                    <p>Clothing (45%)</p>
-                    <p className="gray-text">1,230 Category Products</p>
-                  </div>
-                </div>
-              </div>
-              <div className="border-horizontal"></div>
-              <div className="sales-by-catagory-container">
-                <img className="background" src={Background} />
-                <div className="background-text">
-                  <p className="height-text">ss</p>
-                  <p className="height-text">aaaa</p>
-                </div>
-                <img className="salesbycatagoryimg" src={Salesbycategory} />
-              </div>
-            </div>
-          </div>
+
+          <SalesByCatagory />
         </div>
         <div className="header-section-right">
           <div className="card-total-orders">
             <img className="wave-elemnts" src={WaweElements} />
             <div className="card-main-walet">
-              <p className="card-main-wallet-item">Second Wallet</p>
-              <p className="card-price-item">123</p>
+              <p className="card-main-wallet-item">
+                {data?.[0]?.customer.customerName}
+              </p>
+              <p className="card-price-item">{data?.[0]?.customer.balance}$</p>
             </div>
             <div className="card-id">
-              <p className="id">1231 1231</p>
+              <p className="id">{data?.[0]?.customer.cardNumber}</p>
               <img src={Mastercard} />
             </div>
           </div>
@@ -586,36 +898,46 @@ const Pos = () => {
             <div className="popular-serch-img">
               <img src={Popularsearch} />
               <img className="popularsearcharrows" src={Popularsearcharrows} />
-              <p className="popularsearcharrows-texts-blue">23%</p>
-              <p className="popularsearcharrows-texts-orange">23</p>
-              <p className="popularsearcharrows-texts-red">23</p>
-              <p className="popularsearcharrows-texts-green">23</p>
-              <p className="popularsearcharrows-texts-light-blue">23</p>
+              <p className="popularsearcharrows-texts-blue">
+                {data?.[0]?.categories?.[0]?.salePercentage}%
+              </p>
+              <p className="popularsearcharrows-texts-orange">
+                {data?.[0]?.categories?.[1]?.salePercentage}%
+              </p>
+              <p className="popularsearcharrows-texts-red">
+                {data?.[0]?.categories?.[2]?.salePercentage}%
+              </p>
+              <p className="popularsearcharrows-texts-green">
+                {data?.[0]?.categories?.[3]?.salePercentage}%
+              </p>
+              <p className="popularsearcharrows-texts-light-blue">
+                {data?.[0]?.categories?.[4]?.salePercentage}%
+              </p>
             </div>
             <div className="dots-container-left">
               <div>
                 <div className="dots-container-left-color">
                   <div className="blue-squere"></div>
-                  <p></p>
+                  <p>{data?.[0]?.categories?.[0]?.categoryName}</p>
                 </div>
                 <div className="dots-container-left-color">
                   <div className="green-squere"></div>
-                  <p></p>
+                  <p>{data?.[0]?.categories?.[1]?.categoryName}</p>
                 </div>
                 <div className="dots-container-left-color">
                   <div className="red-squere"></div>
-                  <p></p>
+                  <p>{data?.[0]?.categories?.[2]?.categoryName}</p>
                 </div>
               </div>
               <div>
                 <div className="dots-container-left-color">
                   <div className="orange-squere"></div>
-                  <p></p>
+                  <p>{data?.[0]?.categories?.[3]?.categoryName}</p>
                 </div>
                 <div>
                   <div className="dots-container-left-color">
                     <div className="light-squere"></div>
-                    <p></p>
+                    <p>{data?.[0]?.categories?.[4]?.categoryName}</p>
                   </div>
                 </div>
               </div>
@@ -627,9 +949,15 @@ const Pos = () => {
               </div>
             </div>
             <div className="flex">
-              <button className="gray-button-tags">#</button>{" "}
-              <button className="gray-button-tags">#</button>{" "}
-              <button className="gray-button-tags">#</button>
+              <button className="gray-button-tags">
+                # <p>{data?.[0]?.categories?.[0]?.categoryName}</p>
+              </button>{" "}
+              <button className="gray-button-tags">
+                # <p>{data?.[0]?.categories?.[4]?.categoryName}</p>
+              </button>{" "}
+              <button className="gray-button-tags">
+                # <p>{data?.[0]?.categories?.[2]?.categoryName}</p>
+              </button>
             </div>
           </div>
         </div>
@@ -645,13 +973,15 @@ const Pos = () => {
               <p>Total Orders</p>
             </div>
             <div className="total-orders-content-big">
-              <p className="total-orders-content-big-p">22222</p>
+              <p className="total-orders-content-big-p">
+                {data?.[1]?.totalOrders}
+              </p>
             </div>
 
             <div className="button-dark-container">
               <button className="button-dark-blue">
                 <img src={Vectorup} />
-                44%
+                {data?.[1]?.totalOrdersPercentage}%
               </button>
               <p className="gray">higher than last month</p>
             </div>
@@ -663,13 +993,15 @@ const Pos = () => {
               <p>Total Orders</p>
             </div>
             <div className="total-orders-content-big">
-              <p className="total-orders-content-big-p">22222</p>
+              <p className="total-orders-content-big-p">
+                {data?.[1]?.totalSales}
+              </p>
             </div>
 
             <div className="button-dark-container">
               <button className="button-dark-red">
                 <img src={Vectordownred} />
-                44%
+                {data?.[1]?.totalSalesPercentage}%
               </button>
               <p className="gray">higher than last month</p>
             </div>
@@ -681,13 +1013,15 @@ const Pos = () => {
               <p>Monthly Growth</p>
             </div>
             <div className="total-orders-content-big">
-              <p className="total-orders-content-big-p">22222</p>
+              <p className="total-orders-content-big-p">
+                {data?.[1]?.monthlyGrowth}
+              </p>
             </div>
 
             <div className="button-dark-container">
               <button className="button-dark-green">
                 <img src={Vectorupgreen} />
-                44%
+                {data?.[1]?.monthlyGrowthPercentage}%
               </button>
               <p className="gray">higher than last month</p>
             </div>
@@ -697,7 +1031,7 @@ const Pos = () => {
           <div className="total-oreders-right-container-header">
             <p>Total Orders by Platform</p>
             <button className="total-oreders-right-container-header-button">
-              Add Platforms <img src={Plus} />
+              <p> Platforms</p>
             </button>
           </div>
           <div className="total-oreders-right-container-middle">
@@ -708,9 +1042,9 @@ const Pos = () => {
                   <p className="height">Instagram</p>
                 </div>
                 <div className="flex">
-                  <p className="bold-middle"> 240,96K</p>
+                  <p className="bold-middle"> 500,26K</p>
                   <img src={Greensquareup} />
-                  <p className="green">+15</p>
+                  <p className="green">+35</p>
                 </div>
               </div>
             </div>
@@ -721,9 +1055,9 @@ const Pos = () => {
                   <p className="height">Instagram</p>
                 </div>
                 <div className="flex">
-                  <p className="bold-middle"> 240,96K</p>
+                  <p className="bold-middle"> 130,35K</p>
                   <img src={ArrowSquareDownLeft} />
-                  <p className="red">+15</p>
+                  <p className="red">+5</p>
                 </div>
               </div>
             </div>
@@ -734,9 +1068,9 @@ const Pos = () => {
                   <p className="height">Instagram</p>
                 </div>
                 <div className="flex">
-                  <p className="bold-middle"> 240,96K</p>
+                  <p className="bold-middle"> 280,96K</p>
                   <img src={Greensquareup} />
-                  <p className="green">+15</p>
+                  <p className="green">+10</p>
                 </div>
               </div>
             </div>
@@ -747,9 +1081,9 @@ const Pos = () => {
                   <p className="height">Instagram</p>
                 </div>
                 <div className="flex">
-                  <p className="bold-middle"> 240,96K</p>
+                  <p className="bold-middle"> 400,6K</p>
                   <img src={Greensquareup} />
-                  <p className="green">+15</p>
+                  <p className="green">+40</p>
                 </div>
               </div>
             </div>
@@ -807,55 +1141,11 @@ const Pos = () => {
           <ProductSales />
           <div className="product-sales-section-middle">
             <Vistorsfunction />
-            <div className="sales-activity">
-              <div className="sales-acitivity-header">
-                <p>Sales Activity</p>
-                <select name="" id="">
-                  <option value="January">January</option>
-                </select>
-              </div>
-              <div className="flex-special">
-                <img src={Cargobox} />
-                <div>
-                  <p className="height">tobebacac</p>
-                  <div className="flex">
-                    <p className="bold-little">10,023</p>
-                    <img src={Greensquareup} />
-                    <p className="green">+23%</p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex-special">
-                <img src={Planebox} />
-                <div>
-                  <p className="height">tobebacac</p>
-                  <div className="flex">
-                    <p className="bold-little">10,023</p>
-                    <img src={ArrowSquareDownLeft} />
-                    <p className="red">+23%</p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex-special">
-                <img src={Truckbox} />
-                <div>
-                  <p className="height">tobebacac</p>
-                  <div className="flex">
-                    <p className="bold-little">10,023</p>
-                    <img src={Greensquareup} />
-                    <p className="green">+23%</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <SalesActivity />
           </div>
         </section>
-        <div className="recent-activity">
-          <div className="recent-activity-header">
-            <p>Recent Activity</p>
-            <img src={Treedot} />
-          </div>
-        </div>
+
+        <RecentActivity />
       </section>
     </>
   );

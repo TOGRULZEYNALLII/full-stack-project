@@ -827,7 +827,6 @@ function LogistcsPage() {
                 <div className="cancelled-text-item-container">
                   <img className="cancelled-text-item" src={Leftdownvector} />
                   <p className="cancelled-text-item-percentage-red">
-                    {" "}
                     {data?.[9]?.refundedPercentage}%
                   </p>
                 </div>

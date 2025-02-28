@@ -20,6 +20,9 @@
   justify-content: center;
   gap: 26px;
 }
+.slide{
+  animation: slideInFromRight 2s ease-in-out;
+}
 /* section portfoilio */
 .Portfolio-container {
   display: flex;
@@ -506,4 +509,14 @@
   background-color: hsla(240, 62%, 59%, 1);
   color: white;
   transition: 0.5s;
+}
+@keyframes slideInFromRight {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
